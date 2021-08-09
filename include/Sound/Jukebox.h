@@ -22,8 +22,6 @@
 #ifndef _JUKEBOX_H
 #define _JUKEBOX_H
 
-    #include "include.h"
-
     extern char* EffectPath;
 
     void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath);

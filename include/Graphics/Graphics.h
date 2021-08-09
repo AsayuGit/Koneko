@@ -22,7 +22,6 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
 
-    #include "include.h"
     #include "Scene.h"
 
     void KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y);

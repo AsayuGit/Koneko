@@ -23,6 +23,9 @@
 #include <limits.h>
 #include <libgen.h>
 
+#include "Graphics.h"
+#include "CommunFunctions.h"
+
 #ifdef _SDL
     #include <SDL/SDL_rotozoom.h>
 #endif

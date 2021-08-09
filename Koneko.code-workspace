@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"include.h": "c",
+			"types.h": "c",
+			"jukebox.h": "c",
+			"communfunctions.h": "c"
+		}
+	}
+}

@@ -21,6 +21,24 @@
 
 #ifndef _TYPES_H
 #define _TYPES_H
+
+    #ifdef _SDL
+        #define SDLMAIN <SDL/SDL.h>
+        #define SDLIMAGE <SDL/SDL_image.h>
+        #define SDLMIXER <SDL/SDL_mixer.h>
+    #elif defined(_XBOX)
+        #define SDLMAIN <SDL.h>
+        /*#define SDLIMAGE <SDL2/SDL_image.h>*/
+        #define SDLMIXER <SDL_mixer.h>
+	#else
+        #define SDLMAIN <SDL2/SDL.h>
+        #define SDLIMAGE <SDL2/SDL_image.h>
+        #define SDLMIXER <SDL2/SDL_mixer.h>
+    #endif
+
+    #include SDLMAIN
+    /*#include SDLIMAGE*/
+    #include SDLMIXER
 	
 	#ifdef _XBOX
 		typedef enum{

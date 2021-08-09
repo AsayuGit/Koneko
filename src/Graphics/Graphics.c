@@ -20,6 +20,7 @@
 */
 
 #include "Graphics.h"
+#include "System.h"
 
 void KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y){
     /* Declaration */

@@ -20,6 +20,7 @@
 */
 
 #include "CommunFunctions.h"
+#include "System.h"
 
 int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */

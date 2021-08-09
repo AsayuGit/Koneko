@@ -21,6 +21,9 @@
 
 #include "Scene.h"
 #include "System.h"
+#include "Load.h"
+#include "Jukebox.h"
+#include "Graphics.h"
 
 /* Spawns an entity in the specified scene, loading it if necessary */
 void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int X, unsigned int Y){

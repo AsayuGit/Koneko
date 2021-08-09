@@ -21,14 +21,15 @@
 
 #ifndef _LOAD_H
 #define _LOAD_H
-
-    #include "include.h"
 	
 	#ifdef _XBOX
 		#include <libxml/parser.h>
 	#else
 		#include <libxml2/libxml/parser.h>
 	#endif
+    
+    #include "Types.h"
+    
     enum {
         SURFACE_OPAQUE = 0,
         SURFACE_ALPHA = 1,

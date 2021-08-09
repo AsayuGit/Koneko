@@ -20,6 +20,8 @@
 */
 
 #include "Jukebox.h"
+#include "Types.h"
+#include "Load.h"
 
 static Mix_Music* Track_INTRO = NULL;
 static Mix_Music* Track_LOOP = NULL;

@@ -22,6 +22,9 @@
 #include "Entity.h"
 #include "Load.h"
 #include "Animation.h"
+#include "CommunFunctions.h"
+#include "System.h"
+#include "Graphics.h"
 
 void KON_ParseEntityFlags(Entity* entity, xmlNode* flags){
     flags = flags->children;

@@ -20,6 +20,9 @@
 */
 
 #include "System.h"
+#include "CommunFunctions.h"
+#include "KeyMap.h"
+#include "Graphics.h"
 
 void KON_UpdateRenderRect(DisplayDevice* DDevice){
     int ScreenWidth, ScreenHeight;
@@ -73,13 +76,13 @@ DisplayDevice* KON_CreateDisplayDevice(int resX, int resY, char* GameTitle){
     #endif
     if (Device->Screen == NULL){
         fprintf(stderr, "Can't create main window\n - %s\n", SDL_GetError());
-        exit(EXIT_INIT);
+        exit(-1);
     }
     #ifndef _SDL
         Device->Renderer = SDL_CreateRenderer(Device->Screen , -1, 0);
         if (Device->Renderer == NULL){
             fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
-            exit(EXIT_INIT);
+            exit(-1);
         }
         SDL_GL_SetSwapInterval(1); /* VSync */
     #endif
@@ -100,7 +103,7 @@ void FreeSoundDevice(void){
 void KON_CreateSoundDevice(){
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
         fprintf(stderr, "Can't create sound device\n - %s\n", SDL_GetError());
-        exit(EXIT_INIT);
+        exit(-1);
     }
     /*return NULL;*/
 }
@@ -141,7 +144,7 @@ KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){
     /* SDL Init */
     if (SDL_Init(flags) != 0){
         fprintf(stderr, "[KON] SDL Initialisation failed\n - %s\n", SDL_GetError());
-        exit(EXIT_INIT);
+        exit(-1);
     }
 
     if (flags & KON_INIT_VIDEO){

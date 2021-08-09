@@ -22,7 +22,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
-    #include "include.h"
+    #include "Types.h"
 
     enum {
         KON_INIT_AUDIO = SDL_INIT_AUDIO,

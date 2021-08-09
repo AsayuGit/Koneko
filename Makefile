@@ -59,8 +59,8 @@ multi:
 	@$(MAKE) -j$(CPUS) --no-print-directory all
 	
 copy: $(INCLUDES)
-	@mkdir -p $(OUT)
-	@cp -u $^ lib$(OUT).a $(OUT)/
+	@mkdir -p OUT/$(OUT)
+	@cp -u $^ lib$(OUT).a OUT/$(OUT)/
 
 all: $(OBJ_DIR) $(OUT)
 	@$(MAKE) copy
