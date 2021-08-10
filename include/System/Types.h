@@ -104,6 +104,7 @@
         unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
         unsigned int** MapData;         /* Map Data */
         Node* solidTiles;               /* List Of tile to colide with */
+        Vector2d pos;
     } TileMap;
 
     typedef struct{

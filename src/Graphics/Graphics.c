@@ -32,8 +32,8 @@ void KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID
     SrcTile.w = WorldMap->TileSize;
     SrcTile.h = WorldMap->TileSize;
 
-    DstTile.x = X * WorldMap->TileSize - DDevice->Camera.x;
-    DstTile.y = Y * WorldMap->TileSize - DDevice->Camera.y;
+    DstTile.x = X * WorldMap->TileSize + WorldMap->pos.x - DDevice->Camera.x;
+    DstTile.y = Y * WorldMap->TileSize + WorldMap->pos.y - DDevice->Camera.y;
     DstTile.w = WorldMap->TileSize;
     DstTile.h = WorldMap->TileSize;
     /* Logic */
