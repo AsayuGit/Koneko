@@ -32,7 +32,7 @@
     bool            RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
     bool            RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
     void            DrawFrame(DisplayDevice* DDevice);
-    void            CenterCameraOnCoordinates(DisplayDevice* DDevice, unsigned int X, unsigned int Y);
+    void            CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y);
     void            BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
     unsigned int    KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y);
     unsigned int    KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y);

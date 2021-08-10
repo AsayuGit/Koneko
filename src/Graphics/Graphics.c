@@ -210,9 +210,9 @@ void DrawFrame(DisplayDevice* DDevice){
     #endif
 }
 
-void CenterCameraOnCoordinates(DisplayDevice* DDevice, unsigned int X, unsigned int Y){
-    DDevice->Camera.x = X - (DDevice->InternalResolution.x >> 1);
-    DDevice->Camera.y = Y - (DDevice->InternalResolution.y >> 1);
+void CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y){
+    DDevice->Camera.x = X - (DDevice->InternalResolution.x / 2);
+    DDevice->Camera.y = Y - (DDevice->InternalResolution.y / 2);
 }
 
 void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){

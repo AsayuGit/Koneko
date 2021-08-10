@@ -134,7 +134,7 @@
         Vector2i InternalResolution;    /* Internal render resolution of the game */
         Vector2i ScreenResolution;      /* The external resolution of the game */
         unsigned int IRScalar;          /* The scaling nessary match the external resolution */
-        Vector2i Camera;                /* The coordinates of the in game camera */
+        Vector2d Camera;                /* The coordinates of the in game camera */
 
         bool OffScreenRender;
 
