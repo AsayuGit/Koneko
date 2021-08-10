@@ -92,7 +92,6 @@
     } Node;
 
     typedef struct{
-        char* MapFilePath;
         char* TileMapPath;
         SDL_Texture* TileMapSurface;    /* TileMap surface */
         SDL_Rect TileMapRegion;         /* world region occupied by the map */
@@ -105,6 +104,12 @@
         unsigned int** MapData;         /* Map Data */
         Node* solidTiles;               /* List Of tile to colide with */
     } TileMap;
+
+    typedef struct{
+        char* MapFilePath;
+        unsigned int nbOfLayers;
+        TileMap** MapLayer;
+    } Map;
 
     typedef struct{
         char* PicsPath;

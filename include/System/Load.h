@@ -48,6 +48,6 @@
 
     xmlDoc* loadXml(char* filePath);
 
-    TileMap* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath);
-    void KON_SaveTileMap(TileMap* MapToSave);
+    Map* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath);
+    void KON_SaveTileMap(Map* MapToSave);
 #endif

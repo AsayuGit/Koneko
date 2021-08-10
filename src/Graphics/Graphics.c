@@ -229,21 +229,27 @@ void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
     }
 }
 
-unsigned int KON_GetTile(SceneHandle* scene, unsigned int X, unsigned int Y){
-    if (X >= scene->WorldMap->MapSizeX || Y >= scene->WorldMap->MapSizeY)
+unsigned int KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y){
+    TileMap* selectedLayer;
+
+    selectedLayer = scene->WorldMap->MapLayer[layerID];
+    if (X >= selectedLayer->MapSizeX || Y >= selectedLayer->MapSizeY)
         return 0;
-    return scene->WorldMap->MapData[Y][X];
+    return selectedLayer->MapData[Y][X];
 }
 
-unsigned int KON_GetTileAtCoordinates(SceneHandle* scene, double X, double Y){
-    X /= scene->WorldMap->TileSize;
-    Y /= scene->WorldMap->TileSize;
-    return KON_GetTile(scene, X, Y);
+unsigned int KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y){
+    unsigned int tileSize;
+
+    tileSize = scene->WorldMap->MapLayer[layerID]->TileSize;
+    X /= tileSize;
+    Y /= tileSize;
+    return KON_GetTile(scene, layerID, X, Y);
 }
 
-bool KON_IsTileSolid(SceneHandle* scene, unsigned int tile){
+bool KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile){
     Node* nodePointer = NULL;
-    nodePointer = scene->WorldMap->solidTiles;
+    nodePointer = scene->WorldMap->MapLayer[layerID]->solidTiles;
     while (nodePointer){
         if (tile == *(unsigned int*)(nodePointer->data)){
             return true;
@@ -254,21 +260,26 @@ bool KON_IsTileSolid(SceneHandle* scene, unsigned int tile){
 }
 
 /* Returns true if the Map Tile is solid */
-bool KON_IsMapTileSolid(SceneHandle* scene, unsigned int X, unsigned int Y, unsigned int *tile){
+bool KON_IsMapTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y, unsigned int *tile){
     unsigned int mapTile;
+    TileMap* selectedLayer;
 
-    if (X >= scene->WorldMap->MapSizeX || Y >= scene->WorldMap->MapSizeY)
+    selectedLayer = scene->WorldMap->MapLayer[layerID];
+    if (X >= selectedLayer->MapSizeX || Y >= selectedLayer->MapSizeY)
         return true;
     
-    mapTile = KON_GetTile(scene, X, Y);
+    mapTile = KON_GetTile(scene, layerID, X, Y);
     if (tile)
         (*tile) = mapTile;
 
-    return KON_IsTileSolid(scene, mapTile);
+    return KON_IsTileSolid(scene, layerID, mapTile);
 }
 
-bool KON_IsWorldTileSolid(SceneHandle* scene, double X, double Y, unsigned int *tile){
-    X /= scene->WorldMap->TileSize;
-    Y /= scene->WorldMap->TileSize;
-    return KON_IsMapTileSolid(scene, X, Y, tile);
+bool KON_IsWorldTileSolid(SceneHandle* scene, unsigned int layerID, double X, double Y, unsigned int *tile){
+    unsigned int tileSize;
+
+    tileSize = scene->WorldMap->MapLayer[layerID]->TileSize;
+    X /= tileSize;
+    Y /= tileSize;
+    return KON_IsMapTileSolid(scene, layerID, X, Y, tile);
 }

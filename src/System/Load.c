@@ -229,11 +229,13 @@ xmlDoc* loadXml(char* filePath){
 	#endif
 }
 
-TileMap* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath){
+Map* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath){
     /* Declaration */
-    TileMap* LoadedMap;
+    Map* LoadedMap;
+    TileMap* currentMapLayer = NULL;
     FILE* MapFile;
-    unsigned int i, j;
+    unsigned int i, j, k;
+    unsigned int nbOfLayers, nbOfSolidTiles;
     char* MapRoot = NULL;
     char Buffer[PATH_MAX];
     char filepath[PATH_MAX];
@@ -244,39 +246,46 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath){
         printf("Couldn't load map file: %s !\n", MapFilePath);
         goto Error;
     }
-    LoadedMap = (TileMap*)malloc(sizeof(TileMap));
+
+    LoadedMap = (Map*)malloc(sizeof(Map));
     astrcpy(&LoadedMap->MapFilePath, MapFilePath);
-    
     strcpy(filepath, MapFilePath);
     MapRoot = dirname(filepath);
-    
+
+    fscanf(MapFile, "%u", &nbOfLayers);
+    LoadedMap->MapLayer = (TileMap**)malloc(sizeof(TileMap*)*nbOfLayers);
+    LoadedMap->nbOfLayers = nbOfLayers;
 
     /* Logic */
-    fscanf(MapFile, "%u %u %u %u %u\n%x\n", &LoadedMap->MapSizeX, &LoadedMap->MapSizeY, &LoadedMap->tMSizeX, &LoadedMap->tMSizeY, &LoadedMap->TileSize, &LoadedMap->ColorKey);
-    LoadedMap->TileMapRegion.x = LoadedMap->TileMapRegion.y = 0;
-    LoadedMap->TileMapRegion.w = LoadedMap->MapSizeX * LoadedMap->TileSize;
-    LoadedMap->TileMapRegion.h = LoadedMap->MapSizeY * LoadedMap->TileSize;
+    for (k = 0; k < nbOfLayers; k++){
+        currentMapLayer = LoadedMap->MapLayer[k] = (TileMap*)malloc(sizeof(TileMap));
+        
+        /* Properties */
+        fscanf(MapFile, "%u %u %u %u %u\n%x\n", &currentMapLayer->MapSizeX, &currentMapLayer->MapSizeY, &currentMapLayer->tMSizeX, &currentMapLayer->tMSizeY, &currentMapLayer->TileSize, &currentMapLayer->ColorKey);
+        currentMapLayer->TileMapRegion = InitRect(0, 0, currentMapLayer->MapSizeX * currentMapLayer->TileSize, currentMapLayer->MapSizeY * currentMapLayer->TileSize);
 
-    fgets(Buffer, PATH_MAX, MapFile);
-    Buffer[strcspn(Buffer, "\n")] = '\0';
-    astrcpy(&LoadedMap->TileMapPath, Buffer);
-    
-    LoadedMap->TileMapSurface = LoadSurface(strcat(strcat(strcpy(Buffer, MapRoot), "/"), LoadedMap->TileMapPath), DDevice, LoadedMap->ColorKey, SURFACE_KEYED);
-    
-    /* printf("Map size %u %u \n", LoadedMap->MapSizeX, LoadedMap->MapSizeY); */
-    LoadedMap->MapData = (unsigned int**)malloc(sizeof(unsigned int*)*LoadedMap->MapSizeY);
-    
-    for (i = 0; i < LoadedMap->MapSizeY; i++){
-        LoadedMap->MapData[i] = (unsigned int*)malloc(sizeof(unsigned int)*LoadedMap->MapSizeX);
-        for (j = 0; j < LoadedMap->MapSizeX; j++){
-            fscanf(MapFile, "%u", &LoadedMap->MapData[i][j]);
+        /* TileMap Surface */        
+        fgets(Buffer, PATH_MAX, MapFile);
+        Buffer[strcspn(Buffer, "\n")] = '\0';
+        astrcpy(&currentMapLayer->TileMapPath, Buffer);
+        currentMapLayer->TileMapSurface = LoadSurface(strcat(strcat(strcpy(Buffer, MapRoot), "/"), currentMapLayer->TileMapPath), DDevice, currentMapLayer->ColorKey, SURFACE_KEYED);
+
+        /* LayerData */
+        currentMapLayer->MapData = (unsigned int**)malloc(sizeof(unsigned int*)*currentMapLayer->MapSizeY);
+        for (i = 0; i < currentMapLayer->MapSizeY; i++){
+            currentMapLayer->MapData[i] = (unsigned int*)malloc(sizeof(unsigned int)*currentMapLayer->MapSizeX);
+            for (j = 0; j < currentMapLayer->MapSizeX; j++){
+                fscanf(MapFile, "%u", &currentMapLayer->MapData[i][j]);
+            }
         }
-    }
 
-    /* Solid tiles */
-    LoadedMap->solidTiles = NULL;
-    while (fscanf(MapFile, "%u", &i) != EOF){
-        appendToList(&LoadedMap->solidTiles, &i, sizeof(unsigned int));
+        /* Solid tiles */
+        fscanf(MapFile, "%u", &nbOfSolidTiles);
+        currentMapLayer->solidTiles = NULL;
+        for (i = 0; i < nbOfSolidTiles; i++){
+            fscanf(MapFile, "%u", &j);
+            appendToList(&currentMapLayer->solidTiles, &j, sizeof(unsigned int));
+        }
     }
 
     /* free */
@@ -287,11 +296,13 @@ Error:
     return LoadedMap;
 }
 
-void KON_SaveTileMap(TileMap* MapToSave){
+void KON_SaveTileMap(Map* MapToSave){
     /* Declaration */
     FILE* MapFile;
-    unsigned int i, j;
+    TileMap* currentMapLayer = NULL;
     Node* FBTiles;
+    unsigned int i, j, k;
+    unsigned int nbOfLayers, nbOfSolidTiles = 0;
 
     /* Init */
     MapFile = fopen(MapToSave->MapFilePath, "w");
@@ -301,25 +312,39 @@ void KON_SaveTileMap(TileMap* MapToSave){
     }
 
     /* Logic */
+    nbOfLayers = MapToSave->nbOfLayers;
+    fprintf(MapFile, "%u\n", nbOfLayers);
+    for (k = 0; k < nbOfLayers; k++){
+        currentMapLayer = MapToSave->MapLayer[k];
 
-    /* Print the header to file */
-    fprintf(MapFile, "%u %u %u %u %u\n%x\n%s\n", MapToSave->MapSizeX, MapToSave->MapSizeY, MapToSave->tMSizeX, MapToSave->tMSizeY, MapToSave->TileSize, MapToSave->ColorKey, MapToSave->TileMapPath);
+        /* Print Layer header */
+        fprintf(MapFile, "%u %u %u %u %u\n%x\n%s\n", currentMapLayer->MapSizeX, currentMapLayer->MapSizeY,
+            currentMapLayer->tMSizeX, currentMapLayer->tMSizeY, currentMapLayer->TileSize,
+            currentMapLayer->ColorKey, currentMapLayer->TileMapPath
+        );
+        
+        /* Print layer data */
+        for (i = 0; i < currentMapLayer->MapSizeY; i++){
+            for (j = 0; j < currentMapLayer->MapSizeX; j++){
+                fprintf(MapFile, "%u ", currentMapLayer->MapData[i][j]);
+            }
+            fprintf(MapFile, "\n");
+        }
 
-    /* Print map data */
-    for (i = 0; i < MapToSave->MapSizeY; i++){
-        for (j = 0; j < MapToSave->MapSizeX; j++){
-            fprintf(MapFile, "%u ", MapToSave->MapData[i][j]);
+        /* Print solid tiles */
+        FBTiles = currentMapLayer->solidTiles;
+        while (FBTiles){
+            nbOfSolidTiles++;
+            FBTiles = (Node*)FBTiles->next;
+        }
+        fprintf(MapFile, "%u ", nbOfSolidTiles);
+        FBTiles = currentMapLayer->solidTiles;
+        while (FBTiles){
+            fprintf(MapFile, "%u ", *(unsigned int*)FBTiles->data);
+            FBTiles = (Node*)FBTiles->next;
         }
         fprintf(MapFile, "\n");
     }
-
-    FBTiles = MapToSave->solidTiles;
-    while (FBTiles){
-        fprintf(MapFile, "%u ", *(unsigned int*)FBTiles->data);
-        FBTiles = (Node*)FBTiles->next;
-    }
-
-    fprintf(MapFile, "\n");
 
     /* free */
 Error:

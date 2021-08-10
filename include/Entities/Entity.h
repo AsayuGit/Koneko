@@ -58,6 +58,7 @@
     struct EntityInstance{
         Entity* commun;
         Vector2d pos;
+        unsigned int layerID;
         
         /* Animation instance */
         Uint32 LastFrame;       /* Time at the last frame display */

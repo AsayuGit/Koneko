@@ -26,7 +26,7 @@
 #include "Graphics.h"
 
 /* Spawns an entity in the specified scene, loading it if necessary */
-void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int X, unsigned int Y){
+void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
     EntityInstance* newInstance = NULL;
     Node* nodePointer = NULL;
@@ -54,6 +54,7 @@ void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* S
     newInstance->pos.x = X;
     newInstance->pos.y = Y;
     newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
+    newInstance->layerID = layerID;
     
     appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
 }
@@ -64,6 +65,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     Node* nodePointer;
     int returnValue = 0;
     int renderer = 1; /* TEMP */
+    int i;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadTileMap(KDevice->DDevice, scenePointer->WorldMapPath);
@@ -104,26 +106,30 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         /* Music loop deamon */
         KON_MusicDaemon();
 
+        SDL_RenderClear(KDevice->DDevice->Renderer);
+
         /* Draw */
-        switch (renderer) {
-            case 1: /* 2D */
-                KON_DrawTileMap(KDevice->DDevice, scene->WorldMap);
-                break;
+        for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
+            switch (renderer) {
+                case 1: /* 2D */
+                    KON_DrawTileMap(KDevice->DDevice, scene->WorldMap->MapLayer[i]);
+                    break;
 
-            case 2: /* Raycast */
-                /* code */
-                break;
-                
-            default:
-                break;
-        }
+                case 2: /* Raycast */
+                    /* code */
+                    break;
+                    
+                default:
+                    break;
+            }
 
-        nodePointer = scene->entityInstanceList;
-        while (nodePointer){ /* Processing all entity instances */
-            entityInstancePointer = ((EntityInstance*)nodePointer->data);
-            KON_DrawEntity(KDevice->DDevice, entityInstancePointer);
-
-            nodePointer = (Node*)nodePointer->next;
+            nodePointer = scene->entityInstanceList;
+            while (nodePointer){ /* Processing all entity instances */
+                entityInstancePointer = ((EntityInstance*)nodePointer->data);
+                if (entityInstancePointer->layerID == i)
+                    KON_DrawEntity(KDevice->DDevice, entityInstancePointer);
+                nodePointer = (Node*)nodePointer->next;
+            }
         }
 
         FinishFrame(KDevice->DDevice);                                   /* Update the main window */

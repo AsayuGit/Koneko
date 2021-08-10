@@ -27,7 +27,7 @@
     #include "Entity.h"
 
     struct SceneHandle {
-        TileMap* WorldMap;
+        Map* WorldMap;
         Node* entityList;
         Node* entityInstanceList;
     };
@@ -49,6 +49,6 @@
     /* Start a Scene from a scene descroptor */
     int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer);
     /* Spawn an entity at the specified coordinates */
-    void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int X, unsigned int Y);
+    void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
 
 #endif

@@ -24,20 +24,20 @@
 
     #include "Scene.h"
 
-    void KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y);
-    void KON_DrawTileMap(DisplayDevice* DDevice, TileMap* WorldMap);
-    Uint32 getpixel(SDL_Surface *surface, int x, int y);
-    SDL_Surface* CreateEmptySurface(Uint32 flags, int Width, int Height);
-    void FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag);
-    bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
-    bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
-    void DrawFrame(DisplayDevice* DDevice);
-    void CenterCameraOnCoordinates(DisplayDevice* DDevice, unsigned int X, unsigned int Y);
-    void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
-    unsigned int KON_GetTile(SceneHandle* scene, unsigned int X, unsigned int Y);
-    unsigned int KON_GetTileAtCoordinates(SceneHandle* scene, double X, double Y);
-    bool KON_IsTileSolid(SceneHandle* scene, unsigned int tile);
-    bool KON_IsMapTileSolid(SceneHandle* scene, unsigned int X, unsigned int Y, unsigned int *tile);
-    bool KON_IsWorldTileSolid(SceneHandle* scene, double X, double Y, unsigned int *tile);
+    void            KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y);
+    void            KON_DrawTileMap(DisplayDevice* DDevice, TileMap* WorldMap);
+    Uint32          getpixel(SDL_Surface *surface, int x, int y);
+    SDL_Surface*    CreateEmptySurface(Uint32 flags, int Width, int Height);
+    void            FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag);
+    bool            RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
+    bool            RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
+    void            DrawFrame(DisplayDevice* DDevice);
+    void            CenterCameraOnCoordinates(DisplayDevice* DDevice, unsigned int X, unsigned int Y);
+    void            BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
+    unsigned int    KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y);
+    unsigned int    KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y);
+    bool            KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile);
+    bool            KON_IsMapTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y, unsigned int *tile);
+    bool            KON_IsWorldTileSolid(SceneHandle* scene, unsigned int layerID, double X, double Y, unsigned int *tile);
 
 #endif

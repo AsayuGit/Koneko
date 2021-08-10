@@ -47,7 +47,6 @@ Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
     /* Init */
     newEntity = (Entity*)calloc(1, sizeof(Entity));
 
-    /* FIXME prototype pointer in entity */
     newEntity->descriptor = entityToLoad;
 
     if (entityToLoad->EntityDesctiptorPath){
@@ -133,31 +132,34 @@ void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, b
 
 void KON_MoveEntity(SceneHandle* scene, EntityInstance* entityInstancePointer, double X, double Y){
     Vector2i entityNewTile;
+    unsigned int tileSize;
 
     if (scene && entityInstancePointer->commun->isSolid){ /* If we need to check colisions */
         /* we figure out where the entity is supposed to land */
-        entityNewTile.x = (entityInstancePointer->pos.x + X) / scene->WorldMap->TileSize;
-        entityNewTile.y = (entityInstancePointer->pos.y + Y) / scene->WorldMap->TileSize;
+        tileSize = scene->WorldMap->MapLayer[entityInstancePointer->layerID]->TileSize;
+
+        entityNewTile.x = (entityInstancePointer->pos.x + X) / tileSize;
+        entityNewTile.y = (entityInstancePointer->pos.y + Y) / tileSize;
         
         /* X Collisions */
-        if (!KON_IsMapTileSolid(scene, entityNewTile.x, (int)entityInstancePointer->pos.y / scene->WorldMap->TileSize, NULL)){
+        if (!KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)){
             entityInstancePointer->pos.x += X;
         } else {
             if (X > 0){
-                entityInstancePointer->pos.x = entityNewTile.x * scene->WorldMap->TileSize - 1;
+                entityInstancePointer->pos.x = entityNewTile.x * tileSize - 1;
             } else {
-                entityInstancePointer->pos.x = (entityNewTile.x + 1) * scene->WorldMap->TileSize;
+                entityInstancePointer->pos.x = (entityNewTile.x + 1) * tileSize;
             }
         }
         
         /* Y Collisions */
-        if (!KON_IsMapTileSolid(scene, entityInstancePointer->pos.x / scene->WorldMap->TileSize, entityNewTile.y, NULL)){
+        if (!KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)){
             entityInstancePointer->pos.y += Y;
         } else {
             if (Y > 0){
-                entityInstancePointer->pos.y = entityNewTile.y * scene->WorldMap->TileSize - 1;
+                entityInstancePointer->pos.y = entityNewTile.y * tileSize - 1;
             } else {
-                entityInstancePointer->pos.y = (entityNewTile.y + 1) * scene->WorldMap->TileSize;
+                entityInstancePointer->pos.y = (entityNewTile.y + 1) * tileSize;
             }
         }
         return;
