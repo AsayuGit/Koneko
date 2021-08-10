@@ -261,6 +261,7 @@ Map* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath){
         currentMapLayer = LoadedMap->MapLayer[k] = (TileMap*)malloc(sizeof(TileMap));
         
         /* Properties */
+        currentMapLayer->shown = true;
         fscanf(MapFile, "%u %u %u %u %u\n%x\n", &currentMapLayer->MapSizeX, &currentMapLayer->MapSizeY, &currentMapLayer->tMSizeX, &currentMapLayer->tMSizeY, &currentMapLayer->TileSize, &currentMapLayer->ColorKey);
         currentMapLayer->TileMapRegion = InitRect(0, 0, currentMapLayer->MapSizeX * currentMapLayer->TileSize, currentMapLayer->MapSizeY * currentMapLayer->TileSize);
 

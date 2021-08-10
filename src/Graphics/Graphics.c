@@ -46,9 +46,11 @@ void KON_DrawTileMap(DisplayDevice* DDevice, TileMap* WorldMap){
     unsigned int i, j;
 
     /* Logic */
-    for (i = 0; i < WorldMap->MapSizeY; i++){
-        for (j = 0; j < WorldMap->MapSizeX; j++){
-            KON_DrawTile(DDevice, WorldMap, WorldMap->MapData[i][j], j, i);
+    if (WorldMap->shown){
+        for (i = 0; i < WorldMap->MapSizeY; i++){
+            for (j = 0; j < WorldMap->MapSizeX; j++){
+                KON_DrawTile(DDevice, WorldMap, WorldMap->MapData[i][j], j, i);
+            }
         }
     }
 }

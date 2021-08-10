@@ -96,6 +96,7 @@
         SDL_Texture* TileMapSurface;    /* TileMap surface */
         SDL_Rect TileMapRegion;         /* world region occupied by the map */
         Uint32 ColorKey;                /* TileMap color key */
+        bool shown;                     /* If the layer is displayed or not */
         unsigned int TileSize;          /* Size (in pixel) of a tile */
         unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
         unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
