@@ -29,6 +29,7 @@
 	#endif
     
     #include "Types.h"
+    #include "Map.h"
     
     enum {
         SURFACE_OPAQUE = 0,
@@ -48,6 +49,6 @@
 
     xmlDoc* loadXml(char* filePath);
 
-    Map* KON_LoadTileMap(DisplayDevice* DDevice, char* MapFilePath);
+    Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
     void KON_SaveTileMap(Map* MapToSave);
 #endif

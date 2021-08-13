@@ -24,8 +24,8 @@
 
     #include "Scene.h"
 
-    void            KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y);
-    void            KON_DrawTileMap(DisplayDevice* DDevice, TileMap* WorldMap);
+    void            KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer);
+    void            KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer);
     Uint32          getpixel(SDL_Surface *surface, int x, int y);
     SDL_Surface*    CreateEmptySurface(Uint32 flags, int Width, int Height);
     void            FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag);

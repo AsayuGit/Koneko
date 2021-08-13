@@ -92,35 +92,6 @@
     } Node;
 
     typedef struct{
-        char* TileMapPath;
-        SDL_Texture* TileMapSurface;    /* TileMap surface */
-        SDL_Rect TileMapRegion;         /* world region occupied by the map */
-        Uint32 ColorKey;                /* TileMap color key */
-        bool shown;                     /* If the layer is displayed or not */
-        unsigned int TileSize;          /* Size (in pixel) of a tile */
-        unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
-        unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
-        unsigned int MapSizeX;          /* Nb of tiles in the X direction */
-        unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
-        unsigned int** MapData;         /* Map Data */
-        Node* solidTiles;               /* List Of tile to colide with */
-        Vector2d pos;
-    } TileMap;
-
-    typedef struct{
-        char* MapFilePath;
-        unsigned int nbOfLayers;
-        TileMap** MapLayer;
-    } Map;
-
-    typedef struct{
-        char* PicsPath;
-        SDL_Texture* PicsSurface;
-        unsigned int SizeX;
-        unsigned int SizeY;
-    } Pics;
-
-    typedef struct{
         SDL_Window *Screen;
         #ifdef _SDL
             SDL_Surface* Renderer;

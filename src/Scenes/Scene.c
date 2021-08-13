@@ -61,14 +61,15 @@ void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* S
 
 int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     SceneHandle* scene = NULL;
-    EntityInstance* entityInstancePointer;
-    Node* nodePointer;
+    EntityInstance* entityInstancePointer = NULL;
+    Node* nodePointer = NULL;
+    MapLayer* currentLayer = NULL;
     int returnValue = 0;
     int renderer = 1; /* TEMP */
     int i;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
-    scene->WorldMap = KON_LoadTileMap(KDevice->DDevice, scenePointer->WorldMapPath);
+    scene->WorldMap = KON_LoadMap(KDevice->DDevice, scenePointer->WorldMapPath);
     if (!scene->WorldMap){
         printf("Error Loading Scene Data !\n");
         exit(-1);
@@ -112,7 +113,20 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
             switch (renderer) {
                 case 1: /* 2D */
-                    KON_DrawTileMap(KDevice->DDevice, scene->WorldMap->MapLayer[i]);
+                    currentLayer = scene->WorldMap->MapLayer + i;
+                    switch (currentLayer->layerType)
+                    {
+                        case KON_LAYER_BITMAP:
+                            KON_DrawBitMap(KDevice->DDevice, currentLayer);
+                            break;
+
+                        case KON_LAYER_TILEMAP:
+                            KON_DrawTileMap(KDevice->DDevice, currentLayer);
+                            break;
+                        
+                        default:
+                            break;
+                    }    
                     break;
 
                 case 2: /* Raycast */

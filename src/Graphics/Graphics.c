@@ -21,35 +21,54 @@
 
 #include "Graphics.h"
 #include "System.h"
+#include "Map.h"
 
-void KON_DrawTile(DisplayDevice* DDevice, TileMap* WorldMap, unsigned int TileID, unsigned int X, unsigned int Y){
-    /* Declaration */
-    SDL_Rect SrcTile, DstTile;
+void KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer){
+    BitMap* currentBitMap = NULL;
+    SDL_Rect dstRect;
 
-    /* Init */
-    SrcTile.x = (TileID % WorldMap->tMSizeX) * WorldMap->TileSize;
-    SrcTile.y = (TileID / WorldMap->tMSizeX) * WorldMap->TileSize;
-    SrcTile.w = WorldMap->TileSize;
-    SrcTile.h = WorldMap->TileSize;
+    currentBitMap = ((BitMap*)Layer->layerData);
 
-    DstTile.x = X * WorldMap->TileSize + (int)(WorldMap->pos.x - DDevice->Camera.x);
-    DstTile.y = Y * WorldMap->TileSize + (int)(WorldMap->pos.y - DDevice->Camera.y);
-    DstTile.w = WorldMap->TileSize;
-    DstTile.h = WorldMap->TileSize;
-    /* Logic */
+    dstRect.x = (int)(Layer->pos.x - DDevice->Camera.x);
+    dstRect.y = (int)(Layer->pos.y - DDevice->Camera.y);
+    dstRect.w = currentBitMap->bitMapSize.x;
+    dstRect.h = currentBitMap->bitMapSize.y;
 
-    ScaledDraw(DDevice, WorldMap->TileMapSurface, &SrcTile, &DstTile);
+    ScaledDraw(DDevice, currentBitMap->bitMapSurface, NULL, &dstRect);
 }
 
-void KON_DrawTileMap(DisplayDevice* DDevice, TileMap* WorldMap){
+
+void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y){
+    /* Declaration */
+    SDL_Rect SrcTile, DstTile;
+    unsigned int tileSize;
+
+    tileSize = map->TileSize;
+
+    /* Init */
+    SrcTile.x = (TileID % map->tMSizeX) * tileSize;
+    SrcTile.y = (TileID / map->tMSizeX) * tileSize;
+    DstTile.x = X * tileSize + (int)(Layer->pos.x - DDevice->Camera.x);
+    DstTile.y = Y * tileSize + (int)(Layer->pos.y - DDevice->Camera.y);
+
+    SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
+    /* Logic */
+
+    ScaledDraw(DDevice, map->tileSet->bitMapSurface, &SrcTile, &DstTile);
+}
+
+void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){
     /* Declaration */
     unsigned int i, j;
+    TileMap* map;
+
+    map = (TileMap*)Layer->layerData;
 
     /* Logic */
-    if (WorldMap->shown){
-        for (i = 0; i < WorldMap->MapSizeY; i++){
-            for (j = 0; j < WorldMap->MapSizeX; j++){
-                KON_DrawTile(DDevice, WorldMap, WorldMap->MapData[i][j], j, i);
+    if (Layer->shown && (Layer->layerType == KON_LAYER_TILEMAP)){
+        for (i = 0; i < map->MapSizeY; i++){
+            for (j = 0; j < map->MapSizeX; j++){
+                KON_DrawTile(DDevice, Layer, map, map->MapData[i][j], j, i);
             }
         }
     }
@@ -232,31 +251,44 @@ void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
 }
 
 unsigned int KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y){
-    TileMap* selectedLayer;
+    MapLayer* selectedLayer;
 
-    selectedLayer = scene->WorldMap->MapLayer[layerID];
-    if (X >= selectedLayer->MapSizeX || Y >= selectedLayer->MapSizeY)
-        return 0;
-    return selectedLayer->MapData[Y][X];
+    selectedLayer = scene->WorldMap->MapLayer + layerID;
+    if (selectedLayer->layerType == KON_LAYER_TILEMAP){
+        if (X >= ((TileMap*)selectedLayer->layerData)->MapSizeX || Y >= ((TileMap*)selectedLayer->layerData)->MapSizeY)
+            return 0;
+        return ((TileMap*)selectedLayer->layerData)->MapData[Y][X];
+    }
+    return 0;
 }
 
 unsigned int KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y){
+    MapLayer* currentMapLayer = NULL;
     unsigned int tileSize;
 
-    tileSize = scene->WorldMap->MapLayer[layerID]->TileSize;
-    X /= tileSize;
-    Y /= tileSize;
-    return KON_GetTile(scene, layerID, X, Y);
+    currentMapLayer = scene->WorldMap->MapLayer + layerID;
+    if (currentMapLayer->layerType == KON_LAYER_TILEMAP){
+        tileSize = ((TileMap*)currentMapLayer->layerData)->TileSize;
+        X /= tileSize;
+        Y /= tileSize;
+        return KON_GetTile(scene, layerID, X, Y);
+    }
+    return 0;
 }
 
 bool KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile){
     Node* nodePointer = NULL;
-    nodePointer = scene->WorldMap->MapLayer[layerID]->solidTiles;
-    while (nodePointer){
-        if (tile == *(unsigned int*)(nodePointer->data)){
-            return true;
+    MapLayer* currentMapLayer = NULL;
+    
+    currentMapLayer = scene->WorldMap->MapLayer + layerID;
+    if (currentMapLayer->layerType == KON_LAYER_TILEMAP){
+        nodePointer = ((TileMap*)(currentMapLayer->layerData))->solidTiles;
+        while (nodePointer){
+            if (tile == *(unsigned int*)(nodePointer->data)){
+                return true;
+            }
+            nodePointer = (Node*)nodePointer->next;
         }
-        nodePointer = (Node*)nodePointer->next;
     }
     return false;
 }
@@ -264,24 +296,32 @@ bool KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile
 /* Returns true if the Map Tile is solid */
 bool KON_IsMapTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y, unsigned int *tile){
     unsigned int mapTile;
-    TileMap* selectedLayer;
-
-    selectedLayer = scene->WorldMap->MapLayer[layerID];
-    if (X >= selectedLayer->MapSizeX || Y >= selectedLayer->MapSizeY)
-        return true;
+    MapLayer* selectedLayer = NULL;
     
-    mapTile = KON_GetTile(scene, layerID, X, Y);
-    if (tile)
-        (*tile) = mapTile;
+    selectedLayer = scene->WorldMap->MapLayer + layerID;
+    if (selectedLayer->layerType == KON_LAYER_TILEMAP){
+        if (X >= ((TileMap*)selectedLayer->layerData)->MapSizeX || Y >= ((TileMap*)selectedLayer->layerData)->MapSizeY)
+            return true;
+        
+        mapTile = KON_GetTile(scene, layerID, X, Y);
+        if (tile)
+            (*tile) = mapTile;
 
-    return KON_IsTileSolid(scene, layerID, mapTile);
+        return KON_IsTileSolid(scene, layerID, mapTile);
+    }
+    return false;
 }
 
 bool KON_IsWorldTileSolid(SceneHandle* scene, unsigned int layerID, double X, double Y, unsigned int *tile){
     unsigned int tileSize;
-
-    tileSize = scene->WorldMap->MapLayer[layerID]->TileSize;
-    X /= tileSize;
-    Y /= tileSize;
-    return KON_IsMapTileSolid(scene, layerID, X, Y, tile);
+    MapLayer* currentMapLayer = NULL;
+    
+    currentMapLayer = scene->WorldMap->MapLayer + layerID;
+    if (currentMapLayer->layerType == KON_LAYER_TILEMAP){
+        tileSize = ((TileMap*)(currentMapLayer->layerData))->TileSize;
+        X /= tileSize;
+        Y /= tileSize;
+        return KON_IsMapTileSolid(scene, layerID, X, Y, tile);
+    }
+    return false;
 }
