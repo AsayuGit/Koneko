@@ -26,7 +26,7 @@
 #include "Graphics.h"
 
 /* Spawns an entity in the specified scene, loading it if necessary */
-void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
+EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
     EntityInstance* newInstance = NULL;
     Node* nodePointer = NULL;
@@ -55,8 +55,11 @@ void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* S
     newInstance->pos.y = Y;
     newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
     newInstance->layerID = layerID;
+
+    nodePointer = appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
+    free(newInstance);
     
-    appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
+    return ((EntityInstance*)nodePointer->data);
 }
 
 int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){

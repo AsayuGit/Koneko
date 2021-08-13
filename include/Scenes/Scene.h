@@ -50,6 +50,6 @@
     /* Start a Scene from a scene descroptor */
     int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer);
     /* Spawn an entity at the specified coordinates */
-    void KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+    EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
 
 #endif
