@@ -82,6 +82,11 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
 
     /* Main Loop */
     while (true){
+
+
+        /* Entity collision loop */
+
+
         /* Events Loop */
         while(SDL_PollEvent(&KDevice->IDevice->event)){
             SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */

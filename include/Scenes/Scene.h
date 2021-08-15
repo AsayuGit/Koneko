@@ -31,6 +31,8 @@
         Map* WorldMap;
         Node* entityList;
         Node* entityInstanceList;
+
+        void* sceneInstanceContext;
     };
 
     typedef void (*functPtrScene)(KONDevice* KDevice, SceneHandle* scene);

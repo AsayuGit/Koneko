@@ -59,6 +59,7 @@
         Entity* commun;
         Vector2d pos;
         unsigned int layerID;
+        SDL_Rect boundingBox;
         
         /* Animation instance */
         Uint32 LastFrame;       /* Time at the last frame display */
