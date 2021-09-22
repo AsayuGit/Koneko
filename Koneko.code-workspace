@@ -9,7 +9,8 @@
 			"include.h": "c",
 			"types.h": "c",
 			"jukebox.h": "c",
-			"communfunctions.h": "c"
+			"communfunctions.h": "c",
+			"graphics.h": "c"
 		}
 	}
 }

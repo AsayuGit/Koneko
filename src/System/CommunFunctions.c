@@ -272,3 +272,7 @@ bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd,
     }
     return false;
 }
+
+void KON_PrintRect(SDL_Rect Rect) {
+    printf("{%d, %d, %d, %d}\n", Rect.x, Rect.y, Rect.w, Rect.h);
+}

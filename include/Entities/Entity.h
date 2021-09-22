@@ -29,6 +29,7 @@
     #include "Scene.h"
 
     typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
+    typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, EntityInstance* colidingEntity);
 
     /* Entity descriptor data type */
     struct EntityDescriptor{
@@ -40,6 +41,7 @@
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
         functPtrEntity OnExit;
+        functPtrEntityColison OnColision;
     };
 
     /* Commun data between instances */
@@ -57,9 +59,12 @@
     /* Particular instance of an entity */
     struct EntityInstance{
         Entity* commun;
-        Vector2d pos;
+
+        /* Instance properties */
+        Vector2d pos; /* Absolute position in space */
+        Vector2d mov; /* Relative frame-to-frame movement (reset each frame) */
         unsigned int layerID;
-        SDL_Rect boundingBox;
+        SDL_Rect boundingBox; /* Bounding box of the current entity instance (Updated each frames) */
         
         /* Animation instance */
         Uint32 LastFrame;       /* Time at the last frame display */
@@ -74,6 +79,6 @@
     Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
     void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
     void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
-    void KON_MoveEntity(SceneHandle* scene, EntityInstance* entityInstancePointer, double X, double Y);
+    void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene);
     
 #endif

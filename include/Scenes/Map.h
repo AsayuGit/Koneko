@@ -27,7 +27,7 @@
     enum {
         KON_LAYER_BITMAP = 1,
         KON_LAYER_TILEMAP
-    };
+    }; /* TODO: KON_LayerType */
 
     typedef struct{
         char* bitMapPath;

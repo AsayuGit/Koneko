@@ -132,7 +132,7 @@ void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, b
     }
 }
 
-void KON_MoveEntity(SceneHandle* scene, EntityInstance* entityInstancePointer, double X, double Y){
+void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityInstancePointer){
     MapLayer* currentLayer;
     Vector2i entityNewTile;
     unsigned int tileSize;
@@ -144,34 +144,72 @@ void KON_MoveEntity(SceneHandle* scene, EntityInstance* entityInstancePointer, d
         if (currentLayer->layerType == KON_LAYER_TILEMAP){
             tileSize = ((TileMap*)currentLayer->layerData)->TileSize;
 
-            entityNewTile.x = (entityInstancePointer->pos.x + X) / tileSize;
-            entityNewTile.y = (entityInstancePointer->pos.y + Y) / tileSize;
+            entityNewTile.x = (entityInstancePointer->pos.x + entityInstancePointer->mov.x) / tileSize;
+            entityNewTile.y = (entityInstancePointer->pos.y + entityInstancePointer->mov.y) / tileSize;
             
             /* X Collisions */
-            if (!KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)){
-                entityInstancePointer->pos.x += X;
-            } else {
-                if (X > 0){
-                    entityInstancePointer->pos.x = entityNewTile.x * tileSize - 1;
+            if (KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)){
+                if (entityInstancePointer->mov.x > 0){
+                    entityInstancePointer->mov.x = (entityNewTile.x * tileSize - 1) - entityInstancePointer->pos.x;
                 } else {
-                    entityInstancePointer->pos.x = (entityNewTile.x + 1) * tileSize;
+                    entityInstancePointer->mov.x = ((entityNewTile.x + 1) * tileSize) - entityInstancePointer->pos.x;
                 }
+                /*printf("DEBUG: EntitySceneCollision on X axis\n");*/
             }
             
             /* Y Collisions */
-            if (!KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)){
-                entityInstancePointer->pos.y += Y;
-            } else {
-                if (Y > 0){
-                    entityInstancePointer->pos.y = entityNewTile.y * tileSize - 1;
+            if (KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)){
+                if (entityInstancePointer->mov.y > 0){
+                    entityInstancePointer->mov.y = (entityNewTile.y * tileSize - 1) - entityInstancePointer->pos.y;
                 } else {
-                    entityInstancePointer->pos.y = (entityNewTile.y + 1) * tileSize;
+                    entityInstancePointer->mov.y = ((entityNewTile.y + 1) * tileSize) - entityInstancePointer->pos.y;
                 }
+                /*printf("DEBUG: EntitySceneCollision on Y axis\n");*/
             }
             return;
         }
     }
+}
 
-    entityInstancePointer->pos.x += X;
-    entityInstancePointer->pos.y += Y;
+void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entityA, EntityInstance* entityB) {
+    SDL_Rect collisionResult;
+
+    if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult)) {
+        entityA->commun->descriptor->OnColision(KDevice, scene, entityA, entityB);
+    }
+}
+
+void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene) {
+    EntityInstance *entityInstancePointer;
+    Node* nodePointer, *nodePointerB;
+
+    /* Entity / Scene Collisions */
+    nodePointer = scene->entityInstanceList;
+    while (nodePointer){
+        KON_EntitySceneCollisionCheck(scene, (EntityInstance*)nodePointer->data);
+        nodePointer = (Node*)nodePointer->next;
+    }
+
+    /* Entity / Entity Collisions */
+    nodePointer = nodePointerB = scene->entityInstanceList;
+    while (nodePointer){
+        entityInstancePointer = ((EntityInstance*)nodePointer->data);
+
+        while (nodePointerB){
+            if (nodePointer != nodePointerB){
+                KON_EntityEntityCollisionCheck(KDevice, scene, entityInstancePointer, (EntityInstance*)nodePointerB->data);
+            }
+
+            nodePointerB = (Node*)nodePointerB->next;
+        }
+
+        entityInstancePointer->pos.x += entityInstancePointer->mov.x;
+        entityInstancePointer->pos.y += entityInstancePointer->mov.y;
+
+        entityInstancePointer->mov = InitVector2d(0.0, 0.0);
+
+        nodePointer = (Node*)nodePointer->next;
+    }
+
+    /* TODO: Reset entity->mov when done */
 }

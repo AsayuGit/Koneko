@@ -46,5 +46,6 @@
     Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2);
     bool     KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection);
     bool     KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection);
+    void     KON_PrintRect(SDL_Rect Rect);
 
 #endif

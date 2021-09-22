@@ -25,6 +25,8 @@
 #include "Jukebox.h"
 #include "Graphics.h"
 
+#include "CommunFunctions.h"
+
 /* Spawns an entity in the specified scene, loading it if necessary */
 EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
@@ -83,10 +85,6 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     /* Main Loop */
     while (true){
 
-
-        /* Entity collision loop */
-
-
         /* Events Loop */
         while(SDL_PollEvent(&KDevice->IDevice->event)){
             SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */
@@ -112,9 +110,12 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             nodePointer = (Node*)nodePointer->next;
         }
 
+        KON_EntityColisions(KDevice, scene);
+
         /* Music loop deamon */
         KON_MusicDaemon();
 
+        /* Clear the screen before rendering a new frame */
         SDL_RenderClear(KDevice->DDevice->Renderer);
 
         /* Draw */
@@ -145,6 +146,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
                     break;
             }
 
+            /* Draw all entities in the scene */
             nodePointer = scene->entityInstanceList;
             while (nodePointer){ /* Processing all entity instances */
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
@@ -156,7 +158,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
 
         FinishFrame(KDevice->DDevice);                                   /* Update the main window */
 
-        SDL_Delay(0);
+        SDL_Delay(0); /* TEMPORARY Debug delay */
     }
 
     scenePointer->OnExit(KDevice, scene);
