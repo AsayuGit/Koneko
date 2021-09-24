@@ -73,7 +73,7 @@ SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
 }
 
 /* Add a new node at the end of the list pointer and returns its address */
-Node* appendToList(Node** List, void* newData, size_t dataSize){
+Node* KON_appendToList(Node** List, void* newData, size_t dataSize){
     if (List){
         while (*List){
             List = (Node**)&(*List)->next;
@@ -88,4 +88,27 @@ Node* appendToList(Node** List, void* newData, size_t dataSize){
     }
 
     return NULL;
+}
+
+unsigned int KON_ListCount(Node* List){
+    unsigned int nbOfElements = 0;
+
+    while (List){
+        nbOfElements++;
+        List = (Node*)List->next;
+    }
+
+    return nbOfElements;
+}
+
+void KON_FreeList(Node** List){
+    if (List){
+        if (*List){
+            if ((*List)->next){
+                KON_FreeList((Node**)&(*List)->next);
+            }
+            free(*List);
+            *List = NULL;
+        }
+    }
 }

@@ -10,7 +10,8 @@
 			"types.h": "c",
 			"jukebox.h": "c",
 			"communfunctions.h": "c",
-			"graphics.h": "c"
+			"graphics.h": "c",
+			"animation.h": "c"
 		}
 	}
 }

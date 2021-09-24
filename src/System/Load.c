@@ -274,7 +274,7 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDi
     loadedTilemap->solidTiles = NULL;
     for (i = 0; i < nbOfSolidTiles; i++){
         fscanf(tileMapFile, "%u", &j);
-        appendToList(&loadedTilemap->solidTiles, &j, sizeof(unsigned int));
+        KON_appendToList(&loadedTilemap->solidTiles, &j, sizeof(unsigned int));
     }
 
     return loadedTilemap;

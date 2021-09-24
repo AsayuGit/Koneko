@@ -27,6 +27,7 @@
     typedef struct EntityInstance EntityInstance;
     typedef struct EntityDescriptor EntityDescriptor;
     #include "Scene.h"
+    #include "Collisions.h"
 
     typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
     typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, EntityInstance* colidingEntity);
@@ -41,7 +42,9 @@
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
         functPtrEntity OnExit;
-        functPtrEntityColison OnColision;
+        functPtrEntityColison OnCollisionStart;
+        functPtrEntityColison OnCollisionStay;
+        functPtrEntityColison OnCollisionStop;
     };
 
     /* Commun data between instances */
@@ -55,6 +58,13 @@
         /* Logic */
         EntityDescriptor* descriptor;
     } Entity;
+
+    /*  TODO: Hey here's an idea : Lets have two EntityInstance Types,
+        one that contains the behind the scenes info about an instance
+        and another that contains the info we want exposed to the user.
+        Like EntityInstance is the behind the scene and EntityHandle
+        is on the fronthand, with EntityInstance being a parent of 
+        EntityHandle. */
 
     /* Particular instance of an entity */
     struct EntityInstance{
@@ -73,12 +83,15 @@
         bool Flip;                      /* Defines if the entity should be drawned flipped */
         bool alimationLoop;
 
+        /* Colisions properties */
+        Collision collision;
+
         void* EntityInstanceContext;
     };
 
     Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
     void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
     void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
-    void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene);
+    void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
     
 #endif

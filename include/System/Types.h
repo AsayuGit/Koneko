@@ -137,11 +137,13 @@
         SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 
-    SDL_Rect InitRect(int x, int y, int w, int h);
-    Vector2d InitVector2d(double x, double y);
-    Vector2i InitVector2i(int x, int y);
-    SDL_Rect RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
-    SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
-    Node* appendToList(Node** List, void* newData, size_t dataSize);
+    SDL_Rect     InitRect(int x, int y, int w, int h);
+    Vector2d     InitVector2d(double x, double y);
+    Vector2i     InitVector2i(int x, int y);
+    SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
+    SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
+    Node*        KON_appendToList(Node** List, void* newData, size_t dataSize);
+    void         KON_FreeList(Node** List);
+    unsigned int KON_ListCount(Node* List);
 
 #endif

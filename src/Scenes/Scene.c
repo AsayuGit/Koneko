@@ -52,13 +52,13 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     }
 
     /* Load the new entity in memory */
-    newInstance->commun = ((Entity*)appendToList(&scene->entityList, loadedEntity, sizeof(Entity))->data);
+    newInstance->commun = ((Entity*)KON_appendToList(&scene->entityList, loadedEntity, sizeof(Entity))->data);
     newInstance->pos.x = X;
     newInstance->pos.y = Y;
     newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
     newInstance->layerID = layerID;
 
-    nodePointer = appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
+    nodePointer = KON_appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);
     
     return ((EntityInstance*)nodePointer->data);
