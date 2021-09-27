@@ -25,6 +25,7 @@
     #include "Types.h"
 
     typedef struct {
+        bool generateColisionEvents;
         bool colisionFrameSelect;
         Node* colidingEntities[2];
     } Collision;

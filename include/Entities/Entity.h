@@ -29,6 +29,7 @@
     #include "Scene.h"
     #include "Collisions.h"
 
+    typedef void (*functPtrEntityFree)(EntityInstance* entity);
     typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
     typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, EntityInstance* colidingEntity);
 
@@ -39,9 +40,9 @@
 
         /* Logic */
         functPtrEntity OnSetup;
+        functPtrEntityFree OnExit;
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
-        functPtrEntity OnExit;
         functPtrEntityColison OnCollisionStart;
         functPtrEntityColison OnCollisionStay;
         functPtrEntityColison OnCollisionStop;
@@ -75,6 +76,7 @@
         Vector2d mov; /* Relative frame-to-frame movement (reset each frame) */
         unsigned int layerID;
         SDL_Rect boundingBox; /* Bounding box of the current entity instance (Updated each frames) */
+        bool isVisible;
         
         /* Animation instance */
         Uint32 LastFrame;       /* Time at the last frame display */
@@ -90,8 +92,10 @@
     };
 
     Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
-    void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
-    void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
-    void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
+    void    KON_FreeEntityInstance(EntityInstance* entityInstanceToFree);
+    void    KON_FreeEntity(Entity* entityToFree);
+    void    KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
+    void    KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
+    void    KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
     
 #endif

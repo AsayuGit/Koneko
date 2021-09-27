@@ -62,3 +62,7 @@ Animation* KON_ParseAnimation(xmlNode* array){
 
     return LoadingAnimation;
 }
+
+void KON_FreeAnimation(Animation* anim){
+    free(anim);
+}

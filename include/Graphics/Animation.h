@@ -38,5 +38,6 @@
     } Animation;
 
     Animation* KON_ParseAnimation(xmlNode* array);
+    void       KON_FreeAnimation(Animation* anim);
 
 #endif

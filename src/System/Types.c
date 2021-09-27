@@ -112,3 +112,9 @@ void KON_FreeList(Node** List){
         }
     }
 }
+
+void KON_DeleteListNode(Node** node){
+    Node* nextNode = (Node*)(*node)->next;
+    free((*node));
+    *node = nextNode;
+}

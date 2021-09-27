@@ -97,7 +97,7 @@ void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
     #endif
 }
 
-SDL_Texture* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
+SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
     SDL_Surface* loadingSurface;
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
@@ -119,6 +119,14 @@ SDL_Texture* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey
         printf("ERROR: (loadSurface) Couldn't load %s !\n", FilePath);
     }
     return NULL;
+}
+
+void KON_FreeSurface(SDL_Texture* surface){
+    #ifdef _SDL
+        SDL_FreeSurface(surface);
+    #else
+        SDL_DestroyTexture(surface);
+    #endif
 }
 
 BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
@@ -239,7 +247,7 @@ BitMap* KON_LoadBitMap(DisplayDevice* DDevice, FILE* bitMapFile, char* rootDirec
     fgets(Buffer, PATH_MAX, bitMapFile);
     Buffer[strcspn(Buffer, "\n")] = '\0';
     astrcpy(&loadedBitmap->bitMapPath, Buffer);
-    loadedBitmap->bitMapSurface = LoadSurface(strcat(strcat(strcpy(Buffer, rootDirectory), "/"), loadedBitmap->bitMapPath), DDevice, colorKey, SURFACE_KEYED);
+    loadedBitmap->bitMapSurface = KON_LoadSurface(strcat(strcat(strcpy(Buffer, rootDirectory), "/"), loadedBitmap->bitMapPath), DDevice, colorKey, SURFACE_KEYED);
     SDL_QueryTexture(loadedBitmap->bitMapSurface, NULL, NULL, &loadedBitmap->bitMapSize.x, &loadedBitmap->bitMapSize.y);
     loadedBitmap->colorKey = colorKey;
 

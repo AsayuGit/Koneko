@@ -54,7 +54,7 @@ void KON_AddEntityToCollisionList(Node** list, EntityInstance **colidingEntity){
 void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
     SDL_Rect collisionResult;
     EntityInstance *entityA, *entityB;
-    Node* nodePointer, *nodePointerB;
+    Node* nodePointer, *nodePointerB, *nextEntity;
     Node** colidingEntities;
 
     nodePointer = scene->entityInstanceList;
@@ -68,27 +68,21 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
             if (nodePointer != nodePointerB){
                 entityB = (EntityInstance*)nodePointerB->data;
 
-                if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult)) {
+                if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult) && entityB->collision.generateColisionEvents) {
                     KON_AddEntityToCollisionList(colidingEntities, &entityB);
                     colidingEntities = (Node**)&((*colidingEntities)->next);
                 }
             }
             nodePointerB = (Node*)nodePointerB->next;
         }
+
         KON_FreeList(colidingEntities);
 
-        KON_ProcessEntityCollisionsCalls(KDevice, scene, entityA);
-
-        /* TEMP */
-        /*
-        if (KON_ListCount(entityA->collision.colidingEntities[entityA->collision.colisionFrameSelect])){
-            printf("Entity %s coliding with %u other entities %s \n", 
-                entityA->commun->entityName, 
-                KON_ListCount(entityA->collision.colidingEntities[entityA->collision.colisionFrameSelect]),
-                 (*(EntityInstance**)entityA->collision.colidingEntities[entityA->collision.colisionFrameSelect]->data)->commun->entityName);
-        }*/
-
-        nodePointer = (Node*)nodePointer->next;
+        nextEntity = (Node*)nodePointer->next;
+        if (entityA->collision.generateColisionEvents)
+            KON_ProcessEntityCollisionsCalls(KDevice, scene, entityA);
+        
+        nodePointer = nextEntity;
     }
 }
 

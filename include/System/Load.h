@@ -39,7 +39,8 @@
 
     SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device);
     void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
-    SDL_Texture* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags);
+    SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags);
+    void KON_FreeSurface(SDL_Texture* surface);
     BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
 
     SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h);

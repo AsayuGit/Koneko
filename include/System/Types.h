@@ -143,7 +143,8 @@
     SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     Node*        KON_appendToList(Node** List, void* newData, size_t dataSize);
-    void         KON_FreeList(Node** List);
     unsigned int KON_ListCount(Node* List);
+    void         KON_FreeList(Node** List);
+    void         KON_DeleteListNode(Node** node);
 
 #endif

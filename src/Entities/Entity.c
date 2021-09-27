@@ -57,9 +57,9 @@ Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
         if ((SurfacePath = (char*)xmlGetProp(character, (xmlChar*)"texture"))){
             if ((Buffer = (char*)xmlGetProp(character, (xmlChar*)"colorKey"))){
                 sscanf(Buffer, "%x", &ColorKey);
-                newEntity->EntityTexture = LoadSurface(SurfacePath, DDevice, ColorKey, SURFACE_KEYED);
+                newEntity->EntityTexture = KON_LoadSurface(SurfacePath, DDevice, ColorKey, SURFACE_KEYED);
             } else {
-                newEntity->EntityTexture = LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
+                newEntity->EntityTexture = KON_LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
             }
         }
 
@@ -86,41 +86,60 @@ Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
     return newEntity;
 }
 
+void KON_FreeEntityInstance(EntityInstance* entityInstanceToFree){
+    if (entityInstanceToFree->commun->descriptor->OnExit)
+        entityInstanceToFree->commun->descriptor->OnExit(entityInstanceToFree);
+
+    KON_FreeList(entityInstanceToFree->collision.colidingEntities);
+    KON_FreeList(entityInstanceToFree->collision.colidingEntities + 1);
+
+    free(entityInstanceToFree);
+}
+
+void KON_FreeEntity(Entity* entityToFree){
+    KON_FreeSurface(entityToFree->EntityTexture);
+    KON_FreeAnimation(entityToFree->entityAnimations);
+    free(entityToFree->entityName);
+    free(entityToFree);
+}
+
 /* potential caching possible (entity->commun->entityAnimations)*/
 void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity){ /* Display "A" Character on screen  */
     SDL_Rect SpriteWindow, SpriteLayer;
     Animation* entityPlayingAnim;
 
-    entityPlayingAnim = entity->commun->entityAnimations + entity->PlayingAnimation;
+    if (entity->isVisible){
+        entityPlayingAnim = entity->commun->entityAnimations + entity->PlayingAnimation;
 
-    /* On veille a ne pas dépacer le nombre de frames de l'animation */
-    if (entity->CurrentFrame >= entityPlayingAnim->NbOfFrames){
-        if (entity->alimationLoop){
-            entity->CurrentFrame = 0;
-        } else {
-            entity->CurrentFrame = entityPlayingAnim->NbOfFrames - 1;
+        /* On veille a ne pas dépacer le nombre de frames de l'animation */
+        if (entity->CurrentFrame >= entityPlayingAnim->NbOfFrames){
+            if (entity->alimationLoop){
+                entity->CurrentFrame = 0;
+            } else {
+                entity->CurrentFrame = entityPlayingAnim->NbOfFrames - 1;
+            }
         }
-    }
-    
-    /* On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame */
-    SpriteWindow = entityPlayingAnim->SrcRect;
-    SpriteWindow.x = entityPlayingAnim->SrcRect.x + entity->CurrentFrame * entityPlayingAnim->SrcRect.w;
+        
+        /* On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame */
+        SpriteWindow = entityPlayingAnim->SrcRect;
+        SpriteWindow.x = entityPlayingAnim->SrcRect.x + entity->CurrentFrame * entityPlayingAnim->SrcRect.w;
 
-    SpriteLayer = entityPlayingAnim->DstRect;
+        SpriteLayer = entityPlayingAnim->DstRect;
 
-    if (entity->Flip)
-        SpriteLayer.x = -(SpriteLayer.x + entityPlayingAnim->DstRect.w);
-    
-    SpriteLayer.x += entity->pos.x - DDevice->Camera.x;
-    SpriteLayer.y = entityPlayingAnim->DstRect.y + entity->pos.y - DDevice->Camera.y;
+        if (entity->Flip)
+            SpriteLayer.x = -(SpriteLayer.x + entityPlayingAnim->DstRect.w);
+        
+        SpriteLayer.x += entity->pos.x - DDevice->Camera.x;
+        SpriteLayer.y = entityPlayingAnim->DstRect.y + entity->pos.y - DDevice->Camera.y;
 
-    entity->boundingBox = SpriteLayer;
+        entity->boundingBox = SpriteLayer;
 
-    ScaledDrawEx(DDevice, entity->commun->EntityTexture, &SpriteWindow, &SpriteLayer, entity->Flip);
-    
-    if (SDL_GetTicks() > entity->LastFrame + entityPlayingAnim->Framerate){
-        entity->LastFrame = SDL_GetTicks();
-        entity->CurrentFrame++;
+        ScaledDrawEx(DDevice, entity->commun->EntityTexture, &SpriteWindow, &SpriteLayer, entity->Flip);
+        
+        if (SDL_GetTicks() > entity->LastFrame + entityPlayingAnim->Framerate){
+            entity->LastFrame = SDL_GetTicks();
+            entity->CurrentFrame++;
+        }
     }
 }
 

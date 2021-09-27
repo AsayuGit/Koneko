@@ -28,6 +28,8 @@
 #include "CommunFunctions.h"
 
 /* Spawns an entity in the specified scene, loading it if necessary */
+/* TODO: This curently mallocs an instance twice due to how KON_appendToList works
+            and could be tweaked for dynamically allowed entities */
 EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
     EntityInstance* newInstance = NULL;
@@ -57,11 +59,56 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     newInstance->pos.y = Y;
     newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
     newInstance->layerID = layerID;
+    newInstance->isVisible = true;
+    newInstance->collision.generateColisionEvents = true;
 
     nodePointer = KON_appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);
     
     return ((EntityInstance*)nodePointer->data);
+}
+
+void KON_KillEntity(SceneHandle* scene, Entity* entityToKill){
+    Node** entityList = &scene->entityList;
+    
+    while (*entityList){
+
+        if ((Entity*)(*entityList)->data == entityToKill){
+            KON_FreeEntity(entityToKill);
+            KON_DeleteListNode(entityList);
+        }
+
+        if (!*entityList)
+            break;
+        entityList = (Node**)&(*entityList)->next;
+    }
+}
+
+/* TODO :3 */
+void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill){
+    Node** entityInstanceList = &scene->entityInstanceList;
+    Entity* parentEntity = NULL;
+    bool instanceKilled = false;
+
+    while (*entityInstanceList){
+        if ((EntityInstance*)(*entityInstanceList)->data == entityInstanceToKill){
+            if (instanceKilled){
+                return;
+            } else {
+                parentEntity = ((EntityInstance*)(*entityInstanceList)->data)->commun;
+                /* Free entity instance */
+                KON_FreeEntityInstance(entityInstanceToKill);
+                KON_DeleteListNode(entityInstanceList); /* Don't forget to clean the instance's context :3 */
+                instanceKilled = true;
+            }
+        }
+        if (!*entityInstanceList)
+            break;
+        entityInstanceList = (Node**)&(*entityInstanceList)->next;
+    }
+    /* Free parent entity if no more instances are found */
+    if (parentEntity)
+        KON_KillEntity(scene, parentEntity);
 }
 
 int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
