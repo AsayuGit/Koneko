@@ -36,7 +36,7 @@
     char*    astrcpy(char** dst, char* src);
     SDL_Rect RectToVieport(const SDL_Rect* InputRect, const SDL_Rect* ViewPort, const Vector2i* Position);
     void     BoundVect2iToRect(Vector2i* vect, SDL_Rect rect);
-    void     BoundVect2dToRect(Vector2d* vect, SDL_Rect rect);
+    unsigned char KON_BoundVect2dToRect(Vector2d* vect, SDL_Rect* rect);
 
     double   KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2);
     Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar);

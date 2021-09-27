@@ -97,5 +97,6 @@
     void    KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
     void    KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
     void    KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
+    void    KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect);
     
 #endif

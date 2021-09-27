@@ -159,32 +159,44 @@ SDL_Rect RectToVieport(const SDL_Rect* InputRect, const SDL_Rect* ViewPort, cons
     return Return;
 }
 
-void BoundVect2iToRect(Vector2i* vect, SDL_Rect rect){
-    if (vect->x > rect.x + rect.w){
-        vect->x = rect.x + rect.w;
-    } else if (vect->x < rect.x){
-        vect->x = rect.x;
-    }
-
-    if (vect->y > rect.y + rect.h){
-        vect->y = rect.y + rect.h;
-    } else if (vect->y < rect.y){
-        vect->y = rect.y;
-    }
+Vector2d KON_Vector2iTo2d(Vector2i* vect){
+    return KON_InitVector2d(vect->x, vect->y);
 }
 
-void BoundVect2dToRect(Vector2d* vect, SDL_Rect rect){
-    if (vect->x > rect.x + rect.w){
-        vect->x = rect.x + rect.w;
-    } else if (vect->x < rect.x){
-        vect->x = rect.x;
+Vector2i KON_Vector2dTo2i(Vector2d* vect){
+    return KON_InitVector2i(vect->x, vect->y);
+}
+
+unsigned char KON_BoundVect2iToRect(Vector2i* vect, SDL_Rect* rect){
+    unsigned char result;
+    Vector2d vect2d = KON_Vector2iTo2d(vect);
+
+    result = KON_BoundVect2dToRect(&vect2d, rect);
+    *vect = KON_Vector2dTo2i(&vect2d);
+
+    return result;
+}
+
+unsigned char KON_BoundVect2dToRect(Vector2d* vect, SDL_Rect* rect){
+    unsigned char result = 0;
+
+    if (vect->x > rect->x + rect->w){
+        vect->x = rect->x + rect->w;
+        result |= 1;
+    } else if (vect->x < rect->x){
+        vect->x = rect->x;
+        result |= 1;
     }
 
-    if (vect->y > rect.y + rect.h){
-        vect->y = rect.y + rect.h;
-    } else if (vect->y < rect.y){
-        vect->y = rect.y;
+    if (vect->y > rect->y + rect->h){
+        vect->y = rect->y + rect->h;
+        result |= 2;
+    } else if (vect->y < rect->y){
+        vect->y = rect->y;
+        result |= 2;
     }
+    
+    return result;
 }
 
 double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2){
@@ -261,13 +273,13 @@ bool KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2St
 }
 
 bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection){
-    if (KON_GetLinesIntersect(segStart, segEnd, InitVector2d(rect.x, rect.y), InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
+    if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
         return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, InitVector2d(rect.x + rect.w, rect.y), InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
+    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
         return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, InitVector2d(rect.x, rect.y), InitVector2d(rect.x + rect.w, rect.y), intersection)){ /* Up */
+    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y), intersection)){ /* Up */
         return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, InitVector2d(rect.x, rect.y + rect.h), InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Down */
+    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y + rect.h), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Down */
         return true;
     }
     return false;

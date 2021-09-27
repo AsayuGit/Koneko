@@ -108,7 +108,7 @@ void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene) {
         entityInstancePointer->pos.x += entityInstancePointer->mov.x;
         entityInstancePointer->pos.y += entityInstancePointer->mov.y;
 
-        entityInstancePointer->mov = InitVector2d(0.0, 0.0);
+        entityInstancePointer->mov = KON_InitVector2d(0.0, 0.0);
 
         nodePointer = (Node*)nodePointer->next;
     }

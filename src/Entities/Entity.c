@@ -188,3 +188,16 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         wereColidingEntities = (Node*)wereColidingEntities->next;
     }
 }
+
+void KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect){
+    unsigned char result;
+    Vector2d vect = KON_GetVectAddition(entity->pos, entity->mov);
+
+    result = KON_BoundVect2dToRect(&vect, rect);
+    if (result & 1){
+        entity->mov.x = vect.x - entity->pos.x;
+    }
+    if (result & 2){
+        entity->mov.y = vect.y - entity->pos.y;
+    }
+}

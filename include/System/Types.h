@@ -138,8 +138,8 @@
     } BitmapFont;
 
     SDL_Rect     InitRect(int x, int y, int w, int h);
-    Vector2d     InitVector2d(double x, double y);
-    Vector2i     InitVector2i(int x, int y);
+    Vector2d     KON_InitVector2d(double x, double y);
+    Vector2i     KON_InitVector2i(int x, int y);
     SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     Node*        KON_appendToList(Node** List, void* newData, size_t dataSize);

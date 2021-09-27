@@ -32,7 +32,7 @@ SDL_Rect InitRect(int x, int y, int w, int h){
     return rect;
 }
 
-Vector2d InitVector2d(double x, double y){
+Vector2d KON_InitVector2d(double x, double y){
     Vector2d vector;
 
     vector.x = x;
@@ -41,7 +41,7 @@ Vector2d InitVector2d(double x, double y){
     return vector;
 }
 
-Vector2i InitVector2i(int x, int y){
+Vector2i KON_InitVector2i(int x, int y){
     Vector2i vector;
 
     vector.x = x;
