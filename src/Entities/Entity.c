@@ -30,6 +30,7 @@ void KON_ParseEntityFlags(Entity* entity, xmlNode* flags){
     flags = flags->children;
     while (flags){
         if (strcmp((char*)flags->name, "isSolid") == 0) {
+            /* FIXME: We should probably crash and generate an error if the value isn't true nor false */
             entity->isSolid = (strcmp((char*)xmlGetProp(flags, (xmlChar*)"value"), "true") == 0);
         }
         flags = flags->next;
@@ -170,11 +171,11 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         if (KON_FindInEntityInstanceList(wereColidingEntities, nowColidingEntities->data)){
             /* Ongoing collision */
             if (call->OnCollisionStay)
-                call->OnCollisionStay(KDevice, scene, entity, *((EntityInstance**)nowColidingEntities->data));
+                call->OnCollisionStay(KDevice, scene, entity, (CollisionEvent*)nowColidingEntities->data);
         } else {
             /* New collision */
             if (call->OnCollisionStart)
-                call->OnCollisionStart(KDevice, scene, entity, *((EntityInstance**)nowColidingEntities->data));
+                call->OnCollisionStart(KDevice, scene, entity, (CollisionEvent*)nowColidingEntities->data);
         }
         nowColidingEntities = nowColidingEntities->next;
     }
@@ -183,7 +184,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         if (!KON_FindInEntityInstanceList(nowColidingEntities, wereColidingEntities->data)){
             /* Outgoing collision */
             if (call->OnCollisionStop)
-                call->OnCollisionStop(KDevice, scene, entity, *((EntityInstance**)wereColidingEntities->data));
+                call->OnCollisionStop(KDevice, scene, entity, (CollisionEvent*)wereColidingEntities->data);
         }
         wereColidingEntities = wereColidingEntities->next;
     }

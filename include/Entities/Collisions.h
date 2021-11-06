@@ -33,16 +33,22 @@
         LinkedList* collisionEvents[2];
     } Collision;
 
+    typedef struct CollisionEvent CollisionEvent;
+
     #include "Scene.h"
     #include "Entity.h"
 
     /*
         struct CollisonEvent : Describe a collision event
     */
-    typedef struct {
+    struct CollisionEvent {
+        Vector2d entityLastPosition;
+        Vector2d entityCollidingPosition;
         EntityInstance* collidingEntitiy;
-    } CollisionEvent;
+    };
 
-    void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene);
+    void     KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene);
+    Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
+    Direction KON_GetEntityCollisionDirection(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
 
 #endif

@@ -138,6 +138,17 @@
         SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 
+    typedef enum {
+        Right,
+        DownRight,
+        Down,
+        DownLeft,
+        Left,
+        UpLeft,
+        Up,
+        UpRight
+    } Direction;
+
     SDL_Rect     InitRect(int x, int y, int w, int h);
     Vector2d     KON_InitVector2d(double x, double y);
     Vector2i     KON_InitVector2i(int x, int y);

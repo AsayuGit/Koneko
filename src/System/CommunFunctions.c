@@ -22,6 +22,10 @@
 #include "CommunFunctions.h"
 #include "System.h"
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */
     SDL_Rect DstLetter, SrcLetter;
@@ -199,6 +203,18 @@ unsigned char KON_BoundVect2dToRect(Vector2d* vect, SDL_Rect* rect){
     return result;
 }
 
+void KON_SetNegative(void* valuePointer, size_t dataSize) {
+    *((uint64_t*)valuePointer) |= (1ul << ((dataSize * 8) - 1));
+}
+
+void KON_SetPositive(void* valuePointer, size_t dataSize) {
+    *((uint64_t*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
+}
+
+double KON_GetVectNorm(Vector2d vect) {
+    return sqrt(vect.x * vect.x + vect.y * vect.y);
+}
+
 double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2){
     return (vect1.x * vect2.y) - (vect1.y * vect2.x);
 }
@@ -206,6 +222,13 @@ double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2){
 Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar){
     vect.x *= scalar;
     vect.y *= scalar;
+
+    return vect;
+}
+
+Vector2d KON_GetVectScalarDivision(Vector2d vect, double scalar) {
+    vect.x /= scalar;
+    vect.y /= scalar;
 
     return vect;
 }
@@ -242,6 +265,15 @@ Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2){
     return subbedVector;
 }
 
+Vector2d KON_GetVectProduct(Vector2d vect1, Vector2d vect2) {
+    Vector2d product;
+
+    product.x = vect1.x * vect2.x;
+    product.y = vect1.y * vect2.y;
+
+    return product;
+}
+
 
 bool KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection){
     Vector2d seg1Vect, seg2Vect, segStartDiff;
@@ -272,7 +304,7 @@ bool KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2St
     return false;
 }
 
-bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection){
+bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
     if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
         return true;
     } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
@@ -287,4 +319,27 @@ bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd,
 
 void KON_PrintRect(SDL_Rect Rect) {
     printf("{%d, %d, %d, %d}\n", Rect.x, Rect.y, Rect.w, Rect.h);
+}
+
+/*
+    KON_GetDirectionFromVector() : Returns the direction corresponding to the vector's direction
+    INPUT: Vector2d vect : Vector from which we want to know the direction
+    OUTPUT: Direction :  : The direction corresponding to the vector vect
+*/
+Direction KON_GetDirectionFromVector(Vector2d vect) {
+    const double piStep = M_PI / 8.0;
+    double vectAngle;
+    unsigned int i;
+    
+    vectAngle = atan2(vect.y, vect.x);
+    if (vectAngle < 0)
+        vectAngle += 2 * M_PI;
+
+    for (i = 1; i < 16; i += 2) {
+        if (vectAngle < piStep * i) {
+            return (i - 1) / 2;
+        }
+    }
+
+    return 0;
 }

@@ -157,7 +157,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             nodePointer = nodePointer->next;
         }
 
-        KON_EntityColisions(KDevice, scene);
+        KON_EntityCollisions(KDevice, scene);
 
         /* Music loop deamon */
         KON_MusicDaemon();

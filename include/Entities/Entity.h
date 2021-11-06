@@ -30,8 +30,8 @@
     #include "Collisions.h"
 
     typedef void (*functPtrEntityFree)(EntityInstance* entity);
-    typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
-    typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, EntityInstance* colidingEntity);
+    typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self);
+    typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, CollisionEvent* collision);
 
     /* Entity descriptor data type */
     struct EntityDescriptor{
@@ -70,6 +70,9 @@
     /* Particular instance of an entity */
     struct EntityInstance{
         Entity* commun;
+
+        /* "Behind the scene" properties */
+        Vector2d lastPos;
 
         /* Instance properties */
         Vector2d pos; /* Absolute position in space */
