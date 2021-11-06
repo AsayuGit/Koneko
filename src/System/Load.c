@@ -353,7 +353,7 @@ void KON_SaveTileMap(Map* MapToSave){
     /* Declaration */
     FILE* MapFile;
     MapLayer* currentMapLayer = NULL;
-    Node* FBTiles;
+    LinkedList* FBTiles;
     unsigned int i, j, k;
     unsigned int nbOfLayers, nbOfSolidTiles = 0;
     TileMap* currentTileMap;
@@ -399,13 +399,13 @@ void KON_SaveTileMap(Map* MapToSave){
                 FBTiles = currentTileMap->solidTiles;
                 while (FBTiles){
                     nbOfSolidTiles++;
-                    FBTiles = (Node*)FBTiles->next;
+                    FBTiles = FBTiles->next;
                 }
                 fprintf(MapFile, "%u ", nbOfSolidTiles);
                 FBTiles = currentTileMap->solidTiles;
                 while (FBTiles){
                     fprintf(MapFile, "%u ", *(unsigned int*)FBTiles->data);
-                    FBTiles = (Node*)FBTiles->next;
+                    FBTiles = FBTiles->next;
                 }
                 break;
 

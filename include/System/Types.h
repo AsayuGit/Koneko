@@ -86,10 +86,10 @@
         double y;
     } Vector2d;
     
-    typedef struct Node Node;
-    struct Node{
+    typedef struct LinkedList LinkedList;
+    struct LinkedList{
         void* data;
-        Node* next;
+        LinkedList* next;
     };
 
     typedef struct{
@@ -143,9 +143,9 @@
     Vector2i     KON_InitVector2i(int x, int y);
     SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
-    Node*        KON_appendToList(Node** List, void* newData, size_t dataSize);
-    unsigned int KON_ListCount(Node* List);
-    void         KON_FreeList(Node** List);
-    void         KON_DeleteListNode(Node** node);
+    LinkedList*        KON_appendToList(LinkedList** List, void* newData, size_t dataSize);
+    unsigned int KON_ListCount(LinkedList* List);
+    void         KON_FreeList(LinkedList** List);
+    void         KON_DeleteListNode(LinkedList** node);
 
 #endif

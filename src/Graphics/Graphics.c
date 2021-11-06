@@ -277,7 +277,7 @@ unsigned int KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, 
 }
 
 bool KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile){
-    Node* nodePointer = NULL;
+    LinkedList* nodePointer = NULL;
     MapLayer* currentMapLayer = NULL;
     
     currentMapLayer = scene->WorldMap->MapLayer + layerID;
@@ -287,7 +287,7 @@ bool KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile
             if (tile == *(unsigned int*)(nodePointer->data)){
                 return true;
             }
-            nodePointer = (Node*)nodePointer->next;
+            nodePointer = nodePointer->next;
         }
     }
     return false;

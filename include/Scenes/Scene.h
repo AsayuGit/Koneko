@@ -29,8 +29,8 @@
 
     struct SceneHandle {
         Map* WorldMap;
-        Node* entityList;
-        Node* entityInstanceList;
+        LinkedList* entityList;
+        LinkedList* entityInstanceList;
 
         void* sceneInstanceContext;
     };

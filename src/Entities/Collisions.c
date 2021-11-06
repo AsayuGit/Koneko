@@ -47,7 +47,7 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
            EntityInstance ** colidingEntity [Pointer to the EntityInstance currently colliding]
 
 */
-void KON_AddEntityToCollisionList(Node** list, EntityInstance **colidingEntity){
+void KON_AddEntityToCollisionList(LinkedList** list, EntityInstance **colidingEntity){
     CollisionEvent newCollisonEvent;
     if (*list){
         /*printf("EDITTED\n");*/
@@ -62,8 +62,8 @@ void KON_AddEntityToCollisionList(Node** list, EntityInstance **colidingEntity){
 void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
     SDL_Rect collisionResult;
     EntityInstance *entityA, *entityB;
-    Node* nodePointer, *nodePointerB, *nextEntity;
-    Node** colidingEntities;
+    LinkedList* nodePointer, *nodePointerB, *nextEntity;
+    LinkedList** colidingEntities;
 
     nodePointer = scene->entityInstanceList;
     while (nodePointer){
@@ -97,7 +97,7 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
 
 void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene) {
     EntityInstance *entityInstancePointer;
-    Node* nodePointer;
+    LinkedList* nodePointer;
 
     /* Entity / Scene Collisions */
     nodePointer = scene->entityInstanceList;

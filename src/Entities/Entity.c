@@ -151,19 +151,19 @@ void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, b
     }
 }
 
-bool KON_FindInEntityInstanceList(Node* list, void* data){
+bool KON_FindInEntityInstanceList(LinkedList* list, void* data){
     while (list){
         if (*(EntityInstance**)list->data == *(EntityInstance**)data)
             return true;
-        list = (Node*)list->next;
+        list = list->next;
     }
     return false;
 }
 
 void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity){
     bool frameSelect = entity->collision.collisionFrameSelect;
-    Node* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
-    Node* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
+    LinkedList* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
+    LinkedList* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
     EntityDescriptor* call = entity->commun->descriptor;
 
     while (nowColidingEntities){
@@ -176,7 +176,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
             if (call->OnCollisionStart)
                 call->OnCollisionStart(KDevice, scene, entity, *((EntityInstance**)nowColidingEntities->data));
         }
-        nowColidingEntities = (Node*)nowColidingEntities->next;
+        nowColidingEntities = nowColidingEntities->next;
     }
     nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     while (wereColidingEntities){
@@ -185,7 +185,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
             if (call->OnCollisionStop)
                 call->OnCollisionStop(KDevice, scene, entity, *((EntityInstance**)wereColidingEntities->data));
         }
-        wereColidingEntities = (Node*)wereColidingEntities->next;
+        wereColidingEntities = wereColidingEntities->next;
     }
 }
 

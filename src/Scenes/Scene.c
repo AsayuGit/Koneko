@@ -33,7 +33,7 @@
 EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
     EntityInstance* newInstance = NULL;
-    Node* nodePointer = NULL;
+    LinkedList* nodePointer = NULL;
 
     /* Create a new instance to spawn in */
     newInstance = (EntityInstance*)calloc(1, sizeof(EntityInstance));
@@ -45,7 +45,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
             loadedEntity = ((Entity*)nodePointer->data);
             break;
         }
-        nodePointer = (Node*)nodePointer->next;
+        nodePointer = nodePointer->next;
     }
     /* Load the entity in memory if not found */
     if (!loadedEntity){
@@ -69,7 +69,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
 }
 
 void KON_KillEntity(SceneHandle* scene, Entity* entityToKill){
-    Node** entityList = &scene->entityList;
+    LinkedList** entityList = &scene->entityList;
     
     while (*entityList){
 
@@ -80,13 +80,13 @@ void KON_KillEntity(SceneHandle* scene, Entity* entityToKill){
 
         if (!*entityList)
             break;
-        entityList = (Node**)&(*entityList)->next;
+        entityList = &(*entityList)->next;
     }
 }
 
 /* TODO :3 */
 void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill){
-    Node** entityInstanceList = &scene->entityInstanceList;
+    LinkedList** entityInstanceList = &scene->entityInstanceList;
     Entity* parentEntity = NULL;
     bool instanceKilled = false;
 
@@ -104,7 +104,7 @@ void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceTo
         }
         if (!*entityInstanceList)
             break;
-        entityInstanceList = (Node**)&(*entityInstanceList)->next;
+        entityInstanceList = &(*entityInstanceList)->next;
     }
     /* Free parent entity if no more instances are found */
     if (parentEntity)
@@ -114,7 +114,7 @@ void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceTo
 int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     SceneHandle* scene = NULL;
     EntityInstance* entityInstancePointer = NULL;
-    Node* nodePointer = NULL;
+    LinkedList* nodePointer = NULL;
     MapLayer* currentLayer = NULL;
     int returnValue = 0;
     int renderer = 1; /* TEMP */
@@ -142,7 +142,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
                 entityInstancePointer->commun->descriptor->OnEvent(KDevice, scene, entityInstancePointer);
 
-                nodePointer = (Node*)nodePointer->next;
+                nodePointer = nodePointer->next;
             }
         }
 
@@ -154,7 +154,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             entityInstancePointer = ((EntityInstance*)nodePointer->data);
             entityInstancePointer->commun->descriptor->OnFrame(KDevice, scene, entityInstancePointer);
 
-            nodePointer = (Node*)nodePointer->next;
+            nodePointer = nodePointer->next;
         }
 
         KON_EntityColisions(KDevice, scene);
@@ -199,7 +199,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
                 if (entityInstancePointer->layerID == i)
                     KON_DrawEntity(KDevice->DDevice, entityInstancePointer);
-                nodePointer = (Node*)nodePointer->next;
+                nodePointer = nodePointer->next;
             }
         }
 

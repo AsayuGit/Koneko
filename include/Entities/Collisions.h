@@ -30,7 +30,7 @@
     typedef struct {
         bool generateCollisionEvents;
         bool collisionFrameSelect;
-        Node* collisionEvents[2];
+        LinkedList* collisionEvents[2];
     } Collision;
 
     #include "Scene.h"

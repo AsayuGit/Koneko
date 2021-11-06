@@ -73,12 +73,12 @@ SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
 }
 
 /* Add a new node at the end of the list pointer and returns its address */
-Node* KON_appendToList(Node** List, void* newData, size_t dataSize){
+LinkedList* KON_appendToList(LinkedList** List, void* newData, size_t dataSize){
     if (List){
         while (*List){
-            List = (Node**)&(*List)->next;
+            List = &(*List)->next;
         }
-        (*List) = (Node*)malloc(sizeof(Node));
+        (*List) = (LinkedList*)malloc(sizeof(LinkedList));
         (*List)->data = malloc(dataSize);
         (*List)->next = NULL;
 
@@ -90,22 +90,22 @@ Node* KON_appendToList(Node** List, void* newData, size_t dataSize){
     return NULL;
 }
 
-unsigned int KON_ListCount(Node* List){
+unsigned int KON_ListCount(LinkedList* List){
     unsigned int nbOfElements = 0;
 
     while (List){
         nbOfElements++;
-        List = (Node*)List->next;
+        List = List->next;
     }
 
     return nbOfElements;
 }
 
-void KON_FreeList(Node** List){
+void KON_FreeList(LinkedList** List){
     if (List){
         if (*List){
             if ((*List)->next){
-                KON_FreeList((Node**)&(*List)->next);
+                KON_FreeList(&(*List)->next);
             }
             free(*List);
             *List = NULL;
@@ -113,8 +113,8 @@ void KON_FreeList(Node** List){
     }
 }
 
-void KON_DeleteListNode(Node** node){
-    Node* nextNode = (Node*)(*node)->next;
+void KON_DeleteListNode(LinkedList** node){
+    LinkedList* nextNode = (*node)->next;
     free((*node));
     *node = nextNode;
 }
