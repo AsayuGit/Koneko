@@ -60,7 +60,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
     newInstance->layerID = layerID;
     newInstance->isVisible = true;
-    newInstance->collision.generateColisionEvents = true;
+    newInstance->collision.generateCollisionEvents = true;
 
     nodePointer = KON_appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);

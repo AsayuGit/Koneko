@@ -86,10 +86,11 @@
         double y;
     } Vector2d;
     
-    typedef struct{
+    typedef struct Node Node;
+    struct Node{
         void* data;
-        struct Node* next;
-    } Node;
+        Node* next;
+    };
 
     typedef struct{
         SDL_Window *Screen;

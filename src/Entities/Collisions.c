@@ -41,13 +41,21 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
     }
 }
 
+/*
+    KON_AddEntityToCollisionList() : Adds an EntityInstance to the list of coliding entities of an entity
+    INPUT: Node** list                      [Pointer to a list of coliding entities of an EntityInstance]
+           EntityInstance ** colidingEntity [Pointer to the EntityInstance currently colliding]
+
+*/
 void KON_AddEntityToCollisionList(Node** list, EntityInstance **colidingEntity){
+    CollisionEvent newCollisonEvent;
     if (*list){
         /*printf("EDITTED\n");*/
-        *((EntityInstance**)(*list)->data) = *colidingEntity;
+        ((CollisionEvent*)(*list)->data)->collidingEntitiy = *colidingEntity;
     } else {
         /*printf("ADDED\n");*/
-        KON_appendToList(list, colidingEntity, sizeof(EntityInstance*));
+        newCollisonEvent.collidingEntitiy = *colidingEntity;
+        KON_appendToList(list, &newCollisonEvent, sizeof(CollisionEvent));
     }
 }
 
@@ -60,26 +68,27 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
     nodePointer = scene->entityInstanceList;
     while (nodePointer){
         entityA = ((EntityInstance*)nodePointer->data);
-        entityA->collision.colisionFrameSelect ^= 1;
-        colidingEntities = &(entityA->collision.colidingEntities[entityA->collision.colisionFrameSelect]);
+        entityA->collision.collisionFrameSelect ^= 1;
+        colidingEntities = &(entityA->collision.collisionEvents[entityA->collision.collisionFrameSelect]);
 
         nodePointerB = scene->entityInstanceList;
         while (nodePointerB){
-            if (nodePointer != nodePointerB){
+            if (nodePointer != nodePointerB){ /* Prevent an entity from coliding with itself */
                 entityB = (EntityInstance*)nodePointerB->data;
 
-                if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult) && entityB->collision.generateColisionEvents) {
+                /* Collision test */
+                if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
                     KON_AddEntityToCollisionList(colidingEntities, &entityB);
-                    colidingEntities = (Node**)&((*colidingEntities)->next);
+                    colidingEntities = &((*colidingEntities)->next);
                 }
             }
-            nodePointerB = (Node*)nodePointerB->next;
+            nodePointerB = nodePointerB->next;
         }
 
         KON_FreeList(colidingEntities);
 
-        nextEntity = (Node*)nodePointer->next;
-        if (entityA->collision.generateColisionEvents)
+        nextEntity = nodePointer->next;
+        if (entityA->collision.generateCollisionEvents)
             KON_ProcessEntityCollisionsCalls(KDevice, scene, entityA);
         
         nodePointer = nextEntity;
@@ -94,7 +103,7 @@ void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene) {
     nodePointer = scene->entityInstanceList;
     while (nodePointer){
         KON_EntitySceneCollisionCheck(scene, (EntityInstance*)nodePointer->data);
-        nodePointer = (Node*)nodePointer->next;
+        nodePointer = nodePointer->next;
     }
 
     /* Entity / Entity Collisions */
@@ -110,8 +119,6 @@ void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene) {
 
         entityInstancePointer->mov = KON_InitVector2d(0.0, 0.0);
 
-        nodePointer = (Node*)nodePointer->next;
+        nodePointer = nodePointer->next;
     }
-
-    /* TODO: Reset entity->mov when done */
 }

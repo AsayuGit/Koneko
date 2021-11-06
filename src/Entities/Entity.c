@@ -90,8 +90,8 @@ void KON_FreeEntityInstance(EntityInstance* entityInstanceToFree){
     if (entityInstanceToFree->commun->descriptor->OnExit)
         entityInstanceToFree->commun->descriptor->OnExit(entityInstanceToFree);
 
-    KON_FreeList(entityInstanceToFree->collision.colidingEntities);
-    KON_FreeList(entityInstanceToFree->collision.colidingEntities + 1);
+    KON_FreeList(entityInstanceToFree->collision.collisionEvents);
+    KON_FreeList(entityInstanceToFree->collision.collisionEvents + 1);
 
     free(entityInstanceToFree);
 }
@@ -161,9 +161,9 @@ bool KON_FindInEntityInstanceList(Node* list, void* data){
 }
 
 void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity){
-    bool frameSelect = entity->collision.colisionFrameSelect;
-    Node* nowColidingEntities = entity->collision.colidingEntities[frameSelect];
-    Node* wereColidingEntities = entity->collision.colidingEntities[frameSelect ^ 1];
+    bool frameSelect = entity->collision.collisionFrameSelect;
+    Node* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
+    Node* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
     EntityDescriptor* call = entity->commun->descriptor;
 
     while (nowColidingEntities){
@@ -178,7 +178,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         }
         nowColidingEntities = (Node*)nowColidingEntities->next;
     }
-    nowColidingEntities = entity->collision.colidingEntities[frameSelect];
+    nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     while (wereColidingEntities){
         if (!KON_FindInEntityInstanceList(nowColidingEntities, wereColidingEntities->data)){
             /* Outgoing collision */

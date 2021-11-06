@@ -24,14 +24,24 @@
 
     #include "Types.h"
 
+    /*
+        struct Collision : Contains all properties regarding an entity's collision
+    */
     typedef struct {
-        bool generateColisionEvents;
-        bool colisionFrameSelect;
-        Node* colidingEntities[2];
+        bool generateCollisionEvents;
+        bool collisionFrameSelect;
+        Node* collisionEvents[2];
     } Collision;
 
     #include "Scene.h"
     #include "Entity.h"
+
+    /*
+        struct CollisonEvent : Describe a collision event
+    */
+    typedef struct {
+        EntityInstance* collidingEntitiy;
+    } CollisionEvent;
 
     void KON_EntityColisions(KONDevice* KDevice, SceneHandle* scene);
 
