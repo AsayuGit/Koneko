@@ -44,11 +44,11 @@
     struct CollisionEvent {
         Vector2d entityLastPosition;
         Vector2d entityCollidingPosition;
+        Direction collisionDirection;
         EntityInstance* collidingEntitiy;
     };
 
     void     KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene);
     Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
-    Direction KON_GetEntityCollisionDirection(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
 
 #endif

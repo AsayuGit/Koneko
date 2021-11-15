@@ -152,7 +152,7 @@
     SDL_Rect     InitRect(int x, int y, int w, int h);
     Vector2d     KON_InitVector2d(double x, double y);
     Vector2i     KON_InitVector2i(int x, int y);
-    SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
+    SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
     SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
     LinkedList*  KON_appendToList(LinkedList** List, void* newData, size_t dataSize);
     unsigned int KON_ListCount(LinkedList* List);
