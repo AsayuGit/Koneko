@@ -24,6 +24,7 @@
 #include "Graphics.h"
 #include "CommunFunctions.h"
 
+/* FIXME: Uses boundingboxes instead of raw position to check scene collisions */
 void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityInstancePointer){
     MapLayer* currentLayer;
     Vector2i entityNewTile;
@@ -66,7 +67,7 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
 /*
     KON_AddNewCollisionEvent() : Generates a new collision event and appends it to a list of collision events
     INPUT: Node** list                      : CollisionEvent LinkedList pointer
-           EntityInstance ** colidingEntity : Pointer to the EntityInstance currently colliding
+    INPUT: EntityInstance ** colidingEntity : Pointer to the EntityInstance currently colliding
 */
 void KON_AddNewCollisionEvent(LinkedList** list, EntityInstance **colidingEntity){
     CollisionEvent newCollisonEvent;
@@ -85,7 +86,11 @@ void KON_AddNewCollisionEvent(LinkedList** list, EntityInstance **colidingEntity
         KON_appendToList(list, &newCollisonEvent, sizeof(CollisionEvent));
     }
 }
-
+/*
+    KON_EntityEntityCollisionCheck() : Check collisions between all entities
+    INPUT : KONDevice* KDevice : Pointer the the Engine device
+    INPUT : SceneHanle* scene  : Pointer to the current scene
+*/
 void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
     SDL_Rect collisionResult;
     EntityInstance *entityA, *entityB;
@@ -108,6 +113,17 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
                 entityABoundingBox = KON_GetRectVectAddition(entityA->boundingBox, entityA->mov);
                 entityBBoundingBox = KON_GetRectVectAddition(entityB->boundingBox, entityB->mov);
                 if (SDL_IntersectRect(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                    if (entityA->commun->isSolid) {
+                        /* Prevent entity A from going into entity B */
+                        /* We substract to the "Position" the smallest dimention of the collisionResult */
+
+                        if (collisionResult.w < collisionResult.h) {
+                            entityA->mov.x -= collisionResult.w;
+                        } else {
+                            entityA->mov.y -= collisionResult.h;
+                        }
+                    }
+
                     /* Add entityB to the CollisionEvent list */
                     KON_AddNewCollisionEvent(colidingEntities, &entityB);
                     colidingEntities = &((*colidingEntities)->next);
