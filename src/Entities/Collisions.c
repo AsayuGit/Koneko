@@ -91,6 +91,7 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
     EntityInstance *entityA, *entityB;
     LinkedList* nodePointer, *nodePointerB, *nextEntity;
     LinkedList** colidingEntities;
+    SDL_Rect entityABoundingBox, entityBBoundingBox;
 
     nodePointer = scene->entityInstanceList;
     while (nodePointer){
@@ -104,7 +105,10 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
                 entityB = (EntityInstance*)nodePointerB->data;
 
                 /* Collision test */
-                if (SDL_IntersectRect(&entityA->boundingBox, &entityB->boundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                entityABoundingBox = KON_GetRectVectAddition(entityA->boundingBox, entityA->mov);
+                entityBBoundingBox = KON_GetRectVectAddition(entityB->boundingBox, entityB->mov);
+                if (SDL_IntersectRect(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                    /* Add entityB to the CollisionEvent list */
                     KON_AddNewCollisionEvent(colidingEntities, &entityB);
                     colidingEntities = &((*colidingEntities)->next);
                 }

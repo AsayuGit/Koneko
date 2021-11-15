@@ -42,14 +42,17 @@
     void      KON_SetNegative(void* valuePointer, size_t dataSize);
     void      KON_SetPositive(void* valuePointer, size_t dataSize);
 
+    /* Rect Operations */
+    SDL_Rect KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect);
+
     /* Vector Operations */
     double    KON_GetVectNorm(Vector2d vect);
     double    KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectScalarProduct(Vector2d vect, double scalar);
     Vector2d  KON_GetVectScalarDivision(Vector2d vect, double scalar);
+    Vector2d  KON_GetVectAddition(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectScalarAddition(Vector2d vect, double scalar);
     Vector2d  KON_GetVectScalarSubstraction(Vector2d vect, double scalar);
-    Vector2d  KON_GetVectAddition(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectProduct(Vector2d vect1, Vector2d vect2);
     bool      KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection);

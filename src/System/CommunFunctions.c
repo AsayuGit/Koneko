@@ -211,15 +211,22 @@ void KON_SetPositive(void* valuePointer, size_t dataSize) {
     *((uint64_t*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
 }
 
+SDL_Rect KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect) {
+    rect.x += vect.x;
+    rect.y += vect.y;
+    
+    return rect;
+}
+
 double KON_GetVectNorm(Vector2d vect) {
     return sqrt(vect.x * vect.x + vect.y * vect.y);
 }
 
-double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2){
+double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2) {
     return (vect1.x * vect2.y) - (vect1.y * vect2.x);
 }
 
-Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar){
+Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar) {
     vect.x *= scalar;
     vect.y *= scalar;
 
@@ -231,6 +238,13 @@ Vector2d KON_GetVectScalarDivision(Vector2d vect, double scalar) {
     vect.y /= scalar;
 
     return vect;
+}
+
+Vector2d KON_GetVectAddition(Vector2d vect1, Vector2d vect2){
+    vect1.x += vect2.x;
+    vect1.y += vect2.y;
+
+    return vect1;
 }
 
 Vector2d KON_GetVectScalarAddition(Vector2d vect, double scalar){
@@ -247,31 +261,18 @@ Vector2d KON_GetVectScalarSubstraction(Vector2d vect, double scalar){
     return vect;
 }
 
-Vector2d KON_GetVectAddition(Vector2d vect1, Vector2d vect2){
-    Vector2d addedVector;
-
-    addedVector.x = vect1.x + vect2.x;
-    addedVector.y = vect1.y + vect2.y;
-
-    return addedVector;
-}
-
 Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2){
-    Vector2d subbedVector;
+    vect1.x -= vect2.x;
+    vect1.y -= vect2.y;
 
-    subbedVector.x = vect1.x - vect2.x;
-    subbedVector.y = vect1.y - vect2.y;
-
-    return subbedVector;
+    return vect1;
 }
 
 Vector2d KON_GetVectProduct(Vector2d vect1, Vector2d vect2) {
-    Vector2d product;
+    vect1.x *= vect2.x;
+    vect1.y *= vect2.y;
 
-    product.x = vect1.x * vect2.x;
-    product.y = vect1.y * vect2.y;
-
-    return product;
+    return vect1;
 }
 
 
