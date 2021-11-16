@@ -204,10 +204,18 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             nodePointer = scene->entityInstanceList;
             while (nodePointer){ /* Processing all entity instances */
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
-                if (entityInstancePointer->layerID == i)
+                if (entityInstancePointer->layerID == i) {
                     KON_DrawEntity(KDevice->DDevice, entityInstancePointer);
+                    if (entityInstancePointer->commun->descriptor->OnDraw)
+                        entityInstancePointer->commun->descriptor->OnDraw(KDevice, scene, entityInstancePointer);
+                }
                 nodePointer = nodePointer->next;
             }
+
+            /* Custom On_Draw() event */
+            if (scenePointer->OnDraw)
+                scenePointer->OnDraw(KDevice, scene);
+
         }
 
         KON_FinishFrame(KDevice->DDevice);                                   /* Update the main window */

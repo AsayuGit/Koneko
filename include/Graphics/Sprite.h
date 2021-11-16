@@ -12,6 +12,7 @@
 
     Sprite* KON_LoadSprite(DisplayDevice* dDevice, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey, Uint8 textureFlags);
     Sprite* KON_LoadSpriteAlpha(DisplayDevice* dDevice, char* spritePath, SDL_Rect* source, SDL_Rect* destination);
+    Sprite* KON_LoadSpriteKeyed(DisplayDevice* dDevice, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey);
     void    KON_FreeSprite(Sprite** sprite);
     void    KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite);
 

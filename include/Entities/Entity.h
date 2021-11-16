@@ -43,6 +43,7 @@
         functPtrEntityFree OnExit;
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
+        functPtrEntity OnDraw;
         functPtrEntityColison OnCollisionStart;
         functPtrEntityColison OnCollisionStay;
         functPtrEntityColison OnCollisionStop;

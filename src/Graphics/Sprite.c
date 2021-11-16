@@ -45,6 +45,17 @@ Sprite* KON_LoadSpriteAlpha(DisplayDevice* dDevice, char* spritePath, SDL_Rect* 
 }
 
 /*
+    HON_LoadSpriteKeyed() : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags
+    INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
+    INPUT: char* spritePath       : Path the sprite should be loaded from
+    INPUT: SDL_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
+    INPUT: SDL_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
+    OUTPUT: Sprite*               : Pointer to the newly created sprite
+*/
+Sprite* KON_LoadSpriteKeyed(DisplayDevice* dDevice, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey) {
+    return KON_LoadSprite(dDevice, spritePath, source, destination, colorKey, SURFACE_KEYED);
+}
+/*
     KON_FreeSprite() : Free a loaded sprite form memory
     INPUT: Sprite** sprite : Pointer to a Sprite loaded in memory
 */

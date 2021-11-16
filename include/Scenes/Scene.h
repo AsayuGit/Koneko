@@ -44,9 +44,10 @@
 
         /* Logic */
         functPtrScene OnSetup;
+        functPtrScene OnExit;
         functPtrScene OnEvent;
         functPtrScene OnFrame;
-        functPtrScene OnExit;
+        functPtrScene OnDraw;
     } SceneDescriptor;
 
     /* Start a Scene from a scene descroptor */
