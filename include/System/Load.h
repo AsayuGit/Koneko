@@ -37,19 +37,19 @@
         SURFACE_KEYED = 2
     };
 
-    SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device);
-    void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
+    SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device);
+    void         KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
     SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags);
-    void KON_FreeSurface(SDL_Texture* surface);
-    BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
+    void         KON_FreeSurface(SDL_Texture* surface);
+    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
 
-    SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
+    SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
 
-    Mix_Music* LoadMusic(char FilePath[]);
-    Mix_Chunk* LoadSoundEffect(char FilePath[]);
+    Mix_Music*   KON_LoadMusic(char FilePath[]);
+    Mix_Chunk*   KON_LoadSoundEffect(char FilePath[]);
 
-    xmlDoc* loadXml(char* filePath);
+    xmlDoc*      KON_LoadXml(char* filePath);
 
-    Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
-    void KON_SaveTileMap(Map* MapToSave);
+    Map*         KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
+    void         KON_SaveTileMap(Map* MapToSave);
 #endif

@@ -42,9 +42,9 @@ void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath){
     }
     
     if (IntroPath)
-        Track_INTRO = LoadMusic(IntroPath);
+        Track_INTRO = KON_LoadMusic(IntroPath);
     if (LoopPath){
-        Track_LOOP = LoadMusic(LoopPath);
+        Track_LOOP = KON_LoadMusic(LoopPath);
     }
 
     if (Track_INTRO)

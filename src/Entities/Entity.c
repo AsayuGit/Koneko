@@ -51,7 +51,7 @@ Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
     newEntity->descriptor = entityToLoad;
 
     if (entityToLoad->EntityDesctiptorPath){
-        entityFile = loadXml(entityToLoad->EntityDesctiptorPath); /* Load the xml file in memory */
+        entityFile = KON_LoadXml(entityToLoad->EntityDesctiptorPath); /* Load the xml file in memory */
         character = xmlDocGetRootElement(entityFile); /* root node */
 
         /* Logic */

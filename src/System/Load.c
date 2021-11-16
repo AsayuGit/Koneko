@@ -71,7 +71,7 @@ SDL_Surface* ResizeSurface(SDL_Surface* Source, int Scalar){
 }
 #endif
 
-SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device){
+SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device){
     SDL_Surface* LoadingSurface;
 
     #ifdef _SDL
@@ -89,7 +89,7 @@ SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device){
     #endif
 }
 
-void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
+void KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
     #ifdef _SDL
         SDL_SetColorKey(SurfaceToKey, SDL_SRCCOLORKEY | SDL_RLEACCEL, ColorKey);
     #else
@@ -102,11 +102,11 @@ SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 Colo
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
         return NULL;
-    loadingSurface = LoadSDLSurface(FilePath, Device);
+    loadingSurface = KON_LoadSDLSurface(FilePath, Device);
     if (loadingSurface){
 
         if (SURFACE_KEYED & flags){
-            KeySurface(loadingSurface, ColorKey);
+            KON_KeySurface(loadingSurface, ColorKey);
         }
 
         #ifdef _SDL
@@ -129,7 +129,7 @@ void KON_FreeSurface(SDL_Texture* surface){
     #endif
 }
 
-BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
+BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
     /* Declaration */
     BitmapFont* LoadingFont;
     SDL_Surface* LoadingSurface;
@@ -143,11 +143,11 @@ BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontC
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingSurface = LoadSDLSurface(FilePath, DDevice);
+    LoadingSurface = KON_LoadSDLSurface(FilePath, DDevice);
     if (!LoadingSurface){
-        printf("ERROR: (LoadBitmapFont) Can't load font %s\n", SDL_GetError());
+        printf("ERROR: (KON_LoadBitmapFont) Can't load font %s\n", SDL_GetError());
     }
-    KeySurface(LoadingSurface, FontColorKey);
+    KON_KeySurface(LoadingSurface, FontColorKey);
     
     FontTexW = LoadingSurface->w;
     FontTexH = LoadingSurface->h;
@@ -189,7 +189,7 @@ BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontC
     return LoadingFont;
 }
 
-SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
+SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
     SDL_Texture* LoadingSurface;
 
     LoadingSurface = NULL;
@@ -204,7 +204,7 @@ SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
     return LoadingSurface;
 }
 
-Mix_Music* LoadMusic(char FilePath[]){
+Mix_Music* KON_LoadMusic(char FilePath[]){
     Mix_Music* LoadingMusic = NULL;
 
     if (FilePath){
@@ -216,7 +216,7 @@ Mix_Music* LoadMusic(char FilePath[]){
     return LoadingMusic;
 }
 
-Mix_Chunk* LoadSoundEffect(char FilePath[]){
+Mix_Chunk* KON_LoadSoundEffect(char FilePath[]){
     Mix_Chunk* LoadingSoundEffect = NULL;
 
     LoadingSoundEffect = Mix_LoadWAV(FilePath);
@@ -225,7 +225,7 @@ Mix_Chunk* LoadSoundEffect(char FilePath[]){
     return LoadingSoundEffect;
 }
 
-xmlDoc* loadXml(char* filePath){
+xmlDoc* KON_LoadXml(char* filePath){
     xmlKeepBlanksDefault(0); /* Ignore white space */
 
 	#ifdef _XBOX
