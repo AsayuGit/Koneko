@@ -97,7 +97,7 @@ void KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
     #endif
 }
 
-SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
+SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags){
     SDL_Surface* loadingSurface;
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */

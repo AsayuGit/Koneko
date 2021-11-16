@@ -204,11 +204,11 @@ unsigned char KON_BoundVect2dToRect(Vector2d* vect, SDL_Rect* rect){
 }
 
 void KON_SetNegative(void* valuePointer, size_t dataSize) {
-    *((uint64_t*)valuePointer) |= (1ul << ((dataSize * 8) - 1));
+    *((Uint64*)valuePointer) |= (1ul << ((dataSize * 8) - 1));
 }
 
 void KON_SetPositive(void* valuePointer, size_t dataSize) {
-    *((uint64_t*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
+    *((Uint64*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
 }
 
 SDL_Rect KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect) {

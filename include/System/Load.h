@@ -39,7 +39,7 @@
 
     SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device);
     void         KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
-    SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags);
+    SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
     void         KON_FreeSurface(SDL_Texture* surface);
     BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
 
