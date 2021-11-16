@@ -17,11 +17,11 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Recursive Wildcard function
-rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2)$(filter $(subst *,%,$2),$d))
+# Recursive search function
+recursiveSearch = $(foreach file,$(wildcard $(2)*),$(filter $(subst *,%,$(1)),$(file)) $(call recursiveSearch,$(1),$(file)/))
 
 # Remove duplicate function
-uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1))) 
+removeDuplicates = $(if $(1),$(firstword $(1)) $(call removeDuplicates,$(strip $(filter-out $(firstword $(1)),$(1)))),)
 
 # C Compilers
 CC = gcc
@@ -36,20 +36,21 @@ LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixe
 
 # Main target and filename of the executable
 OUT = Koneko
+OUT_DIR = OUT
 
 # Build Directory
 BUILD_DIR = build
 
 # List of all the .c source files to compile
-SRC = $(call rwildcard,,*.c)
+SRC = $(call recursiveSearch,*.c)
 
 # List of all the .o object files to produce
 OBJ = $(patsubst %,$(BUILD_DIR)/%,$(SRC:%.c=%.o))
-OBJ_DIR = $(call uniq, $(dir $(OBJ)))
+OBJ_DIR = $(call removeDuplicates, $(dir $(OBJ)))
 
 # List of all includes directory
-INCLUDES = $(call rwildcard,, include/*.h)
-INCLUDES_DIR = $(patsubst %, -I %, $(call uniq, $(dir $(INCLUDES))))
+INCLUDES = $(call recursiveSearch,include/*.h)
+INCLUDES_DIR = $(patsubst %, -I %, $(call removeDuplicates, $(dir $(INCLUDES))))
 LIBS = $$(sdl2-config --cflags) $$(xml2-config --cflags)
 
 # Number of therads available 
@@ -59,8 +60,8 @@ multi:
 	@$(MAKE) -j$(CPUS) --no-print-directory all
 	
 copy: $(INCLUDES)
-	@mkdir -p OUT/$(OUT)
-	@cp -u $^ lib$(OUT).a OUT/$(OUT)/
+	@mkdir -p $(OUT_DIR)/$(OUT)
+	@cp -u $^ lib$(OUT).a $(OUT_DIR)/$(OUT)/
 
 all: $(OBJ_DIR) $(OUT)
 	@$(MAKE) copy
@@ -78,7 +79,7 @@ $(OUT): $(OBJ)
 
 clean:
 	@echo "Cleaning Build"
-	@rm -rf $(BUILD_DIR) $(OUT) lib$(OUT)*.a
+	@rm -rf $(BUILD_DIR) $(OUT_DIR) $(OUT) lib$(OUT)*.a
 
 rebuild: clean
 	@$(MAKE) -j$(CPUS) --no-print-directory all

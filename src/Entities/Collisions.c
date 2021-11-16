@@ -90,26 +90,22 @@ void KON_AppendNewCollisionEvent(LinkedList** list, EntityInstance **colidingEnt
 }
 
 Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBPos, SDL_Rect collisionResult) {
-    bool side;
-    
-    side = (collisionResult.w < collisionResult.h); /* Left / Right = 1,  Up / Down = 0 */
-
     /* FIXME: Kind of a hack, good enough for testing */
     if (entityAPos.x < entityBPos.x) {
         if (entityAPos.y < entityBPos.y) {
             /* LOW RIGHT */
-            return side ? Right : Down;
+            return (collisionResult.w < collisionResult.h) ? Right : Down;
         } else {
             /* HIGH RIGHT */
-            return side ? Right : Up;
+            return (collisionResult.w < collisionResult.h) ? Right : Up;
         }
     } else {
         if (entityAPos.y < entityBPos.y) {
             /* LOW LEFT */
-            return side ? Left : Down;
+            return (collisionResult.w < collisionResult.h) ? Left : Down;
         } else {
             /* HIGH LEFT */
-            return side ? Left : Up;
+            return (collisionResult.w < collisionResult.h) ? Left : Up;
         }
     }
 }

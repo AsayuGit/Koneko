@@ -57,10 +57,12 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     newInstance->commun = ((Entity*)KON_appendToList(&scene->entityList, loadedEntity, sizeof(Entity))->data);
     newInstance->pos.x = X;
     newInstance->pos.y = Y;
-    newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
     newInstance->layerID = layerID;
     newInstance->isVisible = true;
     newInstance->collision.generateCollisionEvents = true;
+
+    if (newInstance->commun->descriptor->OnSetup)
+        newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
 
     nodePointer = KON_appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);
@@ -126,7 +128,8 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         printf("Error Loading Scene Data !\n");
         exit(-1);
     }
-    scenePointer->OnSetup(KDevice, scene);
+    if (scenePointer->OnSetup)
+        scenePointer->OnSetup(KDevice, scene);
 
 
     /* Main Loop */
@@ -135,24 +138,28 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         /* Events Loop */
         while(SDL_PollEvent(&KDevice->IDevice->event)){
             SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */
-            scenePointer->OnEvent(KDevice, scene);
+            if (scenePointer->OnEvent)
+                scenePointer->OnEvent(KDevice, scene);
 
             nodePointer = scene->entityInstanceList;
             while (nodePointer){
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
-                entityInstancePointer->commun->descriptor->OnEvent(KDevice, scene, entityInstancePointer);
+                if (entityInstancePointer->commun->descriptor->OnEvent)
+                    entityInstancePointer->commun->descriptor->OnEvent(KDevice, scene, entityInstancePointer);
 
                 nodePointer = nodePointer->next;
             }
         }
 
-        scenePointer->OnFrame(KDevice, scene);
+        if (scenePointer->OnFrame)
+            scenePointer->OnFrame(KDevice, scene);
 
         /* Entity OnFrame Logic */
         nodePointer = scene->entityInstanceList;
         while (nodePointer){
             entityInstancePointer = ((EntityInstance*)nodePointer->data);
-            entityInstancePointer->commun->descriptor->OnFrame(KDevice, scene, entityInstancePointer);
+            if (entityInstancePointer->commun->descriptor->OnFrame)
+                entityInstancePointer->commun->descriptor->OnFrame(KDevice, scene, entityInstancePointer);
 
             nodePointer = nodePointer->next;
         }
@@ -208,7 +215,8 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         SDL_Delay(0); /* TEMPORARY Debug delay */
     }
 
-    scenePointer->OnExit(KDevice, scene);
+    if (scenePointer->OnExit)
+        scenePointer->OnExit(KDevice, scene);
 
     return returnValue;
 }
