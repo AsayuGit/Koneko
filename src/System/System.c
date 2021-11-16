@@ -96,7 +96,7 @@ DisplayDevice* KON_CreateDisplayDevice(int resX, int resY, char* GameTitle){
     return Device;
 }
 
-void FreeSoundDevice(void){
+void KON_FreeSoundDevice(void){
     Mix_CloseAudio();
 }
 
@@ -108,7 +108,7 @@ void KON_CreateSoundDevice(){
     /*return NULL;*/
 }
 
-void FreeInputDevice(InputDevice* IDevice){
+void KON_FreeInputDevice(InputDevice* IDevice){
     if (IDevice->Joy1)
         SDL_JoystickClose(IDevice->Joy1);
     free(IDevice);
@@ -160,7 +160,7 @@ KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){
     return KDevice;
 }
 
-int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
+int KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
     DDevice->OffScreenRender = (surface != NULL);
 #ifdef _SDL
     DDevice->Renderer = (surface) ? surface : DDevice->Screen;
@@ -170,7 +170,7 @@ int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
 #endif
 }
 
-int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+int KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
 	#ifdef _SDL
         FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
         return 0;
@@ -179,11 +179,11 @@ int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect
     #endif
 }
 
-int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
-    return DrawEx(DDevice, texture, srcrect, dstrect, 0);
+int KON_Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return KON_DrawEx(DDevice, texture, srcrect, dstrect, 0);
 }
 
-int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
     SDL_Rect ScaledDstRect;
     #ifdef _SDL
         SDL_Rect ScaledSrcRect;
@@ -214,19 +214,19 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
             ScaledDstRect = DDevice->RenderRect;
         }
         #ifdef _SDL
-            return DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
+            return KON_DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
         #else
-            return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
+            return KON_DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
         #endif
     }
     return 0;
 }
 
-int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
-    return ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
+int KON_ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return KON_ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
 }
 
-void FinishFrame(DisplayDevice* DDevice){
+void KON_FinishFrame(DisplayDevice* DDevice){
     Uint32 ticks;
     DrawFrame(DDevice);
     #ifdef _SDL
@@ -239,7 +239,7 @@ void FinishFrame(DisplayDevice* DDevice){
     DDevice->lastFrame = ticks;
 }
 
-void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
+void KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
 	SDL_Event assertedEvent;
 
     switch (IDevice->event.type){

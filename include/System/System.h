@@ -32,17 +32,17 @@
         KON_INIT_EVERYTHING = 0x70u
     };
 
-    void KON_Exit(KONDevice* KDevice);
+    void       KON_Exit(KONDevice* KDevice);
     KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle);
-    void FreeInputDevice(InputDevice* IDevice);
-    void FreeDisplayDevice(DisplayDevice* DDevice);
-    void FreeSoundDevice(void);
-    int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
-    int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
-    int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
-    int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
-    int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
-    void FinishFrame(DisplayDevice* DDevice);
-    void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);
+    void       KON_FreeInputDevice(InputDevice* IDevice);
+    void       KON_FreeDisplayDevice(DisplayDevice* DDevice);
+    void       KON_FreeSoundDevice(void);
+    int        KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
+    int        KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int        KON_Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
+    int        KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int        KON_ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
+    void       KON_FinishFrame(DisplayDevice* DDevice);
+    void       KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);
     
 #endif

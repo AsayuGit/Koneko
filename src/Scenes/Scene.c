@@ -137,7 +137,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
 
         /* Events Loop */
         while(SDL_PollEvent(&KDevice->IDevice->event)){
-            SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */
+            KON_SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */
             if (scenePointer->OnEvent)
                 scenePointer->OnEvent(KDevice, scene);
 
@@ -172,7 +172,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
         /* Clear the screen before rendering a new frame */
         SDL_RenderClear(KDevice->DDevice->Renderer);
 
-        /* Draw */
+        /* KON_Draw */
         for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
             switch (renderer) {
                 case 1: /* 2D */
@@ -200,7 +200,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
                     break;
             }
 
-            /* Draw all entities in the scene */
+            /* KON_Draw all entities in the scene */
             nodePointer = scene->entityInstanceList;
             while (nodePointer){ /* Processing all entity instances */
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
@@ -210,7 +210,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             }
         }
 
-        FinishFrame(KDevice->DDevice);                                   /* Update the main window */
+        KON_FinishFrame(KDevice->DDevice);                                   /* Update the main window */
 
         SDL_Delay(0); /* TEMPORARY Debug delay */
     }

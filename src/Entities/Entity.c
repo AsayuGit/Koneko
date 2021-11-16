@@ -135,7 +135,7 @@ void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity){ /* Display 
 
         entity->boundingBox = SpriteLayer;
 
-        ScaledDrawEx(DDevice, entity->commun->EntityTexture, &SpriteWindow, &SpriteLayer, entity->Flip);
+        KON_ScaledDrawEx(DDevice, entity->commun->EntityTexture, &SpriteWindow, &SpriteLayer, entity->Flip);
         
         if (SDL_GetTicks() > entity->LastFrame + entityPlayingAnim->Framerate){
             entity->LastFrame = SDL_GetTicks();

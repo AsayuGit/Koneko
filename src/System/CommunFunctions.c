@@ -54,9 +54,9 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, 
 
     /* Logic */
     if (DDevice->OffScreenRender){
-        Draw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
+        KON_Draw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
     } else {
-        ScaledDraw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
+        KON_ScaledDraw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
     }
 
 Exit:

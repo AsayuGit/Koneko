@@ -34,7 +34,7 @@ void KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer){
     dstRect.w = currentBitMap->bitMapSize.x;
     dstRect.h = currentBitMap->bitMapSize.y;
 
-    ScaledDraw(DDevice, currentBitMap->bitMapSurface, NULL, &dstRect);
+    KON_ScaledDraw(DDevice, currentBitMap->bitMapSurface, NULL, &dstRect);
 }
 
 
@@ -54,7 +54,7 @@ void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigne
     SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
     /* Logic */
 
-    ScaledDraw(DDevice, map->tileSet->bitMapSurface, &SrcTile, &DstTile);
+    KON_ScaledDraw(DDevice, map->tileSet->bitMapSurface, &SrcTile, &DstTile);
 }
 
 void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){
@@ -215,6 +215,7 @@ bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
     return RectOnRect(Rect, &BaseRect);
 }
 
+/* FIXME: Should't law levels draws be in system ? */
 void DrawFrame(DisplayDevice* DDevice){
     #ifdef _SDL
         SDL_FillRect(DDevice->Renderer, &DDevice->Frame[0], 0x000000);
