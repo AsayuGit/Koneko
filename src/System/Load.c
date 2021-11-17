@@ -282,7 +282,7 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDi
     loadedTilemap->solidTiles = NULL;
     for (i = 0; i < nbOfSolidTiles; i++){
         fscanf(tileMapFile, "%u", &j);
-        KON_appendToList(&loadedTilemap->solidTiles, &j, sizeof(unsigned int));
+        KON_AppendToLinkedList(&loadedTilemap->solidTiles, &j, sizeof(unsigned int));
     }
 
     return loadedTilemap;
@@ -330,7 +330,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
                 break;
             case KON_LAYER_TILEMAP:
                 loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(DDevice, MapFile, MapRoot);
-                currentLayer->boundingBox = InitRect(0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
+                currentLayer->boundingBox = KON_InitRect(0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
                 break;
 
             default:

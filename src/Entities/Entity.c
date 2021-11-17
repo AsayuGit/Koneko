@@ -91,8 +91,8 @@ void KON_FreeEntityInstance(EntityInstance* entityInstanceToFree){
     if (entityInstanceToFree->commun->descriptor->OnExit)
         entityInstanceToFree->commun->descriptor->OnExit(entityInstanceToFree);
 
-    KON_FreeList(entityInstanceToFree->collision.collisionEvents);
-    KON_FreeList(entityInstanceToFree->collision.collisionEvents + 1);
+    KON_FreeLinkedList(entityInstanceToFree->collision.collisionEvents);
+    KON_FreeLinkedList(entityInstanceToFree->collision.collisionEvents + 1);
 
     free(entityInstanceToFree);
 }

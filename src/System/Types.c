@@ -21,7 +21,7 @@
 
 #include "Types.h"
 
-SDL_Rect InitRect(int x, int y, int w, int h){
+SDL_Rect KON_InitRect(int x, int y, int w, int h){
     SDL_Rect rect;
     
     rect.x = x;
@@ -50,7 +50,7 @@ Vector2i KON_InitVector2i(int x, int y){
     return vector;
 }
 
-SDL_Rect RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect){
+SDL_Rect KON_RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect){
     SDL_Rect Result;
 
     Result.x = Rect->x + Vect->x;
@@ -61,7 +61,7 @@ SDL_Rect RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect){
     return Result;
 }
 
-SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
+SDL_Rect KON_RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
     SDL_Rect Result;
 
     Result.x = Rect->x - Vect->x;
@@ -73,24 +73,26 @@ SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
 }
 
 /* Add a new node at the end of the list pointer and returns its address */
-LinkedList* KON_appendToList(LinkedList** List, void* newData, size_t dataSize){
-    if (List){
-        while (*List){
-            List = &(*List)->next;
-        }
-        (*List) = (LinkedList*)malloc(sizeof(LinkedList));
-        (*List)->data = malloc(dataSize);
-        (*List)->next = NULL;
+LinkedList* KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize) {
+    if (!List)
+        return NULL;
 
-        memcpy((*List)->data, newData, dataSize);
+    while (*List)
+        List = &(*List)->next;
+    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
+    (*List)->data = malloc(dataSize);
+    (*List)->next = NULL;
 
-        return *List;
-    }
+    memcpy((*List)->data, newData, dataSize);
+
+    return *List;
+}
+
 
     return NULL;
 }
 
-unsigned int KON_ListCount(LinkedList* List){
+unsigned int KON_LinkedListCount(LinkedList* List){
     unsigned int nbOfElements = 0;
 
     while (List){
@@ -101,11 +103,11 @@ unsigned int KON_ListCount(LinkedList* List){
     return nbOfElements;
 }
 
-void KON_FreeList(LinkedList** List){
+void KON_FreeLinkedList(LinkedList** List){
     if (List){
         if (*List){
             if ((*List)->next){
-                KON_FreeList(&(*List)->next);
+                KON_FreeLinkedList(&(*List)->next);
             }
             free(*List);
             *List = NULL;
@@ -113,7 +115,7 @@ void KON_FreeList(LinkedList** List){
     }
 }
 
-void KON_DeleteListNode(LinkedList** node){
+void KON_DeleteLinkedListNode(LinkedList** node){
     LinkedList* nextNode = (*node)->next;
     free((*node));
     *node = nextNode;

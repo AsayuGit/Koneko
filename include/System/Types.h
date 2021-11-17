@@ -149,14 +149,17 @@
         UpRight
     } Direction;
 
-    SDL_Rect     InitRect(int x, int y, int w, int h);
+    SDL_Rect     KON_InitRect(int x, int y, int w, int h);
     Vector2d     KON_InitVector2d(double x, double y);
     Vector2i     KON_InitVector2i(int x, int y);
-    SDL_Rect     RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
-    SDL_Rect     RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
-    LinkedList*  KON_appendToList(LinkedList** List, void* newData, size_t dataSize);
-    unsigned int KON_ListCount(LinkedList* List);
-    void         KON_FreeList(LinkedList** List);
-    void         KON_DeleteListNode(LinkedList** node);
+    SDL_Rect     KON_RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
+    SDL_Rect     KON_RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
+    LinkedList*  KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize);
+    LinkedList*  KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize);
+    void         KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to);
+    void         KON_MoveItemIntoLinkedList(LinkedList** from, LinkedList** to);
+    unsigned int KON_LinkedListCount(LinkedList* List);
+    void         KON_FreeLinkedList(LinkedList** List);
+    void         KON_DeleteLinkedListNode(LinkedList** node);
 
 #endif

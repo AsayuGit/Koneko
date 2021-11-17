@@ -183,12 +183,12 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Su
         if (SrcRect){
             LocalSrcRect = *SrcRect;
         } else {
-            LocalSrcRect = InitRect(0, 0, SourceSurface->w, SourceSurface->h);
+            LocalSrcRect = KON_InitRect(0, 0, SourceSurface->w, SourceSurface->h);
         }
         if (DstRect){
             LocalDstRect = *DstRect;
         } else {
-            LocalDstRect = InitRect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
+            LocalDstRect = KON_InitRect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
         }
         SDL_BlitSurface(SourceSurface, &LocalSrcRect, ScreenTarget, &LocalDstRect);
     }
@@ -211,7 +211,7 @@ bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect){
 
 bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
     SDL_Rect BaseRect;
-    BaseRect = InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
+    BaseRect = KON_InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
     return RectOnRect(Rect, &BaseRect);
 }
 

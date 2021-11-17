@@ -47,10 +47,10 @@ void KON_UpdateRenderRect(DisplayDevice* DDevice){
 
     DDevice->OffScreenRender = false;
 
-    DDevice->Frame[0] = InitRect(0, 0, DDevice->RenderRect.x, ScreenHeight);                                                                                                            /* Left Frame */
-    DDevice->Frame[1] = InitRect(DDevice->RenderRect.x + DDevice->RenderRect.w, 0, DDevice->RenderRect.x, ScreenHeight);                                                /* Right Frame */
-    DDevice->Frame[2] = InitRect(DDevice->RenderRect.x, 0, DDevice->RenderRect.w, DDevice->RenderRect.y);                                                               /* Top Frame */
-    DDevice->Frame[3] = InitRect(DDevice->RenderRect.x, DDevice->RenderRect.y + DDevice->RenderRect.h, DDevice->RenderRect.w, DDevice->RenderRect.y);   /* Bottom Frame */
+    DDevice->Frame[0] = KON_InitRect(0, 0, DDevice->RenderRect.x, ScreenHeight);                                                                                                            /* Left Frame */
+    DDevice->Frame[1] = KON_InitRect(DDevice->RenderRect.x + DDevice->RenderRect.w, 0, DDevice->RenderRect.x, ScreenHeight);                                                /* Right Frame */
+    DDevice->Frame[2] = KON_InitRect(DDevice->RenderRect.x, 0, DDevice->RenderRect.w, DDevice->RenderRect.y);                                                               /* Top Frame */
+    DDevice->Frame[3] = KON_InitRect(DDevice->RenderRect.x, DDevice->RenderRect.y + DDevice->RenderRect.h, DDevice->RenderRect.w, DDevice->RenderRect.y);   /* Bottom Frame */
 }
 
 void KON_FreeDisplayDevice(DisplayDevice* DDevice){
@@ -189,12 +189,12 @@ int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rec
         SDL_Rect ScaledSrcRect;
     #endif
 
-    ScaledDstRect = InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
+    ScaledDstRect = KON_InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
     if (texture && RectOnScreen(DDevice, dstrect)){
         
         #ifdef _SDL
             if (srcrect){
-                ScaledSrcRect = InitRect(
+                ScaledSrcRect = KON_InitRect(
                     (srcrect->x * DDevice->IRScalar) + DDevice->RenderRect.x,
                     (srcrect->y * DDevice->IRScalar) + DDevice->RenderRect.y,
                     srcrect->w * DDevice->IRScalar,
@@ -204,7 +204,7 @@ int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rec
         #endif
 
         if (dstrect){
-            ScaledDstRect = InitRect(
+            ScaledDstRect = KON_InitRect(
                 (dstrect->x * DDevice->IRScalar) + DDevice->RenderRect.x,
                 (dstrect->y * DDevice->IRScalar) + DDevice->RenderRect.y,
                 dstrect->w * DDevice->IRScalar,

@@ -39,14 +39,14 @@ Animation* KON_ParseAnimation(xmlNode* array){
             entry = array->children;
             while (entry){
                 if (strcmp((char*)entry->name, "src") == 0){
-                    LoadingAnimation[ArrayID].SrcRect = InitRect(
+                    LoadingAnimation[ArrayID].SrcRect = KON_InitRect(
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"H"))
                     );
                 } else if (strcmp((char*)entry->name, "dst") == 0){
-                    LoadingAnimation[ArrayID].DstRect = InitRect(
+                    LoadingAnimation[ArrayID].DstRect = KON_InitRect(
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
                         atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),

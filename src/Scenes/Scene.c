@@ -28,7 +28,7 @@
 #include "CommunFunctions.h"
 
 /* Spawns an entity in the specified scene, loading it if necessary */
-/* TODO: This curently mallocs an instance twice due to how KON_appendToList works
+/* TODO: This curently mallocs an instance twice due to how KON_AppendToLinkedList works
             and could be tweaked for dynamically allowed entities */
 EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y){
     Entity* loadedEntity = NULL;
@@ -54,7 +54,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     }
 
     /* Load the new entity in memory */
-    newInstance->commun = ((Entity*)KON_appendToList(&scene->entityList, loadedEntity, sizeof(Entity))->data);
+    newInstance->commun = ((Entity*)KON_AppendToLinkedList(&scene->entityList, loadedEntity, sizeof(Entity))->data);
     newInstance->pos.x = X;
     newInstance->pos.y = Y;
     newInstance->layerID = layerID;
@@ -64,7 +64,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     if (newInstance->commun->descriptor->OnSetup)
         newInstance->commun->descriptor->OnSetup(KDevice, scene, newInstance);
 
-    nodePointer = KON_appendToList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
+    nodePointer = KON_AppendToLinkedList(&scene->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);
     
     return ((EntityInstance*)nodePointer->data);
@@ -77,7 +77,7 @@ void KON_KillEntity(SceneHandle* scene, Entity* entityToKill){
 
         if ((Entity*)(*entityList)->data == entityToKill){
             KON_FreeEntity(entityToKill);
-            KON_DeleteListNode(entityList);
+            KON_DeleteLinkedListNode(entityList);
         }
 
         if (!*entityList)
@@ -100,7 +100,7 @@ void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceTo
                 parentEntity = ((EntityInstance*)(*entityInstanceList)->data)->commun;
                 /* Free entity instance */
                 KON_FreeEntityInstance(entityInstanceToKill);
-                KON_DeleteListNode(entityInstanceList); /* Don't forget to clean the instance's context :3 */
+                KON_DeleteLinkedListNode(entityInstanceList); /* Don't forget to clean the instance's context :3 */
                 instanceKilled = true;
             }
         }

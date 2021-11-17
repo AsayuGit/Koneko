@@ -86,7 +86,7 @@ void KON_AppendNewCollisionEvent(LinkedList** list, EntityInstance **colidingEnt
     newCollisonEvent.collisionDirection = collisonDirection;
     newCollisonEvent.entityLastPosition = (*colidingEntity)->lastPos;
 
-    KON_appendToList(list, &newCollisonEvent, sizeof(CollisionEvent));
+    KON_AppendToLinkedList(list, &newCollisonEvent, sizeof(CollisionEvent));
 }
 
 Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBPos, SDL_Rect collisionResult) {
@@ -173,7 +173,7 @@ void KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene) {
         entityInstancePointer = ((EntityInstance*)nodePointer->data);
 
         /* Free the CollisionEvent list for the current entity */
-        KON_FreeList(&(entityInstancePointer->collision.collisionEvents[entityInstancePointer->collision.collisionFrameSelect]));
+        KON_FreeLinkedList(&(entityInstancePointer->collision.collisionEvents[entityInstancePointer->collision.collisionFrameSelect]));
 
         KON_EntitySceneCollisionCheck(scene, entityInstancePointer);
         nodePointer = nodePointer->next;
