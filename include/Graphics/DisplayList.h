@@ -23,6 +23,7 @@
 #define _DISPLAYLIST_H
 
     #include "Types.h"
+    #include "LinkedList.h"
     #include "Sprite.h"
 
     typedef struct {

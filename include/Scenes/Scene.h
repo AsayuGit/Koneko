@@ -23,6 +23,7 @@
 #define _SCENE_H
 
     #include "Types.h"
+    #include "LinkedList.h"
     #include "Map.h"
     typedef struct SceneHandle SceneHandle;
     #include "Entity.h"

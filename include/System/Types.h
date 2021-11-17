@@ -85,12 +85,6 @@
         double x;
         double y;
     } Vector2d;
-    
-    typedef struct LinkedList LinkedList;
-    struct LinkedList{
-        void* data;
-        LinkedList* next;
-    };
 
     typedef struct{
         SDL_Window *Screen;
@@ -154,12 +148,5 @@
     Vector2i     KON_InitVector2i(int x, int y);
     SDL_Rect     KON_RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
     SDL_Rect     KON_RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
-    LinkedList*  KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize);
-    LinkedList*  KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize);
-    void         KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to);
-    void         KON_MoveItemIntoLinkedList(LinkedList** from, LinkedList** to);
-    unsigned int KON_LinkedListCount(LinkedList* List);
-    void         KON_FreeLinkedList(LinkedList** List);
-    void         KON_DeleteLinkedListNode(LinkedList** node);
 
 #endif

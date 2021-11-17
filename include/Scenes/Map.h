@@ -23,6 +23,7 @@
 #define _MAP_H
 
     #include "Types.h"
+    #include "LinkedList.h"
 
     enum {
         KON_LAYER_BITMAP = 1,

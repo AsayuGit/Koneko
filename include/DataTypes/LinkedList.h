@@ -19,37 +19,23 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _COLLISIONS_H
-#define _COLLISIONS_H
+#ifndef _LINKEDLIST_H
+#define _LINKEDLIST_H
 
-    #include "Types.h"
-    #include "LinkedList.h"
+    #include <unistd.h> /* size_t */
 
-    /*
-        struct Collision : Contains all properties regarding an entity's collision
-    */
-    typedef struct {
-        bool generateCollisionEvents;
-        bool collisionFrameSelect;
-        LinkedList* collisionEvents[2];
-    } Collision;
-
-    typedef struct CollisionEvent CollisionEvent;
-
-    #include "Scene.h"
-    #include "Entity.h"
-
-    /*
-        struct CollisonEvent : Describe a collision event
-    */
-    struct CollisionEvent {
-        Vector2d entityLastPosition;
-        Vector2d entityCollidingPosition;
-        Direction collisionDirection;
-        EntityInstance* collidingEntitiy;
+    typedef struct LinkedList LinkedList;
+    struct LinkedList{
+        void* data;
+        LinkedList* next;
     };
 
-    void     KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene);
-    Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
+    LinkedList*  KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize);
+    LinkedList*  KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize);
+    void         KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to);
+    void         KON_MoveItemIntoLinkedList(LinkedList** from, LinkedList** to);
+    unsigned int KON_LinkedListCount(LinkedList* List);
+    void         KON_FreeLinkedList(LinkedList** List);
+    void         KON_DeleteLinkedListNode(LinkedList** node);
 
 #endif
