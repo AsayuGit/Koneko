@@ -88,8 +88,47 @@ LinkedList* KON_AppendToLinkedList(LinkedList** List, void* newData, size_t data
     return *List;
 }
 
+LinkedList* KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize) {
+    LinkedList* oldElement;
 
-    return NULL;
+    if (!List)
+        return NULL;
+
+    oldElement = *List;
+    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
+    (*List)->data = malloc(dataSize);
+    (*List)->next = oldElement;
+
+    memcpy((*List)->data, newData, dataSize);
+
+    return *List;
+}
+
+void KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to) {
+    LinkedList* A, *B, *NA, *NB;
+    
+    A = *from;
+    B = *to;
+
+    NA = A->next;
+    NB = B->next;
+
+    /* Swap to and from */
+    (*to)->next = (NA == B) ? A : NA;
+    (*from) = B;
+    (*to) = A;
+    (*to)->next = NB;
+}
+
+void KON_MoveItemIntoLinkedList(LinkedList** from, LinkedList** to) {
+    LinkedList* A, *NB;
+    
+    A = *from;
+    NB = (*to)->next;
+
+    (*from) = (*from)->next;
+    (*to)->next = A;
+    A->next = NB;
 }
 
 unsigned int KON_LinkedListCount(LinkedList* List){
