@@ -75,6 +75,7 @@
         #define PAD_QUIT SDLK_ESCAPE
         #define PAD_FULLSCREEN SDLK_f
         #define PAD_SNAP SDLK_f1
+        #define PAD_INTEGER_SCLLING SDL_SCANCODE_F2
         #define PAD_MAINMENU SDLK_f4
 
 	#elif defined (_XBOX)
@@ -94,6 +95,7 @@
         #define PAD_QUIT SDL_SCANCODE_ESCAPE
         #define PAD_FULLSCREEN SDL_SCANCODE_F
         #define PAD_SNAP SDL_SCANCODE_F1
+        #define PAD_INTEGER_SCLLING SDL_SCANCODE_F2
         #define PAD_MAINMENU SDL_SCANCODE_F4
 
     #else
@@ -113,6 +115,7 @@
         #define PAD_QUIT SDL_SCANCODE_ESCAPE
         #define PAD_FULLSCREEN SDL_SCANCODE_F
         #define PAD_SNAP SDL_SCANCODE_F1
+        #define PAD_INTEGER_SCLLING SDL_SCANCODE_F2
         #define PAD_MAINMENU SDL_SCANCODE_F4
 
     #endif

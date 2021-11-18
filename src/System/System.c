@@ -25,7 +25,7 @@
 #include "Graphics.h"
 
 void KON_UpdateRenderRect(DisplayDevice* DDevice){
-    int ScreenWidth, ScreenHeight;
+    int ScreenWidth, ScreenHeight; /* Signed because SDL said so :c */
 
     #ifdef _SDL
         ScreenWidth = DDevice->Screen->w;
@@ -34,7 +34,10 @@ void KON_UpdateRenderRect(DisplayDevice* DDevice){
         SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
     #endif
 
-    DDevice->IRScalar = MAX(MIN(ScreenWidth / DDevice->InternalResolution.x, ScreenHeight / DDevice->InternalResolution.y), 1);
+    if (DDevice->integerScalling && (ScreenWidth > DDevice->InternalResolution.x) && (ScreenHeight > DDevice->InternalResolution.y))
+        DDevice->IRScalar = MIN(ScreenWidth / DDevice->InternalResolution.x, ScreenHeight / DDevice->InternalResolution.y);
+    else
+        DDevice->IRScalar = MIN((double)ScreenWidth / (double)DDevice->InternalResolution.x, (double)ScreenHeight / (double)DDevice->InternalResolution.y);
 
     DDevice->ScreenResolution.x = ScreenWidth;
     DDevice->ScreenResolution.y = ScreenHeight;
@@ -297,6 +300,11 @@ void KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
 
             case PAD_SNAP:
                 SDL_SetWindowSize(DDevice->Screen, DDevice->RenderRect.w, DDevice->RenderRect.h);
+                KON_UpdateRenderRect(DDevice);
+                break;
+
+            case PAD_INTEGER_SCLLING:
+                DDevice->integerScalling ^= 1;
                 KON_UpdateRenderRect(DDevice);
                 break;
 

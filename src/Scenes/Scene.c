@@ -218,7 +218,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
 
         }
 
-        KON_FinishFrame(KDevice->DDevice);                                   /* Update the main window */
+        KON_FinishFrame(KDevice->DDevice); /* Update the main window */
 
         SDL_Delay(0); /* TEMPORARY Debug delay */
     }
