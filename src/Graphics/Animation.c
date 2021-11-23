@@ -20,6 +20,7 @@
 */
 
 #include "Animation.h"
+#include "xmlTools.h"
 
 Animation* KON_ParseAnimation(xmlNode* array){
     Animation* LoadingAnimation;
@@ -38,20 +39,10 @@ Animation* KON_ParseAnimation(xmlNode* array){
 
             entry = array->children;
             while (entry){
-                if (strcmp((char*)entry->name, "src") == 0){
-                    LoadingAnimation[ArrayID].SrcRect = KON_InitRect(
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"H"))
-                    );
+                if (strcmp((char*)entry->name, "src") == 0){                    
+                    KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].SrcRect);
                 } else if (strcmp((char*)entry->name, "dst") == 0){
-                    LoadingAnimation[ArrayID].DstRect = KON_InitRect(
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),
-                        atoi((char*)xmlGetProp(entry, (xmlChar*)"H"))
-                    );
+                    KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].DstRect);
                 }
                 entry = entry->next;
             }

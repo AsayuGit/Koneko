@@ -173,12 +173,12 @@ int KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
 #endif
 }
 
-int KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+int KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX){
 	#ifdef _SDL
-        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
+        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flipX);
         return 0;
     #else
-        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flip);
+        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flipX);
     #endif
 }
 
@@ -186,7 +186,7 @@ int KON_Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcre
     return KON_DrawEx(DDevice, texture, srcrect, dstrect, 0);
 }
 
-int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX){
     SDL_Rect ScaledDstRect;
     #ifdef _SDL
         SDL_Rect ScaledSrcRect;
@@ -217,9 +217,9 @@ int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rec
             ScaledDstRect = DDevice->RenderRect;
         }
         #ifdef _SDL
-            return KON_DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
+            return KON_DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flipX);
         #else
-            return KON_DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
+            return KON_DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flipX);
         #endif
     }
     return 0;

@@ -23,18 +23,33 @@
 #define _SPRITE_H
 
     #include "Types.h"
+    #include "Animation.h"
 
     typedef struct {
+        /* Texture */
         SDL_Rect source;
         SDL_Rect destination;
+        SDL_Rect boundingBox;
         Uint32 colorKey;
         SDL_Texture* spriteTexture;
+        bool flipX;                       /* Defines if the sprite should be drawned flipped */
+        bool flipY;
+        bool isVisible;
+        
+        /* Animation */
+        Animation* animationArray;
+        Uint32 lastFrame;                /* Time at which the last frame was displayed */
+        unsigned int currentFrame;       /* Frame currently being displayed */
+        unsigned int playingAnimation;   /* The Animation currently playing */
+        bool alimationLoop;
     } Sprite;
 
     void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey, Uint8 textureFlags);
     void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination);
     void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey);
-    void    KON_FreeSprite(Sprite* sprite);
-    void    KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite);
+    void KON_LoadSpriteFromXml(DisplayDevice* DDevice, Sprite* sprite, char* spriteXmlPath);
+    void KON_FreeSprite(Sprite* sprite);
+    void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool reset, bool loop);
+    void KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite, Vector2d spritePosition);
 
 #endif

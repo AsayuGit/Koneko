@@ -30,7 +30,7 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
     Vector2i entityNewTile;
     unsigned int tileSize;
 
-    if (scene && entityInstancePointer->commun->isSolid){ /* If we need to check colisions */
+    if (scene && entityInstancePointer->properties.isSolid){ /* If we need to check colisions */
         /* we figure out where the entity is supposed to land */
         currentLayer = scene->WorldMap->MapLayer + entityInstancePointer->layerID;
 
@@ -132,11 +132,11 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
                 entityB = (EntityInstance*)nodePointerB->data;
 
                 /* Collision test */
-                entityABoundingBox = KON_GetRectVectAddition(entityA->boundingBox, entityA->mov);
-                entityBBoundingBox = KON_GetRectVectAddition(entityB->boundingBox, entityB->mov);
+                entityABoundingBox = KON_GetRectVectAddition(entityA->entitySprite.boundingBox, entityA->mov);
+                entityBBoundingBox = KON_GetRectVectAddition(entityB->entitySprite.boundingBox, entityB->mov);
                 if (SDL_IntersectRect(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
                     
-                    if (entityA->commun->isSolid) {
+                    if (entityA->properties.isSolid) {
                         /* Prevent entity A from going into entity B */
                         /* We substract to the "Position" the smallest dimention of the collisionResult */
 

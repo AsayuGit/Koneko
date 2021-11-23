@@ -12,7 +12,8 @@
 			"communfunctions.h": "c",
 			"graphics.h": "c",
 			"animation.h": "c",
-			"math.h": "c"
+			"math.h": "c",
+			"parser.h": "c"
 		}
 	}
 }

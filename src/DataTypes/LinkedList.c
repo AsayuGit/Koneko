@@ -40,6 +40,19 @@ LinkedList* KON_AppendToLinkedList(LinkedList** List, void* newData, size_t data
     return *List;
 }
 
+LinkedList* KON_AppendRefToLinkedList(LinkedList** List, void* newDataRef) {
+    if (!List)
+        return NULL;
+
+    while (*List)
+        List = &(*List)->next;
+    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
+    (*List)->data = newDataRef;
+    (*List)->next = NULL;
+
+    return *List;
+}
+
 LinkedList* KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize) {
     LinkedList* oldElement;
 

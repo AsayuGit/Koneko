@@ -19,24 +19,17 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _LINKEDLIST_H
-#define _LINKEDLIST_H
+#ifndef _XMLTOOLS_H
+#define _XMLTOOLS_H
 
-    #include <unistd.h> /* size_t */
+    #include "Types.h"
 
-    typedef struct LinkedList LinkedList;
-    struct LinkedList{
-        void* data;
-        LinkedList* next;
-    };
+    #ifdef _XBOX
+		#include <libxml/parser.h>
+	#else
+		#include <libxml2/libxml/parser.h>
+	#endif
 
-    LinkedList*  KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize);
-    LinkedList*  KON_AppendRefToLinkedList(LinkedList** List, void* newDataRef);
-    LinkedList*  KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize);
-    void         KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to);
-    void         KON_MoveItemIntoLinkedList(LinkedList** from, LinkedList** to);
-    unsigned int KON_LinkedListCount(LinkedList* List);
-    void         KON_FreeLinkedList(LinkedList** List);
-    void         KON_DeleteLinkedListNode(LinkedList** node);
+    void KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect);
 
 #endif

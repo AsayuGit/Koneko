@@ -38,9 +38,9 @@
     void       KON_FreeDisplayDevice(DisplayDevice* DDevice);
     void       KON_FreeSoundDevice(void);
     int        KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
-    int        KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int        KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX);
     int        KON_Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
-    int        KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int        KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX);
     int        KON_ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
     void       KON_FinishFrame(DisplayDevice* DDevice);
     void       KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);

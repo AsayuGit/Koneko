@@ -26,70 +26,28 @@
 #include "System.h"
 #include "Graphics.h"
 
-void KON_ParseEntityFlags(Entity* entity, xmlNode* flags){
-    flags = flags->children;
-    while (flags){
-        if (strcmp((char*)flags->name, "isSolid") == 0) {
-            /* FIXME: We should probably crash and generate an error if the value isn't true nor false */
-            entity->isSolid = (strcmp((char*)xmlGetProp(flags, (xmlChar*)"value"), "true") == 0);
-        }
-        flags = flags->next;
-    }
-}
-
 /* Loads an Entity in memory */
-Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
-    Entity* newEntity = NULL;
-    xmlDoc* entityFile;
-    xmlNode *character, *property;
-    Uint32 ColorKey;
-    char* SurfacePath, *Buffer;
+EntityInstance* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
+    EntityInstance* newEntityInstance = NULL;
 
     /* Init */
-    newEntity = (Entity*)calloc(1, sizeof(Entity));
+    newEntityInstance = (EntityInstance*)calloc(1, sizeof(EntityInstance));
+    newEntityInstance->descriptor = entityToLoad;
 
-    newEntity->descriptor = entityToLoad;
+    /* Load */
+    KON_LoadSpriteFromXml(DDevice, &newEntityInstance->entitySprite, entityToLoad->spriteXmlPath);
 
-    if (entityToLoad->EntityDesctiptorPath){
-        entityFile = KON_LoadXml(entityToLoad->EntityDesctiptorPath); /* Load the xml file in memory */
-        character = xmlDocGetRootElement(entityFile); /* root node */
+    /* Copy properties over */
+    newEntityInstance->properties = entityToLoad->properties;
 
-        /* Logic */
-        if ((SurfacePath = (char*)xmlGetProp(character, (xmlChar*)"texture"))){
-            if ((Buffer = (char*)xmlGetProp(character, (xmlChar*)"colorKey"))){
-                sscanf(Buffer, "%x", &ColorKey);
-                newEntity->EntityTexture = KON_LoadSurface(SurfacePath, DDevice, ColorKey, SURFACE_KEYED);
-            } else {
-                newEntity->EntityTexture = KON_LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
-            }
-        }
-
-        /* Parsing */
-        property = character->children;
-        while (property){
-            if (strcmp((char*)property->name, "name") == 0){
-                astrcpy(&newEntity->entityName ,(char*)xmlNodeGetContent(property));
-            } else if (strcmp((char*)property->name, "animArray") == 0){
-                newEntity->entityAnimations = KON_ParseAnimation(property);
-            } else if (strcmp((char*)property->name, "flags") == 0){
-                KON_ParseEntityFlags(newEntity, property);
-            }
-            property = property->next;
-        }
-
-        if (!newEntity->entityName){
-            newEntity->entityName = "Unnamed Entity";
-        }
-    }
-
-    xmlFreeDoc(entityFile);
-
-    return newEntity;
+    return newEntityInstance;
 }
 
-void KON_FreeEntityInstance(EntityInstance* entityInstanceToFree){
-    if (entityInstanceToFree->commun->descriptor->OnExit)
-        entityInstanceToFree->commun->descriptor->OnExit(entityInstanceToFree);
+void KON_FreeEntity(EntityInstance* entityInstanceToFree){
+    if (entityInstanceToFree->descriptor->OnExit)
+        entityInstanceToFree->descriptor->OnExit(entityInstanceToFree);
+
+    KON_FreeSprite(&entityInstanceToFree->entitySprite);
 
     KON_FreeLinkedList(entityInstanceToFree->collision.collisionEvents);
     KON_FreeLinkedList(entityInstanceToFree->collision.collisionEvents + 1);
@@ -97,59 +55,13 @@ void KON_FreeEntityInstance(EntityInstance* entityInstanceToFree){
     free(entityInstanceToFree);
 }
 
-void KON_FreeEntity(Entity* entityToFree){
-    KON_FreeSurface(entityToFree->EntityTexture);
-    KON_FreeAnimation(entityToFree->entityAnimations);
-    free(entityToFree->entityName);
-    free(entityToFree);
-}
-
 /* potential caching possible (entity->commun->entityAnimations)*/
-void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity){ /* Display "A" Character on screen  */
-    SDL_Rect SpriteWindow, SpriteLayer;
-    Animation* entityPlayingAnim;
-
-    if (entity->isVisible){
-        entityPlayingAnim = entity->commun->entityAnimations + entity->PlayingAnimation;
-
-        /* On veille a ne pas dépacer le nombre de frames de l'animation */
-        if (entity->CurrentFrame >= entityPlayingAnim->NbOfFrames){
-            if (entity->alimationLoop){
-                entity->CurrentFrame = 0;
-            } else {
-                entity->CurrentFrame = entityPlayingAnim->NbOfFrames - 1;
-            }
-        }
-        
-        /* On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame */
-        SpriteWindow = entityPlayingAnim->SrcRect;
-        SpriteWindow.x = entityPlayingAnim->SrcRect.x + entity->CurrentFrame * entityPlayingAnim->SrcRect.w;
-
-        SpriteLayer = entityPlayingAnim->DstRect;
-
-        if (entity->Flip)
-            SpriteLayer.x = -(SpriteLayer.x + entityPlayingAnim->DstRect.w);
-        
-        SpriteLayer.x += entity->pos.x - DDevice->Camera.x;
-        SpriteLayer.y = entityPlayingAnim->DstRect.y + entity->pos.y - DDevice->Camera.y;
-
-        entity->boundingBox = SpriteLayer;
-
-        KON_ScaledDrawEx(DDevice, entity->commun->EntityTexture, &SpriteWindow, &SpriteLayer, entity->Flip);
-        
-        if (SDL_GetTicks() > entity->LastFrame + entityPlayingAnim->Framerate){
-            entity->LastFrame = SDL_GetTicks();
-            entity->CurrentFrame++;
-        }
-    }
+void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity) { /* Display "A" Character on screen  */
+    KON_DrawSprite(DDevice, &entity->entitySprite, entity->pos);
 }
 
-void KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop){
-    if (reset || AnimationID != entity->PlayingAnimation){
-        entity->PlayingAnimation = AnimationID;
-        entity->CurrentFrame = 0;
-        entity->alimationLoop = loop;
-    }
+void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){
+    KON_PlaySpriteAnimation(&entity->entitySprite, animationID, reset, loop);
 }
 
 bool KON_FindInEntityInstanceList(LinkedList* list, void* data){
@@ -165,7 +77,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
     bool frameSelect = entity->collision.collisionFrameSelect;
     LinkedList* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     LinkedList* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
-    EntityDescriptor* call = entity->commun->descriptor;
+    EntityDescriptor* call = entity->descriptor;
 
     while (nowColidingEntities){
         if (KON_FindInEntityInstanceList(wereColidingEntities, nowColidingEntities->data)){
@@ -200,5 +112,47 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect){
     }
     if (result & 2){
         entity->mov.y = vect.y - entity->pos.y;
+    }
+}
+
+EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
+    EntityInstance* newInstance = NULL;
+    LinkedList* nodePointer = NULL;
+
+    newInstance = KON_LoadEntity(KDevice->DDevice, SpawnedEntity);
+
+    /* Load the new entity in memory */
+    newInstance->pos.x = X;
+    newInstance->pos.y = Y;
+    newInstance->layerID = layerID;
+    newInstance->collision.generateCollisionEvents = true;
+
+    if (newInstance->descriptor->OnSetup)
+        newInstance->descriptor->OnSetup(KDevice, scene, newInstance);
+
+    nodePointer = KON_AppendRefToLinkedList(&scene->entityInstanceList, newInstance);
+    
+    return ((EntityInstance*)nodePointer->data);
+}
+
+/* TODO: Check that again */
+void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill) {
+    LinkedList** entityInstanceList = &scene->entityInstanceList;
+    bool instanceKilled = false;
+
+    while (*entityInstanceList){
+        if ((EntityInstance*)(*entityInstanceList)->data == entityInstanceToKill){
+            if (instanceKilled){
+                return;
+            } else {
+                /* Free entity instance */
+                KON_FreeEntity(entityInstanceToKill);
+                KON_DeleteLinkedListNode(entityInstanceList); /* Don't forget to clean the instance's context :3 */
+                instanceKilled = true;
+            }
+        }
+        if (!*entityInstanceList)
+            break;
+        entityInstanceList = &(*entityInstanceList)->next;
     }
 }

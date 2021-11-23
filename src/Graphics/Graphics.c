@@ -196,16 +196,16 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Su
 #endif
 
 bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect){
-    if (SrcRect && DstRect){
-        if ((SrcRect->x + SrcRect->w) < DstRect->x)
-            return false;
-        if (SrcRect->x > (DstRect->x + DstRect->w))
-            return false;
-        if ((SrcRect->y + SrcRect->h) < DstRect->y)
-            return false;
-        if (SrcRect->y > (DstRect->y + DstRect->h))
-            return false;
-    }
+    if (!SrcRect || !DstRect)
+        return false;
+    if ((SrcRect->x + SrcRect->w) < DstRect->x)
+        return false;
+    if (SrcRect->x > (DstRect->x + DstRect->w))
+        return false;
+    if ((SrcRect->y + SrcRect->h) < DstRect->y)
+        return false;
+    if (SrcRect->y > (DstRect->y + DstRect->h))
+        return false;
     return true;
 }
 

@@ -23,9 +23,11 @@
 #define _ENTITY_H
 
     #include "Types.h"
+    #include "Sprite.h"
     #include "Animation.h"
     typedef struct EntityInstance EntityInstance;
     typedef struct EntityDescriptor EntityDescriptor;
+    typedef struct EntityProperties EntityProperties;
     #include "Scene.h"
     #include "Collisions.h"
 
@@ -33,10 +35,16 @@
     typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self);
     typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, CollisionEvent* collision);
 
+    struct EntityProperties {
+        bool isSolid;
+    };
+
     /* Entity descriptor data type */
-    struct EntityDescriptor{
+    struct EntityDescriptor {
         /* Data */
-        char* EntityDesctiptorPath;
+        char* spriteXmlPath;
+        char* entityName;
+        EntityProperties properties;
 
         /* Logic */
         functPtrEntity OnSetup;
@@ -49,18 +57,6 @@
         functPtrEntityColison OnCollisionStop;
     };
 
-    /* Commun data between instances */
-    typedef struct {
-        /* Data */
-        char* entityName;
-        SDL_Texture* EntityTexture;
-        Animation* entityAnimations;
-        bool isSolid;
-
-        /* Logic */
-        EntityDescriptor* descriptor;
-    } Entity;
-
     /*  TODO: Hey here's an idea : Lets have two EntityInstance Types,
         one that contains the behind the scenes info about an instance
         and another that contains the info we want exposed to the user.
@@ -70,24 +66,19 @@
 
     /* Particular instance of an entity */
     struct EntityInstance{
-        Entity* commun;
+        EntityDescriptor* descriptor;
 
         /* "Behind the scene" properties */
         Vector2d lastPos;
 
-        /* Instance properties */
+        /* Global Properties */
+        EntityProperties properties;
+
+        /* Visual properties */
+        Sprite entitySprite;
+        unsigned int layerID; /* TODO: Should that be a part of the sprite itself ? */
         Vector2d pos; /* Absolute position in space */
         Vector2d mov; /* Relative frame-to-frame movement (reset each frame) */
-        unsigned int layerID;
-        SDL_Rect boundingBox; /* Bounding box of the current entity instance (Updated each frames) */
-        bool isVisible;
-        
-        /* Animation instance */
-        Uint32 LastFrame;       /* Time at the last frame display */
-        unsigned int CurrentFrame;       /* Frame currently being displayed */
-        unsigned int PlayingAnimation;   /* The Animation currently playing */
-        bool Flip;                      /* Defines if the entity should be drawned flipped */
-        bool alimationLoop;
 
         /* Colisions properties */
         Collision collision;
@@ -95,12 +86,13 @@
         void* EntityInstanceContext;
     };
 
-    Entity* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
-    void    KON_FreeEntityInstance(EntityInstance* entityInstanceToFree);
-    void    KON_FreeEntity(Entity* entityToFree);
+    EntityInstance* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
+    void    KON_FreeEntity(EntityInstance* entityToFree);
     void    KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
-    void    KON_EntityPlayAnimation(EntityInstance* entity, unsigned int AnimationID, bool reset, bool loop);
+    void    KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop);
     void    KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
     void    KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect);
+    EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+    void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
     
 #endif
