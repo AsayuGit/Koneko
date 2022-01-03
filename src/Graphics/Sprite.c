@@ -23,6 +23,7 @@
 #include "Load.h" /* Load textures from disk */
 #include "System.h" /* Draw texture on screen */
 #include "xmlTools.h"
+#include "RessourceManager.h"
 
 /* defines an empty sprite */
 static const Sprite emptySprite;

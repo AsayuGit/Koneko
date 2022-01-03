@@ -25,6 +25,7 @@
 
 #include "Graphics.h"
 #include "CommunFunctions.h"
+#include "RessourceManager.h"
 
 #ifdef _SDL
     #include <SDL/SDL_rotozoom.h>
@@ -71,7 +72,7 @@ SDL_Surface* ResizeSurface(SDL_Surface* Source, int Scalar){
 }
 #endif
 
-SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device){
+static SDL_Surface* KON_LoadRAWSurface(char FilePath[], DisplayDevice* Device){
     SDL_Surface* LoadingSurface;
 
     #ifdef _SDL
@@ -89,7 +90,15 @@ SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device){
     #endif
 }
 
-void KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
+static void KON_FreeRAWSurface(SDL_Texture* surface) {
+    #ifdef _SDL
+        SDL_FreeSurface(surface);
+    #else
+        SDL_DestroyTexture(surface);
+    #endif
+}
+
+static void KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey) {
     #ifdef _SDL
         SDL_SetColorKey(SurfaceToKey, SDL_SRCCOLORKEY | SDL_RLEACCEL, ColorKey);
     #else
@@ -97,12 +106,12 @@ void KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
     #endif
 }
 
-SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags){
+static SDL_Texture* KON_LoadNewSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
     SDL_Surface* loadingSurface;
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
         return NULL;
-    loadingSurface = KON_LoadSDLSurface(FilePath, Device);
+    loadingSurface = KON_LoadRAWSurface(FilePath, Device);
     if (loadingSurface){
 
         if (SURFACE_KEYED & flags){
@@ -121,15 +130,29 @@ SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 Colo
     return NULL;
 }
 
-void KON_FreeSurface(SDL_Texture* surface){
-    #ifdef _SDL
-        SDL_FreeSurface(surface);
-    #else
-        SDL_DestroyTexture(surface);
-    #endif
+SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
+        SDL_Texture* loadedTexture = NULL;
+
+    /* Est ce que la ressource existe ? */
+    loadedTexture = (SDL_Texture*)KON_GetManagedRessource(FilePath);
+    if (!loadedTexture) {
+        /* VERBOSE printf("Not Found! ");*/
+
+        /* Si non on chage la ressource */
+        loadedTexture = KON_LoadNewSurface(FilePath, Device, ColorKey, flags);
+        KON_AddManagedRessource(FilePath, loadedTexture);
+    }
+
+    /* VERBOSE printf("Texture >%s< data = %p\n", FilePath, (void*)loadedTexture); */
+
+    return loadedTexture;
 }
 
-BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
+void KON_FreeSurface(SDL_Texture* surface) {
+    KON_FreeRAWSurface(KON_FreeManagedRessourceByRef(surface));
+}
+
+BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey) {
     /* Declaration */
     BitmapFont* LoadingFont;
     SDL_Surface* LoadingSurface;
@@ -143,7 +166,7 @@ BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 F
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingSurface = KON_LoadSDLSurface(FilePath, DDevice);
+    LoadingSurface = KON_LoadRAWSurface(FilePath, DDevice);
     if (!LoadingSurface){
         printf("ERROR: (KON_LoadBitmapFont) Can't load font %s\n", SDL_GetError());
     }

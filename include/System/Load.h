@@ -31,25 +31,28 @@
     #include "Types.h"
     #include "Map.h"
     
+    /* Surface */
     enum {
         SURFACE_OPAQUE = 0,
         SURFACE_ALPHA = 1,
         SURFACE_KEYED = 2
     };
 
-    SDL_Surface* KON_LoadSDLSurface(char FilePath[], DisplayDevice* Device);
-    void         KON_KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
     SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
     void         KON_FreeSurface(SDL_Texture* surface);
-    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
-
     SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
 
+    /* Fonts */
+    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
+
+    /* Music */
     Mix_Music*   KON_LoadMusic(char FilePath[]);
     Mix_Chunk*   KON_LoadSoundEffect(char FilePath[]);
 
+    /* Documents */
     xmlDoc*      KON_LoadXml(char* filePath);
 
+    /* Maps */
     Map*         KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
     void         KON_SaveTileMap(Map* MapToSave);
 #endif

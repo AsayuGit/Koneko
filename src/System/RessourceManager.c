@@ -57,6 +57,7 @@ void* KON_GetManagedRessource(char* key) {
     if (!(managedRessource = KON_SearchRessourceNodeByKey(key)))
         return NULL;
     
+    /* We give away a new reference to the managed ressource so we increment the ref counter */
     ((ManagedRessource*)managedRessource->data)->nbOfReferences++;
 
     return ((ManagedRessource*)managedRessource->data)->ressource;
@@ -64,8 +65,11 @@ void* KON_GetManagedRessource(char* key) {
 
 void* KON_FreeManagedRessourceByKey(char* key) {
     void* returnRessource = NULL;
-    LinkedList* managedRessource = KON_SearchRessourceNodeByKey(key);
-    if (!managedRessource)
+    LinkedList* managedRessource =  NULL;
+    
+    if (!key)
+        return NULL;
+    if (!(managedRessource = KON_SearchRessourceNodeByKey(key)))
         return NULL;
     if (((ManagedRessource*)managedRessource->data)->nbOfReferences > 1) {
         ((ManagedRessource*)managedRessource->data)->nbOfReferences--;
@@ -80,16 +84,19 @@ void* KON_FreeManagedRessourceByKey(char* key) {
 
 void* KON_FreeManagedRessourceByRef(void* ressource) {
     void* returnRessource = NULL;
-    LinkedList* managedRessource = KON_SearchRessourceNodeByRef(ressource);
-    if (!managedRessource)
+    LinkedList* managedRessource = NULL;
+
+    if (!ressource)
+        return NULL;
+    if (!(managedRessource = KON_SearchRessourceNodeByRef(ressource)))
         return NULL;
     if (((ManagedRessource*)managedRessource->data)->nbOfReferences > 1) {
         ((ManagedRessource*)managedRessource->data)->nbOfReferences--;
         return NULL;
     }
     returnRessource = ((ManagedRessource*)managedRessource->data)->ressource;
-    free(((ManagedRessource*)managedRessource->data)->key);
+    free(((ManagedRessource*)managedRessource->data)->key); /* Free the ressource container */
     KON_DeleteLinkedListNode(&managedRessource);
 
-    return returnRessource;
+    return returnRessource; /* Return the internal ressource to be freed */
 }
