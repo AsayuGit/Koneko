@@ -13,7 +13,10 @@
 			"graphics.h": "c",
 			"animation.h": "c",
 			"math.h": "c",
-			"parser.h": "c"
+			"parser.h": "c",
+			"map.h": "c",
+			"surface.h": "c",
+			"xml.h": "c"
 		}
 	}
 }

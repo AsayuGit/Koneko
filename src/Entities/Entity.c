@@ -20,7 +20,7 @@
 */
 
 #include "Entity.h"
-#include "Load.h"
+
 #include "Animation.h"
 #include "CommunFunctions.h"
 #include "System.h"

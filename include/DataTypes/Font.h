@@ -19,17 +19,16 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _XMLTOOLS_H
-#define _XMLTOOLS_H
+#ifndef _FONT_H
+#define _FONT_H
 
     #include "Types.h"
 
-    #ifdef _XBOX
-		#include <libxml/parser.h>
-	#else
-		#include <libxml2/libxml/parser.h>
-	#endif
+    typedef struct{
+        SDL_Texture* FontSurface;
+        SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
+    } BitmapFont;
 
-    void KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect);
+    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
 
 #endif

@@ -20,10 +20,9 @@
 */
 
 #include "Sprite.h"
-#include "Load.h" /* Load textures from disk */
+#include "Surface.h" /* Load textures from disk */
 #include "System.h" /* Draw texture on screen */
-#include "xmlTools.h"
-#include "RessourceManager.h"
+#include "XML.h"
 
 /* defines an empty sprite */
 static const Sprite emptySprite;

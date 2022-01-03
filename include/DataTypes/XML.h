@@ -19,43 +19,18 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Jukebox.h"
-#include "Music.h"
+#ifndef _XML_H
+#define _XML_H
 
-static Mix_Music* Track_INTRO = NULL;
-static Mix_Music* Track_LOOP = NULL;
+    #include "Types.h"
 
-/* MUSIC QUEUE SYSTEM */
+    #ifdef _XBOX
+        #include <libxml/parser.h>
+    #else
+        #include <libxml2/libxml/parser.h>
+    #endif
 
-void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath){
-    KON_StopTrack();
+    xmlDoc* KON_LoadXml(char* filePath);
+    void    KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect);
 
-    if (Track_INTRO){
-        Mix_FreeMusic(Track_INTRO);
-        Track_INTRO = NULL;
-    }
-
-    if (Track_LOOP){
-        Mix_FreeMusic(Track_LOOP);
-        Track_LOOP = NULL;
-    }
-    
-    if (IntroPath)
-        Track_INTRO = KON_LoadMusic(IntroPath);
-    if (LoopPath){
-        Track_LOOP = KON_LoadMusic(LoopPath);
-    }
-
-    if (Track_INTRO)
-        Mix_PlayMusic(Track_INTRO, 1);
-}
-
-void KON_MusicDaemon(void){
-    if (!Mix_PlayingMusic() && Track_LOOP){
-        Mix_PlayMusic(Track_LOOP, -1);
-    }
-}
-
-void KON_StopTrack(void){
-    Mix_HaltMusic();
-}
+#endif

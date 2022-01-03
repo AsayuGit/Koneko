@@ -128,11 +128,6 @@
         InputDevice* IDevice;
     } KONDevice;
 
-    typedef struct{
-        SDL_Texture* FontSurface;
-        SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
-    } BitmapFont;
-
     typedef enum {
         Right,
         DownRight,

@@ -19,43 +19,25 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Jukebox.h"
 #include "Music.h"
 
-static Mix_Music* Track_INTRO = NULL;
-static Mix_Music* Track_LOOP = NULL;
+Mix_Music* KON_LoadMusic(char FilePath[]){
+    Mix_Music* LoadingMusic = NULL;
 
-/* MUSIC QUEUE SYSTEM */
-
-void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath){
-    KON_StopTrack();
-
-    if (Track_INTRO){
-        Mix_FreeMusic(Track_INTRO);
-        Track_INTRO = NULL;
-    }
-
-    if (Track_LOOP){
-        Mix_FreeMusic(Track_LOOP);
-        Track_LOOP = NULL;
+    if (FilePath){
+        LoadingMusic = Mix_LoadMUS(FilePath);
+        if (LoadingMusic == NULL)
+            fprintf(stderr, "Can't load music %s\n", Mix_GetError());
     }
     
-    if (IntroPath)
-        Track_INTRO = KON_LoadMusic(IntroPath);
-    if (LoopPath){
-        Track_LOOP = KON_LoadMusic(LoopPath);
-    }
-
-    if (Track_INTRO)
-        Mix_PlayMusic(Track_INTRO, 1);
+    return LoadingMusic;
 }
 
-void KON_MusicDaemon(void){
-    if (!Mix_PlayingMusic() && Track_LOOP){
-        Mix_PlayMusic(Track_LOOP, -1);
-    }
-}
+Mix_Chunk* KON_LoadSoundEffect(char FilePath[]){
+    Mix_Chunk* LoadingSoundEffect = NULL;
 
-void KON_StopTrack(void){
-    Mix_HaltMusic();
+    LoadingSoundEffect = Mix_LoadWAV(FilePath);
+    if (LoadingSoundEffect == NULL)
+        fprintf(stderr, "Can't load sound effect %s\n", Mix_GetError());
+    return LoadingSoundEffect;
 }

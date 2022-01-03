@@ -20,7 +20,7 @@
 */
 
 #include "Animation.h"
-#include "xmlTools.h"
+#include "XML.h"
 
 Animation* KON_ParseAnimation(xmlNode* array){
     Animation* LoadingAnimation;

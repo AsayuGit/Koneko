@@ -21,9 +21,9 @@
 
 #include "Scene.h"
 #include "System.h"
-#include "Load.h"
 #include "Jukebox.h"
 #include "Graphics.h"
+#include "TileMap.h"
 
 #include "CommunFunctions.h"
 

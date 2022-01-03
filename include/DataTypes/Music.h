@@ -19,40 +19,12 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _LOAD_H
-#define _LOAD_H
-	
-	#ifdef _XBOX
-		#include <libxml/parser.h>
-	#else
-		#include <libxml2/libxml/parser.h>
-	#endif
-    
+#ifndef _MUSIC_H
+#define _MUSIC_H
+
     #include "Types.h"
-    #include "Map.h"
-    
-    /* Surface */
-    enum {
-        SURFACE_OPAQUE = 0,
-        SURFACE_ALPHA = 1,
-        SURFACE_KEYED = 2
-    };
 
-    SDL_Texture* KON_LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
-    void         KON_FreeSurface(SDL_Texture* surface);
-    SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
-
-    /* Fonts */
-    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
-
-    /* Music */
     Mix_Music*   KON_LoadMusic(char FilePath[]);
     Mix_Chunk*   KON_LoadSoundEffect(char FilePath[]);
 
-    /* Documents */
-    xmlDoc*      KON_LoadXml(char* filePath);
-
-    /* Maps */
-    Map*         KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
-    void         KON_SaveTileMap(Map* MapToSave);
 #endif

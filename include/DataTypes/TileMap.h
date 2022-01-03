@@ -19,13 +19,12 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "xmlTools.h"
+#ifndef _TILEMAP_H
+#define _TILEMAP_H
 
-void KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect) {
-    *rect = KON_InitRect(
-        atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
-    );
-}
+    #include "Map.h"
+
+    Map*         KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath);
+    void         KON_SaveTileMap(Map* MapToSave);
+
+#endif

@@ -22,7 +22,7 @@
 #ifndef _COMMUNFUNCTIONS_H
 #define _COMMUNFUNCTIONS_H
 
-    #include "Types.h"
+    #include "Font.h"
 
     #define MAX(x, y) (((x) > (y)) ? (x) : (y))
     #define MIN(x, y) (((x) < (y)) ? (x) : (y))

@@ -19,43 +19,23 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Jukebox.h"
-#include "Music.h"
+#include "XML.h"
 
-static Mix_Music* Track_INTRO = NULL;
-static Mix_Music* Track_LOOP = NULL;
+xmlDoc* KON_LoadXml(char* filePath){
+    xmlKeepBlanksDefault(0); /* Ignore white space */
 
-/* MUSIC QUEUE SYSTEM */
-
-void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath){
-    KON_StopTrack();
-
-    if (Track_INTRO){
-        Mix_FreeMusic(Track_INTRO);
-        Track_INTRO = NULL;
-    }
-
-    if (Track_LOOP){
-        Mix_FreeMusic(Track_LOOP);
-        Track_LOOP = NULL;
-    }
-    
-    if (IntroPath)
-        Track_INTRO = KON_LoadMusic(IntroPath);
-    if (LoopPath){
-        Track_LOOP = KON_LoadMusic(LoopPath);
-    }
-
-    if (Track_INTRO)
-        Mix_PlayMusic(Track_INTRO, 1);
+    #ifdef _XBOX
+        return xmlParseFile(filePath); /* Load File into memory */
+    #else
+        return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+    #endif
 }
 
-void KON_MusicDaemon(void){
-    if (!Mix_PlayingMusic() && Track_LOOP){
-        Mix_PlayMusic(Track_LOOP, -1);
-    }
-}
-
-void KON_StopTrack(void){
-    Mix_HaltMusic();
+void KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect) {
+    *rect = KON_InitRect(
+        atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
+        atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
+        atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
+        atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
+    );
 }
