@@ -22,36 +22,46 @@
 #ifndef _RESSOURCEMANAGER_H
 #define _RESSOURCEMANAGER_H
 
+    typedef enum {
+        RESSOURCE_CPU_SURFACE,
+        RESSOURCE_GPU_SURFACE,
+        RESSOURCE_SOUND_EFFECT,
+        RESSOURCE_MUSIC,
+        RESSOURCE_FONT,
+        RESSOURCE_OTHER
+    } RessourceType;
+
     typedef struct ManagedRessource ManagedRessource;
     struct ManagedRessource {
-        char* key;                      /* A unique ID identifying the shared ressource */
+        char* name;                     /* A unique ID identifying the shared ressource */
+        RessourceType type;             /* The type of the ressource to be stored */
         void* ressource;                /* The ressource to be shared */
         unsigned int nbOfReferences;    /* The number of time the ressource is shared */
     };
 
     /*
         SUMMARY : Adds a new ressource as managed ressource
-        INPUT   : char* key  : The key the new ressource should be reffered as
+        INPUT   : char* name  : The name the new ressource should be reffered as
         INPUT   : void* data : Pointer to the ressource to be managed
     */
-    void  KON_AddManagedRessource(char* key, void* data);
+    void  KON_AddManagedRessource(char* name, RessourceType type, void* data);
     
     /*
         SUMMARY : Finds a managed ressource in the ressource bank, return NULL if not found.
-        INPUT   : char* key : Ressource to search for
+        INPUT   : char* name : Ressource to search for
         OUTPUT  : void*     : Ressource pointer or NULL
     */
-    void* KON_GetManagedRessource(char* key);
+    void* KON_GetManagedRessource(char* name, RessourceType type);
     
     /*
         SUMMARY : Free a managed ressource's container and return the contained ressource if
                 said managed ressources isn't shared anymore. Otherwise decrement the
                 reference counter and return NULL.
                 (meaning the contained ressource shouldn't be freed yet).
-        INPUT   : char* key : The managed ressource key
+        INPUT   : char* name : The managed ressource name
         OUTPUT  : void*     : The contained ressource to be freed
     */
-    void* KON_FreeManagedRessourceByKey(char* key);
+    void* KON_FreeManagedRessourceByID(char* name, RessourceType type);
 
     /*
         SUMMARY : Free a managed ressource's container and return the contained ressource if

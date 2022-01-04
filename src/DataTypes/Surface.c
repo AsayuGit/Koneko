@@ -90,16 +90,14 @@ static SDL_Texture* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
 
 SDL_Texture* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
     SDL_Texture* loadedTexture = NULL;
-    char buffer[PATH_MAX];
 
     if (!FilePath || !Device)
         return NULL;
 
-    sprintf(buffer, "[GPU-SURFACE]>%s", FilePath);
-    loadedTexture = (SDL_Texture*)KON_GetManagedRessource(buffer);
+    loadedTexture = (SDL_Texture*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE);
     if (!loadedTexture) {
         loadedTexture = KON_LoadRawSurface(FilePath, Device, ColorKey, flags);
-        KON_AddManagedRessource(buffer, loadedTexture);
+        KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedTexture);
     }
 
     return loadedTexture;
@@ -107,16 +105,14 @@ SDL_Texture* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 Color
 
 SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
     SDL_Surface* loadedCpuSurface = NULL;
-    char buffer[PATH_MAX];
 
     if (!FilePath || !Device)
         return NULL;
 
-    sprintf(buffer, "[CPU-SURFACE]>%s", FilePath);
-    loadedCpuSurface = (SDL_Surface*)KON_GetManagedRessource(buffer);
+    loadedCpuSurface = (SDL_Surface*)KON_GetManagedRessource(FilePath, RESSOURCE_CPU_SURFACE);
     if (!loadedCpuSurface) {
         loadedCpuSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags);
-        KON_AddManagedRessource(buffer, loadedCpuSurface);
+        KON_AddManagedRessource(FilePath, RESSOURCE_CPU_SURFACE, loadedCpuSurface);
     }
 
     return loadedCpuSurface;

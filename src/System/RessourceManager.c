@@ -29,15 +29,17 @@
 static LinkedList* loadedRessources = NULL;
 
 /*
-    SUMMARY : Finds a managed ressource node by its key, returning NULL if not found
-    INPUT   : char* key   : Ressource to search for
+    SUMMARY : Finds a managed ressource node by its name & type, returning NULL if not found
+    INPUT   : char* name   : Ressource to search for
     OUTPUT  : LinkedList* : Ressource node or null
 */
-static LinkedList* KON_SearchRessourceNodeByKey(char* key) {
+static LinkedList* KON_SearchRessourceNodeByID(char* name, RessourceType type) {
     LinkedList* ressourceIterator = loadedRessources;
+    ManagedRessource* ressource;
 
     while (ressourceIterator) {
-        if (strcmp(((ManagedRessource*)ressourceIterator->data)->key, key) == 0)
+        ressource = (ManagedRessource*)ressourceIterator->data;
+        if ((strcmp(ressource->name, name) == 0) && (ressource->type == type))
             return ressourceIterator;
         ressourceIterator = ressourceIterator->next;
     }
@@ -62,20 +64,21 @@ static LinkedList* KON_SearchRessourceNodeByRef(void* ressource) {
     return NULL;
 }
 
-void KON_AddManagedRessource(char* key, void* data) {
+void KON_AddManagedRessource(char* name, RessourceType type, void* data) {
     ManagedRessource* managedRessource = (ManagedRessource*)malloc(sizeof(ManagedRessource));
 
-    managedRessource->key = (char*)malloc(sizeof(char) * (strlen(key) + 1));
-    strcpy(managedRessource->key, key);
+    managedRessource->name = (char*)malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(managedRessource->name, name);
+    managedRessource->type = type;
     managedRessource->nbOfReferences = 1;
     managedRessource->ressource = data;
     KON_AppendRefToLinkedList(&loadedRessources, managedRessource);
 }
 
-void* KON_GetManagedRessource(char* key) {
+void* KON_GetManagedRessource(char* name, RessourceType type) {
     LinkedList* managedRessource = NULL;
     
-    if (!(managedRessource = KON_SearchRessourceNodeByKey(key)))
+    if (!(managedRessource = KON_SearchRessourceNodeByID(name, type)))
         return NULL;
     
     /* We give away a new reference to the managed ressource so we increment the ref counter */
@@ -84,20 +87,20 @@ void* KON_GetManagedRessource(char* key) {
     return ((ManagedRessource*)managedRessource->data)->ressource;
 }
 
-void* KON_FreeManagedRessourceByKey(char* key) {
+void* KON_FreeManagedRessourceByID(char* name, RessourceType type) {
     void* returnRessource = NULL;
     LinkedList* managedRessource =  NULL;
     
-    if (!key)
+    if (!name)
         return NULL;
-    if (!(managedRessource = KON_SearchRessourceNodeByKey(key)))
+    if (!(managedRessource = KON_SearchRessourceNodeByID(name, type)))
         return NULL;
     if (((ManagedRessource*)managedRessource->data)->nbOfReferences > 1) {
         ((ManagedRessource*)managedRessource->data)->nbOfReferences--;
         return NULL;
     }
     returnRessource = ((ManagedRessource*)managedRessource->data)->ressource;
-    free(((ManagedRessource*)managedRessource->data)->key);
+    free(((ManagedRessource*)managedRessource->data)->name);
     KON_DeleteLinkedListNode(&managedRessource);
 
     return returnRessource;
@@ -116,7 +119,7 @@ void* KON_FreeManagedRessourceByRef(void* ressource) {
         return NULL;
     }
     returnRessource = ((ManagedRessource*)managedRessource->data)->ressource;
-    free(((ManagedRessource*)managedRessource->data)->key); /* Free the ressource container */
+    free(((ManagedRessource*)managedRessource->data)->name); /* Free the ressource container */
     KON_DeleteLinkedListNode(&managedRessource);
 
     return returnRessource; /* Return the internal ressource to be freed */
