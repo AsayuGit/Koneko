@@ -25,6 +25,9 @@
 #define KON_LoadRawMusic(FilePath) Mix_LoadMUS(FilePath)
 #define KON_LoadRawSoundEffect(FilePath) Mix_LoadWAV(FilePath)
 
+#define KON_FreeRawMusic(music) Mix_FreeMusic(music)
+#define KON_FreeRawSoundEffect(soundEffect) Mix_FreeChunk(soundEffect)
+
 Mix_Music* KON_LoadMusic(char* FilePath) {
     Mix_Music* loadingMusic;
 
@@ -59,6 +62,20 @@ Mix_Chunk* KON_LoadSoundEffect(char* FilePath) {
     }
 
     KON_AddManagedRessource(FilePath, RESSOURCE_SOUND_EFFECT, loadingSoundEffect);
-    
+
     return loadingSoundEffect;
+}
+
+void KON_FreeMusic(Mix_Music* music) {
+    if (!music)
+        return;
+
+    KON_FreeRawMusic(KON_FreeManagedRessourceByRef(music));
+}
+
+void KON_FreeSoundEffect(Mix_Chunk* soundEffect) {
+    if (!soundEffect)
+        return;
+
+    KON_FreeRawSoundEffect(KON_FreeManagedRessourceByRef(soundEffect));
 }

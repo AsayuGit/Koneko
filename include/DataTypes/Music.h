@@ -38,4 +38,16 @@
     */
     Mix_Chunk* KON_LoadSoundEffect(char* FilePath);
 
+    /*
+        SUMMARY : Free a previously loaded music file.
+        INPUT   : Mix_Music* music : The music file to free.
+    */
+    void KON_FreeMusic(Mix_Music* music);
+    
+    /*
+        SUMMARY : Free a previously loaded sound effect.
+        INPUT   : Mix_Chunk* soundEffect : The sound effect to free.
+    */
+    void KON_FreeSoundEffect(Mix_Chunk* soundEffect);
+
 #endif
