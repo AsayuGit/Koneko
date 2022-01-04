@@ -22,18 +22,14 @@
 #include "Font.h"
 #include "Surface.h"
 #include "Graphics.h"
+#include "RessourceManager.h"
 
-BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey) {
-    /* Declaration */
+static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
     BitmapFont* LoadingFont;
     SDL_Surface* LoadingSurface;
-    unsigned int FontPixX, FontPixY;
-    unsigned int LetterIndex;
+    unsigned int FontPixX = 1, FontPixY;
+    unsigned int LetterIndex = 0;
     int FontTexW, FontTexH;
-
-    /* Init */
-    LetterIndex = 0;
-    FontPixX = 1;
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
@@ -72,12 +68,38 @@ BitmapFont* KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 F
     }
     SDL_UnlockSurface(LoadingSurface);
 
-    #ifdef _SDL
-        LoadingFont->FontSurface = LoadingSurface;
-    #else
-        LoadingFont->FontSurface = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingSurface);
-        SDL_FreeSurface(LoadingSurface);
-    #endif
+    LoadingFont->FontSurface = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingSurface);
+    SDL_FreeSurface(LoadingSurface);
 
     return LoadingFont;
+}
+
+BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
+    BitmapFont* loadedFont; 
+
+    if (!FilePath || !DDevice)
+        return NULL;
+    if ((loadedFont = KON_GetManagedRessource(FilePath, RESSOURCE_FONT)))
+        return loadedFont;
+    if (!(loadedFont = KON_LoadRawBitmapFont(FilePath, DDevice, FontColorKey)))
+        return NULL;
+
+    KON_AddManagedRessource(FilePath, RESSOURCE_FONT, loadedFont);
+
+    return loadedFont;
+}
+
+static void KON_FreeRawBitmapFont(BitmapFont* font) {
+    if (!font)
+        return;
+    
+    KON_FreeSurface(font->FontSurface);
+    free(font);
+}
+
+void KON_FreeBitmapFont(BitmapFont* font) {
+    if (!font)
+        return;
+
+    KON_FreeRawBitmapFont(KON_FreeManagedRessourceByRef(font));
 }

@@ -29,6 +29,19 @@
         SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 
-    BitmapFont*  KON_LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
+    /*
+        SUMMARY : Load a bitmap font from disk
+        INPUT   : char* FilePath         : Path to the font to load.
+        INPUT   : DisplayDevice* DDevice : Pointer to Koneko's display device.
+        INPUT   : uint32_t FontColorKey  : The color key to apply to the font.
+        OUTPUT  : BitmapFont*            : Pointer to the newly loaded font, or NULL on error.
+    */
+    BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey);
+
+    /*
+        SUMMARY : Free a previously loaded font
+        INPUT   : BitmapFont* font : Pointer to the font to free
+    */
+    void KON_FreeBitmapFont(BitmapFont* font);
 
 #endif
