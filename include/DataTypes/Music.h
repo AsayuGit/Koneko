@@ -24,7 +24,18 @@
 
     #include "Types.h"
 
-    Mix_Music*   KON_LoadMusic(char FilePath[]);
-    Mix_Chunk*   KON_LoadSoundEffect(char FilePath[]);
+    /*
+        SUMARRY : Load a music file from disk.
+        INPUT   : char* FilePath : The path to the music file.
+        OUTPUT  : Mix_Music*     : The newly loaded music file or NULL on error.
+    */
+    Mix_Music* KON_LoadMusic(char* FilePath);
+
+    /*
+        SUMMARY : Load a sound effect file from disk.
+        INPUT   : char* FilePath : The path to the sound effect file.
+        OUTPUT  : Mix_Chunk*     : The newly loaded sound effect or NULL on error.
+    */
+    Mix_Chunk* KON_LoadSoundEffect(char* FilePath);
 
 #endif

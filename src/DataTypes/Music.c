@@ -20,24 +20,45 @@
 */
 
 #include "Music.h"
+#include "RessourceManager.h"
 
-Mix_Music* KON_LoadMusic(char FilePath[]){
-    Mix_Music* LoadingMusic = NULL;
+#define KON_LoadRawMusic(FilePath) Mix_LoadMUS(FilePath)
+#define KON_LoadRawSoundEffect(FilePath) Mix_LoadWAV(FilePath)
 
-    if (FilePath){
-        LoadingMusic = Mix_LoadMUS(FilePath);
-        if (LoadingMusic == NULL)
-            fprintf(stderr, "Can't load music %s\n", Mix_GetError());
+Mix_Music* KON_LoadMusic(char* FilePath) {
+    Mix_Music* loadingMusic;
+
+    if (!FilePath)
+        return NULL;
+
+    if ((loadingMusic = KON_GetManagedRessource(FilePath, RESSOURCE_MUSIC)))
+        return loadingMusic;
+
+    if (!(loadingMusic = Mix_LoadMUS(FilePath))) {
+        fprintf(stderr, "Can't load music %s\n", Mix_GetError());
+        return NULL;
     }
-    
-    return LoadingMusic;
+
+    KON_AddManagedRessource(FilePath, RESSOURCE_MUSIC, loadingMusic);
+
+    return loadingMusic;
 }
 
-Mix_Chunk* KON_LoadSoundEffect(char FilePath[]){
-    Mix_Chunk* LoadingSoundEffect = NULL;
+Mix_Chunk* KON_LoadSoundEffect(char* FilePath) {
+    Mix_Chunk* loadingSoundEffect;
 
-    LoadingSoundEffect = Mix_LoadWAV(FilePath);
-    if (LoadingSoundEffect == NULL)
+    if (!FilePath)
+        return NULL;
+
+    if ((loadingSoundEffect = KON_GetManagedRessource(FilePath, RESSOURCE_SOUND_EFFECT)))
+        return loadingSoundEffect;
+
+    if (!(loadingSoundEffect = Mix_LoadWAV(FilePath))) {
         fprintf(stderr, "Can't load sound effect %s\n", Mix_GetError());
-    return LoadingSoundEffect;
+        return NULL;
+    }
+
+    KON_AddManagedRessource(FilePath, RESSOURCE_SOUND_EFFECT, loadingSoundEffect);
+    
+    return loadingSoundEffect;
 }
