@@ -22,32 +22,33 @@
 #ifndef _MUSIC_H
 #define _MUSIC_H
 
-    #include "Types.h"
+    typedef void* KON_Music;
+    typedef void* KON_Sfx;
 
     /*
         SUMARRY : Load a music file from disk.
         INPUT   : char* FilePath : The path to the music file.
-        OUTPUT  : Mix_Music*     : The newly loaded music file or NULL on error.
+        OUTPUT  : KON_Music     : The newly loaded music file or NULL on error.
     */
-    Mix_Music* KON_LoadMusic(char* FilePath);
+    KON_Music KON_LoadMusic(char* FilePath);
 
     /*
         SUMMARY : Load a sound effect file from disk.
         INPUT   : char* FilePath : The path to the sound effect file.
-        OUTPUT  : Mix_Chunk*     : The newly loaded sound effect or NULL on error.
+        OUTPUT  : KON_Sfx     : The newly loaded sound effect or NULL on error.
     */
-    Mix_Chunk* KON_LoadSoundEffect(char* FilePath);
+    KON_Sfx KON_LoadSoundEffect(char* FilePath);
 
     /*
         SUMMARY : Free a previously loaded music file.
-        INPUT   : Mix_Music* music : The music file to free.
+        INPUT   : KON_Music music : The music file to free.
     */
-    void KON_FreeMusic(Mix_Music* music);
+    void KON_FreeMusic(KON_Music music);
     
     /*
         SUMMARY : Free a previously loaded sound effect.
-        INPUT   : Mix_Chunk* soundEffect : The sound effect to free.
+        INPUT   : KON_Sfx soundEffect : The sound effect to free.
     */
-    void KON_FreeSoundEffect(Mix_Chunk* soundEffect);
+    void KON_FreeSoundEffect(KON_Sfx soundEffect);
 
 #endif

@@ -21,6 +21,7 @@
 
 #include "Music.h"
 #include "RessourceManager.h"
+#include "Types.h"
 
 #define KON_LoadRawMusic(FilePath) Mix_LoadMUS(FilePath)
 #define KON_LoadRawSoundEffect(FilePath) Mix_LoadWAV(FilePath)
@@ -28,8 +29,8 @@
 #define KON_FreeRawMusic(music) Mix_FreeMusic(music)
 #define KON_FreeRawSoundEffect(soundEffect) Mix_FreeChunk(soundEffect)
 
-Mix_Music* KON_LoadMusic(char* FilePath) {
-    Mix_Music* loadingMusic;
+KON_Music KON_LoadMusic(char* FilePath) {
+    KON_Music loadingMusic;
 
     if (!FilePath)
         return NULL;
@@ -47,8 +48,8 @@ Mix_Music* KON_LoadMusic(char* FilePath) {
     return loadingMusic;
 }
 
-Mix_Chunk* KON_LoadSoundEffect(char* FilePath) {
-    Mix_Chunk* loadingSoundEffect;
+KON_Sfx KON_LoadSoundEffect(char* FilePath) {
+    KON_Sfx loadingSoundEffect;
 
     if (!FilePath)
         return NULL;
@@ -66,14 +67,14 @@ Mix_Chunk* KON_LoadSoundEffect(char* FilePath) {
     return loadingSoundEffect;
 }
 
-void KON_FreeMusic(Mix_Music* music) {
+void KON_FreeMusic(KON_Music music) {
     if (!music)
         return;
 
     KON_FreeRawMusic(KON_FreeManagedRessourceByRef(music));
 }
 
-void KON_FreeSoundEffect(Mix_Chunk* soundEffect) {
+void KON_FreeSoundEffect(KON_Sfx soundEffect) {
     if (!soundEffect)
         return;
 

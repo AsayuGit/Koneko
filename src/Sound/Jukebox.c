@@ -22,8 +22,10 @@
 #include "Jukebox.h"
 #include "Music.h"
 
-static Mix_Music* Track_INTRO = NULL;
-static Mix_Music* Track_LOOP = NULL;
+#include "Types.h"
+
+static KON_Music Track_INTRO = NULL;
+static KON_Music Track_LOOP = NULL;
 
 /* MUSIC QUEUE SYSTEM */
 
@@ -31,12 +33,12 @@ void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath){
     KON_StopTrack();
 
     if (Track_INTRO){
-        Mix_FreeMusic(Track_INTRO);
+        KON_FreeMusic(Track_INTRO);
         Track_INTRO = NULL;
     }
 
     if (Track_LOOP){
-        Mix_FreeMusic(Track_LOOP);
+        KON_FreeMusic(Track_LOOP);
         Track_LOOP = NULL;
     }
     
