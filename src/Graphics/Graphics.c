@@ -24,17 +24,12 @@
 #include "Map.h"
 
 void KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer){
-    BitMap* currentBitMap = NULL;
-    SDL_Rect dstRect;
+    Vector2d pos;
 
-    currentBitMap = ((BitMap*)Layer->layerData);
+    pos.x = (int)(Layer->pos.x - DDevice->Camera.x);
+    pos.y = (int)(Layer->pos.y - DDevice->Camera.y);
 
-    dstRect.x = (int)(Layer->pos.x - DDevice->Camera.x);
-    dstRect.y = (int)(Layer->pos.y - DDevice->Camera.y);
-    dstRect.w = currentBitMap->bitMapSize.x;
-    dstRect.h = currentBitMap->bitMapSize.y;
-
-    KON_ScaledDraw(DDevice, currentBitMap->bitMapSurface, NULL, &dstRect);
+    KON_DrawSurface(DDevice, (KON_Surface*)Layer->layerData, &pos);
 }
 
 
@@ -54,7 +49,7 @@ void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigne
     SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
     /* Logic */
 
-    KON_ScaledDraw(DDevice, map->tileSet->bitMapSurface, &SrcTile, &DstTile);
+    KON_DrawScaledSurfaceRect(DDevice, map->tileSet, &SrcTile, &DstTile);
 }
 
 void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){

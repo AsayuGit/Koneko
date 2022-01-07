@@ -34,10 +34,12 @@ static const Sprite emptySprite;
     INPUT: char* spritePath       : Path the sprite should be loaded from
     INPUT: SDL_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
     INPUT: SDL_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
-    INPUT: Uint32 colorKey        : The colorKey the texture should use if keyed
-    INPUT: Uint8 textureFlags     : Texture parameters (Ex: Alpha or Not)
+    INPUT: uint32_t colorKey        : The colorKey the texture should use if keyed
+    INPUT: uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not)
 */
-void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey, Uint8 textureFlags) {
+void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+    Vector2d spriteSize;
+    
     if (!sprite)
         return;
 
@@ -47,9 +49,9 @@ void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SD
     if (source)
         sprite->source = *source;
     else {
-        sprite->source.x = 0;
-        sprite->source.y = 0;
-        SDL_QueryTexture(sprite->spriteTexture, NULL, NULL, &sprite->source.w, &sprite->source.h);
+        KON_GetSurfaceSize(sprite->spriteTexture, &spriteSize);
+        sprite->source.w = spriteSize.x;
+        sprite->source.h = spriteSize.y;
     }
     
     sprite->destination = (destination) ? *destination : sprite->source;
@@ -198,5 +200,5 @@ void KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite, Vector2d spritePosit
     sprite->boundingBox.x += spritePosition.x - dDevice->Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
     sprite->boundingBox.y += spritePosition.y - dDevice->Camera.y;
 
-    KON_ScaledDrawEx(dDevice, sprite->spriteTexture, &sprite->source, &sprite->boundingBox, sprite->flipX);
+    KON_DrawScaledSurfaceRectEx(dDevice, sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
 }

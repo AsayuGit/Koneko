@@ -23,7 +23,6 @@
 #define _RESSOURCEMANAGER_H
 
     typedef enum {
-        RESSOURCE_CPU_SURFACE,
         RESSOURCE_GPU_SURFACE,
         RESSOURCE_SOUND_EFFECT,
         RESSOURCE_MUSIC,

@@ -32,6 +32,17 @@ SDL_Rect KON_InitRect(int x, int y, int w, int h){
     return rect;
 }
 
+SDL_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh) {
+    SDL_Rect rect;
+
+    rect.x = xy->x;
+    rect.y = xy->y;
+    rect.w = wh->x;
+    rect.h = wh->y;
+
+    return rect;
+}
+
 Vector2d KON_InitVector2d(double x, double y){
     Vector2d vector;
 

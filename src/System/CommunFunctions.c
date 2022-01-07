@@ -20,7 +20,7 @@
 */
 
 #include "CommunFunctions.h"
-#include "System.h"
+#include "Surface.h"
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -54,9 +54,9 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, 
 
     /* Logic */
     if (DDevice->OffScreenRender){
-        KON_Draw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
+        KON_DrawScaledSurfaceRect(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
     } else {
-        KON_ScaledDraw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
+        KON_DrawScaledSurfaceRectEx(DDevice, Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
     }
 
 Exit:

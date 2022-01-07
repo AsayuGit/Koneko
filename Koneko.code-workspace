@@ -16,7 +16,13 @@
 			"parser.h": "c",
 			"map.h": "c",
 			"surface.h": "c",
-			"xml.h": "c"
+			"xml.h": "c",
+			"*.inc": "cpp",
+			"*.tcc": "cpp",
+			"fstream": "cpp",
+			"source_location": "cpp",
+			"valarray": "cpp",
+			"*.def": "cpp"
 		}
 	}
 }

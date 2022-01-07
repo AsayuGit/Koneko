@@ -23,9 +23,10 @@
 #define _FONT_H
 
     #include "Types.h"
+    #include "Surface.h"
 
     typedef struct{
-        SDL_Texture* FontSurface;
+        KON_Surface* FontSurface;
         SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 

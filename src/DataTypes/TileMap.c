@@ -26,23 +26,33 @@
 #include <linux/limits.h>
 #include <libgen.h> /* dirname() */
 
-/* Load a bitmap from a map file */
-BitMap* KON_LoadBitMap(DisplayDevice* DDevice, FILE* bitMapFile, char* rootDirectory){
-    BitMap* loadedBitmap;
-    Uint32 colorKey;
-    char Buffer[PATH_MAX];
 
-    loadedBitmap = (BitMap*)malloc(sizeof(BitMap));
+/*
+    SUMMARY : Loads a bitmap from map file.
+    INPUT   : DisplayDevice* dDevice : Koneko's DisplayDevice.
+    INPUT   : FILE* titleMapFile     : Oppened tilemap file.
+    INPUT   : char* rootDirectory    : Current Map's directory.
+    OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
+*/
+static KON_Surface* KON_LoadBitMap(DisplayDevice* dDevice, FILE* tileMapFile, char* rootDirectory) {
+    KON_Surface* loadedSurface;
+    uint32_t colorKey;
+    char buffer[PATH_MAX];
+    char path[PATH_MAX] = {0};
+    
+    fscanf(tileMapFile, "%x\n", &colorKey);
 
-    fscanf(bitMapFile, "%x\n", &colorKey);
-    fgets(Buffer, PATH_MAX, bitMapFile);
-    Buffer[strcspn(Buffer, "\n")] = '\0';
-    astrcpy(&loadedBitmap->bitMapPath, Buffer);
-    loadedBitmap->bitMapSurface = KON_LoadSurface(strcat(strcat(strcpy(Buffer, rootDirectory), "/"), loadedBitmap->bitMapPath), DDevice, colorKey, SURFACE_KEYED);
-    SDL_QueryTexture(loadedBitmap->bitMapSurface, NULL, NULL, &loadedBitmap->bitMapSize.x, &loadedBitmap->bitMapSize.y);
-    loadedBitmap->colorKey = colorKey;
+    fgets(buffer, PATH_MAX, tileMapFile);
+    buffer[strcspn(buffer, "\n")] = '\0'; /* Remove trailing \n */
 
-    return loadedBitmap;
+    strcat(path, rootDirectory);
+    strcat(path, "/");
+    strcat(path, buffer);
+
+    if (!(loadedSurface = KON_LoadSurface(path, dDevice, colorKey, SURFACE_KEYED)))
+        return NULL;
+
+    return loadedSurface;
 }
 
 /* Load a tilemap from a map file */
@@ -53,9 +63,9 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDi
 
     loadedTilemap = (TileMap*)malloc(sizeof(TileMap));
 
-    /* TileMap Surface */        
+    /* Loading */
     loadedTilemap->tileSet = KON_LoadBitMap(DDevice, tileMapFile, rootDirectory);
-    
+
     /* Properties */
     fscanf(tileMapFile, "%u %u %u %u %u\n", &loadedTilemap->MapSizeX, &loadedTilemap->MapSizeY, &loadedTilemap->tMSizeX, &loadedTilemap->tMSizeY, &loadedTilemap->TileSize);
 
@@ -85,6 +95,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     MapLayer* currentLayer = NULL;
     FILE* MapFile = NULL;
     TileMap* loadedTileMap = NULL;
+    Vector2d bdSize;
     unsigned int nbOfLayers, layerType;
     unsigned int i;
     char* MapRoot = NULL;
@@ -115,10 +126,11 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
         switch (layerType){
             case KON_LAYER_BITMAP:
                 currentLayer->layerData = (void*)KON_LoadBitMap(DDevice, MapFile, MapRoot);
-                currentLayer->boundingBox.w = ((BitMap*)currentLayer->layerData)->bitMapSize.x;
-                currentLayer->boundingBox.h = ((BitMap*)currentLayer->layerData)->bitMapSize.y;
-                currentLayer->boundingBox.x = currentLayer->boundingBox.y = 0;
+
+                KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
+                currentLayer->boundingBox = KON_InitRect(0, 0, bdSize.x, bdSize.y);
                 break;
+                
             case KON_LAYER_TILEMAP:
                 loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(DDevice, MapFile, MapRoot);
                 currentLayer->boundingBox = KON_InitRect(0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
@@ -140,7 +152,8 @@ Error:
     return LoadedMap;
 }
 
-void KON_SaveTileMap(Map* MapToSave){
+/* FIXME: retreive colorKey*/
+void KON_SaveTileMap(Map* MapToSave) {
     /* Declaration */
     FILE* MapFile;
     MapLayer* currentMapLayer = NULL;

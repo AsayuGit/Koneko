@@ -30,10 +30,37 @@
         SURFACE_KEYED = 2
     };
 
-    SDL_Texture* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
+    typedef enum {
+        DRAW_DEFAULT = 0,
+        DRAW_HORIZONTAL_FLIP = 1,
+        DRAW_VERTICAL_FLIP = 2,
+        DRAW_NO_SCALE = 4
+    } DrawFlags;
+
+    typedef struct KON_Surface KON_Surface;
+
+    KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
     SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
-    void         KON_FreeSurface(SDL_Texture* surface);
-    SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
+    void         KON_FreeSurface(KON_Surface* surface);
+
+    KON_Surface* KON_CpuToGpuSurface(DisplayDevice* dDevice, SDL_Surface* cpuSurface);
+
+    /*
+        SUMMARY : When provided with a surface, allows the user to get its size.
+        INPUT   : KON_Surface* surface : The surface to get the size from
+        INPUT   : Vector2d* size       : The surface's size
+    */
+    void         KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size);
+
+    #define      KON_DrawScaledSurfaceRect(dDevice, surface, rect, dest) KON_DrawScaledSurfaceRectEx(dDevice, surface, rect, dest, DRAW_DEFAULT) 
+    #define      KON_DrawSurfaceRect(dDevice, surface, rect, pos) KON_DrawSurfaceRectEx(dDevice, surface, rect, pos, DRAW_DEFAULT)
+    #define      KON_DrawScaledSurface(dDevice, surface, dest) KON_DrawScaledSurfaceEx(dDevice, surface, dest, DRAW_DEFAULT)
+    #define      KON_DrawSurface(dDevice, surface, pos) KON_DrawSurfaceEx(dDevice, surface, pos, DRAW_DEFAULT)
+
+    void         KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, SDL_Rect* dest, DrawFlags flags);
+    void         KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, Vector2d* pos, DrawFlags flags);
+    void         KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* dest, DrawFlags flags);
+    void         KON_DrawSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
 
 #endif

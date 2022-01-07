@@ -20,7 +20,6 @@
 */
 
 #include "Font.h"
-#include "Surface.h"
 #include "Graphics.h"
 #include "RessourceManager.h"
 
@@ -68,7 +67,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice,
     }
     SDL_UnlockSurface(LoadingSurface);
 
-    LoadingFont->FontSurface = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingSurface);
+    LoadingFont->FontSurface = KON_CpuToGpuSurface(DDevice, LoadingSurface);
     SDL_FreeSurface(LoadingSurface);
 
     return LoadingFont;

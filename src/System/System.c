@@ -57,6 +57,9 @@ void KON_UpdateRenderRect(DisplayDevice* DDevice){
 }
 
 void KON_FreeDisplayDevice(DisplayDevice* DDevice){
+    if (!DDevice)
+        return;
+
     #ifdef _SDL
         SDL_FreeSurface(DDevice->Screen);
     #else
@@ -66,28 +69,26 @@ void KON_FreeDisplayDevice(DisplayDevice* DDevice){
     free(DDevice);
 }
 
-DisplayDevice* KON_CreateDisplayDevice(int resX, int resY, char* GameTitle){
+DisplayDevice* KON_CreateDisplayDevice(int resX, int resY, char* GameTitle) {
     DisplayDevice* Device = (DisplayDevice*)calloc(1, sizeof(DisplayDevice));
     
     #ifdef _SDL
         Device->Screen = SDL_SetVideoMode(ScreenWidth, ScreenHeight, 32, SDL_HWSURFACE); /* | SDL_RESIZABLE */
         SDL_WM_SetCaption(GameTitle, NULL);
-	    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
+        SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
         Device->Renderer = Device->Screen;
     #else
         Device->Screen = SDL_CreateWindow(GameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     #endif
-    if (Device->Screen == NULL){
-        fprintf(stderr, "Can't create main window\n - %s\n", SDL_GetError());
-        exit(-1);
+    if (!Device->Screen){
+        KON_SystemMsgExt("(KON_CreateDisplayDevice) Can't create main window\n - %s\n", SDL_GetError(), MESSAGE_ERROR);
     }
     #ifndef _SDL
         Device->Renderer = SDL_CreateRenderer(Device->Screen , -1, 0);
         if (Device->Renderer == NULL){
-            fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
-            exit(-1);
+            KON_SystemMsgExt("(KON_CreateDisplayDevice) Can't create main renderer\n - %s", SDL_GetError(), MESSAGE_ERROR);
         }
-        SDL_GL_SetSwapInterval(1); /* VSync */
+        SDL_GL_SetSwapInterval(true); /* VSync */
     #endif
 
     /* TEMPORARY: Makes the start resulution de default internal resolution */
@@ -144,87 +145,27 @@ KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){
 
     /* SDL Init */
     if (SDL_Init(flags) != 0){
-        fprintf(stderr, "[KON] SDL Initialisation failed\n - %s\n", SDL_GetError());
-        exit(-1);
+        KON_SystemMsgExt("(KON_Init) SDL Initialisation failed\n - %s\n", SDL_GetError(), MESSAGE_ERROR);
     }
 
-    if (flags & KON_INIT_VIDEO){
+    if (flags & KON_INIT_VIDEO)
         KDevice->DDevice = KON_CreateDisplayDevice(resX, resY, GameTitle);
-    }
-    if (flags & KON_INIT_AUDIO){
+    if (flags & KON_INIT_AUDIO)
         KON_CreateSoundDevice();
-    }
-    if (flags & KON_INIT_INPUT){
+    if (flags & KON_INIT_INPUT)
         KDevice->IDevice = KON_InitInputs();
-    }
 
     return KDevice;
 }
 
 int KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
-    DDevice->OffScreenRender = (surface != NULL);
+    DDevice->OffScreenRender = (surface);
 #ifdef _SDL
     DDevice->Renderer = (surface) ? surface : DDevice->Screen;
     return 0;
 #else
     return SDL_SetRenderTarget(DDevice->Renderer, surface);
 #endif
-}
-
-int KON_DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX){
-	#ifdef _SDL
-        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flipX);
-        return 0;
-    #else
-        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flipX);
-    #endif
-}
-
-int KON_Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
-    return KON_DrawEx(DDevice, texture, srcrect, dstrect, 0);
-}
-
-int KON_ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flipX){
-    SDL_Rect ScaledDstRect;
-    #ifdef _SDL
-        SDL_Rect ScaledSrcRect;
-    #endif
-
-    ScaledDstRect = KON_InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
-    if (texture && RectOnScreen(DDevice, dstrect)){
-        
-        #ifdef _SDL
-            if (srcrect){
-                ScaledSrcRect = KON_InitRect(
-                    (srcrect->x * DDevice->IRScalar) + DDevice->RenderRect.x,
-                    (srcrect->y * DDevice->IRScalar) + DDevice->RenderRect.y,
-                    srcrect->w * DDevice->IRScalar,
-                    srcrect->h * DDevice->IRScalar
-                );
-            }
-        #endif
-
-        if (dstrect){
-            ScaledDstRect = KON_InitRect(
-                (dstrect->x * DDevice->IRScalar) + DDevice->RenderRect.x,
-                (dstrect->y * DDevice->IRScalar) + DDevice->RenderRect.y,
-                dstrect->w * DDevice->IRScalar,
-                dstrect->h * DDevice->IRScalar
-            );
-        } else {
-            ScaledDstRect = DDevice->RenderRect;
-        }
-        #ifdef _SDL
-            return KON_DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flipX);
-        #else
-            return KON_DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flipX);
-        #endif
-    }
-    return 0;
-}
-
-int KON_ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
-    return KON_ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
 }
 
 void KON_FinishFrame(DisplayDevice* DDevice){
@@ -241,7 +182,7 @@ void KON_FinishFrame(DisplayDevice* DDevice){
 }
 
 void KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
-	SDL_Event assertedEvent;
+    SDL_Event assertedEvent;
 
     switch (IDevice->event.type){
         #ifndef _SDL
@@ -261,29 +202,29 @@ void KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
             }
             break;
 
-		case SDL_JOYHATMOTION:
-			assertedEvent.type = PAD_KEYDOWN;
-			switch (IDevice->event.jhat.value){
-				case SDL_HAT_LEFT:
-					assertedEvent.PADKEY = PAD_LEFT;
-					SDL_PushEvent(&assertedEvent);
-					break;
-				case SDL_HAT_RIGHT:
-					assertedEvent.PADKEY = PAD_RIGHT;
-					SDL_PushEvent(&assertedEvent);
-					break;
-				case SDL_HAT_UP:
-					assertedEvent.PADKEY = PAD_UP;
-					SDL_PushEvent(&assertedEvent);
-					break;
-				case SDL_HAT_DOWN:
-					assertedEvent.PADKEY = PAD_DOWN;
-					SDL_PushEvent(&assertedEvent);
-					break;
-				default:
-					break;
-			}
-			break;
+        case SDL_JOYHATMOTION:
+            assertedEvent.type = PAD_KEYDOWN;
+            switch (IDevice->event.jhat.value){
+                case SDL_HAT_LEFT:
+                    assertedEvent.PADKEY = PAD_LEFT;
+                    SDL_PushEvent(&assertedEvent);
+                    break;
+                case SDL_HAT_RIGHT:
+                    assertedEvent.PADKEY = PAD_RIGHT;
+                    SDL_PushEvent(&assertedEvent);
+                    break;
+                case SDL_HAT_UP:
+                    assertedEvent.PADKEY = PAD_UP;
+                    SDL_PushEvent(&assertedEvent);
+                    break;
+                case SDL_HAT_DOWN:
+                    assertedEvent.PADKEY = PAD_DOWN;
+                    SDL_PushEvent(&assertedEvent);
+                    break;
+                default:
+                    break;
+            }
+            break;
 
         case SDL_KEYDOWN:
             switch (IDevice->event.PADKEY)

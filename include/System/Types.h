@@ -140,6 +140,7 @@
     } Direction;
 
     SDL_Rect     KON_InitRect(int x, int y, int w, int h);
+    SDL_Rect     KON_CatVectToRect(Vector2d* xy, Vector2d* wh);
     Vector2d     KON_InitVector2d(double x, double y);
     Vector2i     KON_InitVector2i(int x, int y);
     SDL_Rect     KON_RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */

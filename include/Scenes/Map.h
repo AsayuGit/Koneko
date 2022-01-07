@@ -24,6 +24,7 @@
 
     #include "Types.h"
     #include "LinkedList.h"
+    #include "Surface.h"
 
     enum {
         KON_LAYER_BITMAP = 1,
@@ -31,14 +32,7 @@
     }; /* TODO: KON_LayerType */
 
     typedef struct{
-        char* bitMapPath;
-        SDL_Texture* bitMapSurface;
-        Vector2i bitMapSize;
-        Uint32 colorKey;
-    } BitMap;
-
-    typedef struct{
-        BitMap* tileSet;
+        KON_Surface* tileSet;
         unsigned int TileSize;          /* Size (in pixel) of a tile */
         unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
         unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */

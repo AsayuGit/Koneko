@@ -43,9 +43,14 @@
     void      KON_SetPositive(void* valuePointer, size_t dataSize);
 
     /* Rect Operations */
-    SDL_Rect KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect);
+    SDL_Rect  KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect);
 
     /* Vector Operations */
+    #define   KON_VectToVect(dest, src) { \
+        dest.x = src.x;                   \
+        dest.y = src.y;                   \
+    }                                     \
+
     double    KON_GetVectNorm(Vector2d vect);
     double    KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectScalarProduct(Vector2d vect, double scalar);
