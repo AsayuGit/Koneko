@@ -22,6 +22,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
+    #include "Log.h"
     #include "Types.h"
 
     enum {

@@ -105,10 +105,8 @@ void KON_FreeSoundDevice(void){
 
 void KON_CreateSoundDevice(){
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-        fprintf(stderr, "Can't create sound device\n - %s\n", SDL_GetError());
-        exit(-1);
+        KON_SystemMsgExt("(KON_CreateSoundDevice) Can't create sound device\n - %s", SDL_GetError(), MESSAGE_ERROR);
     }
-    /*return NULL;*/
 }
 
 void KON_FreeInputDevice(InputDevice* IDevice){
@@ -120,23 +118,23 @@ void KON_FreeInputDevice(InputDevice* IDevice){
 InputDevice* KON_InitInputs(void){
     InputDevice* Inputs;
     
-    Inputs = (InputDevice*)calloc(1, sizeof(InputDevice));
+    if (!(Inputs = (InputDevice*)calloc(1, sizeof(InputDevice))))
+        KON_SystemMsg("(KON_InitInputs) Out of memory", MESSAGE_ERROR);
+
     Inputs->Joy1 = NULL;
-    if (SDL_NumJoysticks()){
+    if (SDL_NumJoysticks())
         Inputs->Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
-    }
+    
     Inputs->KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-    if (Inputs->Joy1 == NULL){
-        Inputs->JoyEnabled = false;
-    }else{
-        Inputs->JoyEnabled = true;
-    }
+    Inputs->JoyEnabled = (Inputs->Joy1);
     Inputs->EventEnabled = true;
+
     return Inputs;
 }
 
+/* FIXME : Implement memoru cleanup */
 void KON_Exit(KONDevice* KDevice){
-
+    KON_SystemMsg("(KON_Exit) Exit non implemented !", MESSAGE_WARNING);
 }
 
 KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){

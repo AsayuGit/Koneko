@@ -21,6 +21,7 @@
 
 #include "TileMap.h"
 #include "Surface.h"
+#include "Log.h"
 #include "CommunFunctions.h"
 #include <linux/limits.h>
 #include <libgen.h> /* dirname() */
@@ -92,7 +93,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     /* Init */
     MapFile = fopen(MapFilePath, "r");
     if (!MapFile){
-        printf("Couldn't load map file: %s !\n", MapFilePath);
+        KON_SystemMsgExt("(KON_LoadMap) Couldn't load map file: ", MapFilePath, MESSAGE_WARNING);
         goto Error;
     }
 
@@ -166,13 +167,12 @@ void KON_SaveTileMap(Map* MapToSave){
         switch (currentMapLayer->layerType)
         {
             case KON_LAYER_BITMAP:
-                fprintf(MapFile, "%x\n%s\n", ((BitMap*)(currentMapLayer->layerData))->colorKey, ((BitMap*)(currentMapLayer->layerData))->bitMapPath);
+                /*fprintf(MapFile, "%x\n%s\n", ((SDL_Texture*)(currentMapLayer->layerData))->colorKey, ((BitMap*)(currentMapLayer->layerData))->bitMapPath);*/
                 break;
             
             case KON_LAYER_TILEMAP:
                 currentTileMap = ((TileMap*)(currentMapLayer->layerData));
-                fprintf(MapFile, "%x\n%s\n", currentTileMap->tileSet->colorKey, currentTileMap->tileSet->bitMapPath);
-
+                /*fprintf(MapFile, "%x\n%s\n", currentTileMap->tileSet->colorKey, currentTileMap->tileSet->bitMapPath);*/
 
                 fprintf(MapFile, "%u %u %u %u %u\n", currentTileMap->MapSizeX, currentTileMap->MapSizeY,
                 currentTileMap->tMSizeX, currentTileMap->tMSizeY, currentTileMap->TileSize);

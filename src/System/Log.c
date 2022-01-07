@@ -19,21 +19,36 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _SURFACE_H
-#define _SURFACE_H
+#include "Log.h"
 
-    #include "Types.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
 
-    enum {
-        SURFACE_OPAQUE = 0,
-        SURFACE_ALPHA = 1,
-        SURFACE_KEYED = 2
-    };
+static char* messageLeader[] = {
+    "[Message]",
+    "[Warning]",
+    "[Error]",
+    "[Debug]"
+};
 
-    SDL_Texture* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
-    SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
-    void         KON_FreeSurface(SDL_Texture* surface);
-    SDL_Texture* KON_CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
+void KON_SystemMsgExt(const char* message, const char* extension, MessageGravity gravity) {
+    bool exitAfferPrint = false;
 
+    /* Decode the message gravity level */
+    switch (gravity) {
+        default:
+        case MESSAGE_LOG:
+            break;
+        case MESSAGE_WARNING:
+            break;
+        case MESSAGE_ERROR:
+            exitAfferPrint = true;
+            break;
+    }
 
-#endif
+    printf("%s %s%s\n",  messageLeader[gravity], message, extension);
+
+    if (exitAfferPrint)
+        exit(-1);
+}

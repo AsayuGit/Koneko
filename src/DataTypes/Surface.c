@@ -46,16 +46,19 @@
 */
 static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
     SDL_Surface* loadingCPUSurface = NULL;
-    
+
     if (!FilePath)
         return NULL;
     if (!(loadingCPUSurface = SDL_LoadBMP(FilePath))) {
-        printf("ERROR: (KON_LoadRawCPUSurface) Couldn't load %s !\n", FilePath);
+        KON_SystemMsgExt("(KON_LoadRawCPUSurface) Couldn't load : ", FilePath, MESSAGE_WARNING);
+        printf("Nyan >%s<\n", FilePath);
         return NULL;
     }
 
     if (SURFACE_KEYED & flags)
         KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
+
+    KON_SystemMsgExt("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface : ", FilePath, MESSAGE_LOG);
 
     return loadingCPUSurface;
 }
@@ -72,10 +75,8 @@ static SDL_Texture* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
     SDL_Surface* loadingCPUSurface = NULL;
     SDL_Texture* loadingSurface;
     
-    if (!FilePath || !Device)
-        return NULL;
-    if (!(loadingCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags))) {
-        printf("ERROR: (KON_LoadRawSurface) Couldn't load %s !\n", FilePath);
+    if (!FilePath || !Device) {
+        KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING);
         return NULL;
     }
 
@@ -91,18 +92,23 @@ static SDL_Texture* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
 SDL_Texture* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
     SDL_Texture* loadedTexture = NULL;
 
-    if (!FilePath || !Device)
+    if (!FilePath || !Device) {
+        KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING);
         return NULL;
-
-    loadedTexture = (SDL_Texture*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE);
-    if (!loadedTexture) {
-        loadedTexture = KON_LoadRawSurface(FilePath, Device, ColorKey, flags);
-        KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedTexture);
     }
 
-    return loadedTexture;
+    if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE))) {
+        loadedSurface = KON_LoadRawSurface(FilePath, Device, ColorKey, flags);
+        KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedSurface);
+        KON_SystemMsgExt("(KON_LoadSurface) Loaded NEW GPU Surface : ", FilePath, MESSAGE_LOG);
+        return loadedSurface;
+    }
+
+    KON_SystemMsgExt("(KON_LoadSurface) Referenced GPU Surface : ", FilePath, MESSAGE_LOG);
+    return loadedSurface;
 }
 
+/* Unmanaged */
 SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
     SDL_Surface* loadedCpuSurface = NULL;
 
