@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Add a new node at the end of the list pointer and returns its address */
 LinkedList* KON_AppendToLinkedList(LinkedList** List, void* newData, size_t dataSize) {
     if (!List)
         return NULL;

@@ -24,7 +24,14 @@
 #include "RessourceManager.h"
 #include "Log.h"
 
-static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
+/*
+    SUMMARY : Loads an unmanagedBitmap font from disk.
+    INPUT   : char* filePath         : The path of the font to load.
+    INPUT   : DisplayDevice* DDevice : Pointer to Koneko's display device.
+    INPUT   : uint32_t fontColorKey  : The color key the font should be keyed with.
+    OUTPUT  : BitmapFont*            : The newly loaded font (or NULL on error).
+*/
+static BitmapFont* KON_LoadRawBitmapFont(char* filePath, DisplayDevice* DDevice, uint32_t fontColorKey) {
     BitmapFont* LoadingFont;
     SDL_Surface* LoadingSurface;
     unsigned int FontPixX = 1, FontPixY;
@@ -33,9 +40,9 @@ static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice,
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingSurface = KON_LoadCpuSurface(FilePath, DDevice, FontColorKey, SURFACE_KEYED);
+    LoadingSurface = KON_LoadCpuSurface(filePath, DDevice, fontColorKey, SURFACE_KEYED);
     if (!LoadingSurface){
-        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 2, FilePath, SDL_GetError());
+        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 2, filePath, SDL_GetError());
         return NULL;
     }
     
@@ -75,6 +82,14 @@ static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice,
     return LoadingFont;
 }
 
+static void KON_FreeRawBitmapFont(BitmapFont* font) {
+    if (!font)
+        return;
+    
+    KON_FreeSurface(font->FontSurface);
+    free(font);
+}
+
 BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
     BitmapFont* loadedFont; 
 
@@ -88,14 +103,6 @@ BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t 
     KON_AddManagedRessource(FilePath, RESSOURCE_FONT, loadedFont);
 
     return loadedFont;
-}
-
-static void KON_FreeRawBitmapFont(BitmapFont* font) {
-    if (!font)
-        return;
-    
-    KON_FreeSurface(font->FontSurface);
-    free(font);
 }
 
 void KON_FreeBitmapFont(BitmapFont* font) {
