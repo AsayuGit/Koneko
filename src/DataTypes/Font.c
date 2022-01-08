@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,11 +27,10 @@
 /*
     SUMMARY : Loads an unmanagedBitmap font from disk.
     INPUT   : char* filePath         : The path of the font to load.
-    INPUT   : DisplayDevice* DDevice : Pointer to Koneko's display device.
     INPUT   : uint32_t fontColorKey  : The color key the font should be keyed with.
     OUTPUT  : BitmapFont*            : The newly loaded font (or NULL on error).
 */
-static BitmapFont* KON_LoadRawBitmapFont(char* filePath, DisplayDevice* DDevice, uint32_t fontColorKey) {
+static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) {
     BitmapFont* LoadingFont;
     SDL_Surface* LoadingSurface;
     unsigned int FontPixX = 1, FontPixY;
@@ -40,7 +39,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, DisplayDevice* DDevice,
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingSurface = KON_LoadCpuSurface(filePath, DDevice, fontColorKey, SURFACE_KEYED);
+    LoadingSurface = KON_LoadCpuSurface(filePath, fontColorKey, SURFACE_KEYED);
     if (!LoadingSurface){
         KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 2, filePath, SDL_GetError());
         return NULL;
@@ -76,7 +75,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, DisplayDevice* DDevice,
     }
     SDL_UnlockSurface(LoadingSurface);
 
-    LoadingFont->FontSurface = KON_CpuToGpuSurface(DDevice, LoadingSurface);
+    LoadingFont->FontSurface = KON_CpuToGpuSurface(LoadingSurface);
     SDL_FreeSurface(LoadingSurface);
 
     return LoadingFont;
@@ -90,14 +89,14 @@ static void KON_FreeRawBitmapFont(BitmapFont* font) {
     free(font);
 }
 
-BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
+BitmapFont* KON_LoadBitmapFont(char* FilePath, uint32_t FontColorKey) {
     BitmapFont* loadedFont; 
 
-    if (!FilePath || !DDevice)
+    if (!FilePath)
         return NULL;
     if ((loadedFont = KON_GetManagedRessource(FilePath, RESSOURCE_FONT)))
         return loadedFont;
-    if (!(loadedFont = KON_LoadRawBitmapFont(FilePath, DDevice, FontColorKey)))
+    if (!(loadedFont = KON_LoadRawBitmapFont(FilePath, FontColorKey)))
         return NULL;
 
     KON_AddManagedRessource(FilePath, RESSOURCE_FONT, loadedFont);

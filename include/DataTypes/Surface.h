@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@
 
     typedef struct KON_Surface KON_Surface;
 
-    KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags);
-    SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags);
+    KON_Surface* KON_LoadSurface(char* FilePath, uint32_t ColorKey, uint8_t flags);
+    SDL_Surface* KON_LoadCpuSurface(char* FilePath, uint32_t ColorKey, uint8_t flags);
     void         KON_FreeSurface(KON_Surface* surface);
 
-    KON_Surface* KON_CpuToGpuSurface(DisplayDevice* dDevice, SDL_Surface* cpuSurface);
+    KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface);
 
     /*
         SUMMARY : When provided with a surface, allows the user to get its size.
@@ -55,15 +55,15 @@
     */
     void         KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size);
 
-    #define      KON_DrawScaledSurfaceRect(dDevice, surface, rect, dest) KON_DrawScaledSurfaceRectEx(dDevice, surface, rect, dest, DRAW_DEFAULT) 
-    #define      KON_DrawSurfaceRect(dDevice, surface, rect, pos) KON_DrawSurfaceRectEx(dDevice, surface, rect, pos, DRAW_DEFAULT)
-    #define      KON_DrawScaledSurface(dDevice, surface, dest) KON_DrawScaledSurfaceEx(dDevice, surface, dest, DRAW_DEFAULT)
-    #define      KON_DrawSurface(dDevice, surface, pos) KON_DrawSurfaceEx(dDevice, surface, pos, DRAW_DEFAULT)
+    #define      KON_DrawScaledSurfaceRect(surface, rect, dest) KON_DrawScaledSurfaceRectEx(surface, rect, dest, DRAW_DEFAULT) 
+    #define      KON_DrawSurfaceRect(surface, rect, pos) KON_DrawSurfaceRectEx(surface, rect, pos, DRAW_DEFAULT)
+    #define      KON_DrawScaledSurface(surface, dest) KON_DrawScaledSurfaceEx(surface, dest, DRAW_DEFAULT)
+    #define      KON_DrawSurface(surface, pos) KON_DrawSurfaceEx(surface, pos, DRAW_DEFAULT)
 
-    void         KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags);
-    void         KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
-    void         KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
-    void         KON_DrawSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, Vector2d* pos, DrawFlags flags);
+    void         KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags);
+    void         KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
+    void         KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
+    void         KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
 
 #endif

@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,13 +37,9 @@
         KON_INIT_EVERYTHING = 0x70u
     };
 
-     typedef struct{
+        typedef struct{
         SDL_Window *Screen;
-        #ifdef _SDL
-            SDL_Surface* Renderer;
-        #else
-            SDL_Renderer *Renderer;
-        #endif
+        SDL_Renderer *Renderer;
 
         KON_Rect Frame[4];              /* Screen Border Frame */
 
@@ -57,8 +53,8 @@
         bool OffScreenRender;
 
         /* Timing control */
-        Uint32 lastFrame;
-        Uint32 frametime;
+        uint32_t lastFrame;
+        uint32_t frametime;
     } DisplayDevice;
 
     typedef struct{
@@ -67,7 +63,7 @@
         bool EventEnabled;
 
         /* Key Presses */
-        const Uint8* KeyStates; /* Pointer to the keypresses */
+        const uint8_t* KeyStates; /* Pointer to the keypresses */
         
         /* Joystick */
         SDL_Joystick* Joy1; /* Pointers to the Joypad */
@@ -75,19 +71,16 @@
     } InputDevice;
 
     typedef struct {
-        DisplayDevice* DDevice;
-        InputDevice* IDevice;
+        DisplayDevice dDevice;
+        InputDevice iDevice;
     } KONDevice;
 
-    void       KON_Exit(KONDevice* KDevice);
-    KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle);
-    void       KON_FreeInputDevice(InputDevice* IDevice);
-    void       KON_FreeDisplayDevice(DisplayDevice* DDevice);
-    void       KON_FreeSoundDevice(void);
+    void KON_Exit();
+    void KON_Init(uint32_t flags, int resX, int resY, char* GameTitle);
 
-    int        KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
+    int  KON_SetRenderTarget(SDL_Texture* surface);
 
-    void       KON_FinishFrame(DisplayDevice* DDevice);
-    void       KON_SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);
+    void KON_FinishFrame();
+    void KON_SystemEvents();
 
 #endif

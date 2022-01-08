@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,15 +27,11 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
+int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */
     KON_Rect DstLetter, SrcLetter;
 
     /* Init */
-    if (!DDevice){ /* DDevice check */
-        KON_SystemMsg("(gputc) Invalid DisplayDevice !", MESSAGE_WARNING, 0);
-        return 0;
-    }
     if (!Font){ /* Font check */
         KON_SystemMsg("(gputc) No Font to print with !", MESSAGE_WARNING, 0);
         return 0;
@@ -54,29 +50,28 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, 
     SrcLetter.y += (SrcLetter.h + 1) * color;
 
     /* Logic */
-    if (DDevice->OffScreenRender){
-        KON_DrawScaledSurfaceRect(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
+    if (Koneko.dDevice.OffScreenRender){
+        KON_DrawScaledSurfaceRect(Font->FontSurface, &SrcLetter, &DstLetter);
     } else {
-        KON_DrawScaledSurfaceRectEx(DDevice, Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
+        KON_DrawScaledSurfaceRectEx(Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
     }
 
     return DstLetter.w;
 }
 
 Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
-    return gprintf(NULL, Font, text, intCharSpce, NULL);
+    return gprintf(Font, text, intCharSpce, NULL); /* dDevice = NULL was used to only get the length without printing anything */
 }
 
 /* Could use the same engine as dialogue for bonds checking */
 /* Or a letter by letter mode */
-Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds){
+Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds){
     /* Declaration */
     unsigned int CharID, sizeTmp, DimX, textColor = 0;
     size_t BufferLen = 0;
     char* Buffer;
     Vector2i CharCoords;
     Vector2i Dimensions;
- 
 
     /* Init */
     Dimensions.x = 0;
@@ -105,11 +100,10 @@ Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCh
 
     while (text[CharID] != '\0'){
         if (text[CharID] != '\n'){
-            if (DDevice){
-                sizeTmp = gputc(DDevice, Font, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
-            } else {
-                sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;
-            }
+            /* FIXME : This isn't coherent anymore */
+
+            sizeTmp = gputc(Font, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
+                /* sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;*/
             CharCoords.x += sizeTmp;
             DimX += sizeTmp;
         } else {

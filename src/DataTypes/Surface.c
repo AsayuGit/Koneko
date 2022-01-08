@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Koneko.h"
 #include "Surface.h"
 #include "RessourceManager.h"
 #include <linux/limits.h>
@@ -74,18 +75,17 @@ static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uin
 /*
     SUMMARY : Loads a GPU-Side Surface from disk
     INPUT   : char* FilePath        : Path to the surface to load
-    INPUT   : DisplayDevice* Device : Pointer to Koneko's display device
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
     OUTPUT  : SDL_Surface*          : Pointer to the loaded surface (UnMannaged)
 */
-static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags) {
+static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
     SDL_Surface* loadedCPUSurface = NULL;
     SDL_Texture* loadedGPUSurface;
     KON_Surface* loadedSurface;
     Vector2i surfaceSize;
     
-    if (!FilePath || !Device) {
+    if (!FilePath) {
         KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
@@ -95,7 +95,7 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
     if (SURFACE_KEYED & flags)
         KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
 
-    if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(Device->Renderer, loadedCPUSurface))) {
+    if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, loadedCPUSurface))) {
         KON_SystemMsg("(KON_LoadRawSurface) Couldn't upload surface to GPU : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
         return NULL;
     }
@@ -115,16 +115,16 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
     return loadedSurface;
 }
 
-KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags) {
+KON_Surface* KON_LoadSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
     KON_Surface* loadedSurface;
 
-    if (!FilePath || !Device) {
+    if (!FilePath) {
         KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
 
     if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE))) {
-        loadedSurface = KON_LoadRawSurface(FilePath, Device, ColorKey, flags);
+        loadedSurface = KON_LoadRawSurface(FilePath, ColorKey, flags);
         KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedSurface);
         KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, FilePath);
         return loadedSurface;
@@ -135,8 +135,8 @@ KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t Col
 }
 
 /* Unmanaged */
-SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags) {
-    if (!FilePath || !Device)
+SDL_Surface* KON_LoadCpuSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+    if (!FilePath)
         return NULL;
 
     return KON_LoadRawCPUSurface(FilePath, ColorKey, flags);
@@ -147,11 +147,11 @@ void KON_FreeSurface(KON_Surface* surface) {
 }
 
 /* Unmanaged */
-KON_Surface* KON_CpuToGpuSurface(DisplayDevice* dDevice, SDL_Surface* cpuSurface) {
+KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface) {
     int w, h;
     KON_Surface* newSurface = (KON_Surface*)malloc(sizeof(KON_Surface));
 
-    newSurface->surface = SDL_CreateTextureFromSurface(dDevice->Renderer, cpuSurface);
+    newSurface->surface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, cpuSurface);
     SDL_QueryTexture(newSurface->surface, NULL, NULL, &w, &h);
     newSurface->size = KON_InitVector2d(w, h);
 
@@ -164,51 +164,51 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
 }
 
 /* API level draw */
-static int KON_DrawEx(DisplayDevice* dDevice, SDL_Texture* texture, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
+static int KON_DrawEx(SDL_Texture* texture, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
 
     /* Flags decoding */
 
-    return SDL_RenderCopyEx(dDevice->Renderer, texture, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
+    return SDL_RenderCopyEx(Koneko.dDevice.Renderer, texture, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
 }
 
 #define KON_Draw(dDevice, texture, srcrect, dstrect) KON_DrawEx(dDevice, texture, srcrect, dstrect, DRAW_DEFAULT)
 
-void KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
+void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
     KON_Rect ScaledDstRect;
 
-    ScaledDstRect = KON_InitRect(0, 0, dDevice->InternalResolution.x, dDevice->InternalResolution.y);
+    ScaledDstRect = KON_InitRect(0, 0, Koneko.dDevice.InternalResolution.x, Koneko.dDevice.InternalResolution.y);
     
-    if (!dDevice || !surface)
+    if (!surface)
         return;
 
     if (dest){
-        if (!RectOnScreen(dDevice, dest))
+        if (!RectOnScreen(dest))
             return;
         ScaledDstRect = KON_InitRect(
-            (dest->x * dDevice->IRScalar) + dDevice->RenderRect.x,
-            (dest->y * dDevice->IRScalar) + dDevice->RenderRect.y,
-            dest->w * dDevice->IRScalar,
-            dest->h * dDevice->IRScalar
+            (dest->x * Koneko.dDevice.IRScalar) + Koneko.dDevice.RenderRect.x,
+            (dest->y * Koneko.dDevice.IRScalar) + Koneko.dDevice.RenderRect.y,
+            dest->w * Koneko.dDevice.IRScalar,
+            dest->h * Koneko.dDevice.IRScalar
         );
     } else {
-        ScaledDstRect = dDevice->RenderRect;
+        ScaledDstRect = Koneko.dDevice.RenderRect;
     }
 
-    KON_DrawEx(dDevice, surface->surface, rect, &ScaledDstRect, flags);
+    KON_DrawEx(surface->surface, rect, &ScaledDstRect, flags);
 }
 
-void KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
+void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
     KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
 
-    KON_DrawScaledSurfaceRectEx(dDevice, surface, rect, &dest, flags);
+    KON_DrawScaledSurfaceRectEx(surface, rect, &dest, flags);
 }
 
-void KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* dest, DrawFlags flags) {
-    KON_DrawScaledSurfaceRectEx(dDevice, surface, NULL, dest, flags);
+void KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags) {
+    KON_DrawScaledSurfaceRectEx(surface, NULL, dest, flags);
 }
 
-void KON_DrawSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
+void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
     KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
 
-    KON_DrawScaledSurfaceRectEx(dDevice, surface, NULL, &dest, flags);
+    KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
 }

@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #ifndef _FONT_H
 #define _FONT_H
 
-    #include "Rect.h"
+    #include "Koneko.h"
     #include "Surface.h"
 
     typedef struct{
@@ -33,11 +33,10 @@
     /*
         SUMMARY : Load a bitmap font from disk
         INPUT   : char* FilePath         : Path to the font to load.
-        INPUT   : DisplayDevice* DDevice : Pointer to Koneko's display device.
         INPUT   : uint32_t FontColorKey  : The color key to apply to the font.
         OUTPUT  : BitmapFont*            : Pointer to the newly loaded font, or NULL on error.
     */
-    BitmapFont* KON_LoadBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey);
+    BitmapFont* KON_LoadBitmapFont(char* FilePath, uint32_t FontColorKey);
 
     /*
         SUMMARY : Free a previously loaded font

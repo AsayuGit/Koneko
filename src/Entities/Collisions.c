@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -112,10 +112,9 @@ Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBP
 
 /*
     KON_EntityEntityCollisionCheck() : Check collisions between all entities
-    INPUT : KONDevice* KDevice : Pointer the the Engine device
     INPUT : SceneHanle* scene  : Pointer to the current scene
 */
-void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
+void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
     KON_Rect collisionResult;
     EntityInstance *entityA, *entityB;
     LinkedList* nodePointer, *nodePointerB, *nextEntity;
@@ -157,13 +156,13 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
 
         nextEntity = nodePointer->next;
         if (entityA->collision.generateCollisionEvents)
-            KON_ProcessEntityCollisionsCalls(KDevice, scene, entityA);
+            KON_ProcessEntityCollisionsCalls(scene, entityA);
         
         nodePointer = nextEntity;
     }
 }
 
-void KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene) {
+void KON_EntityCollisions(SceneHandle* scene) {
     EntityInstance *entityInstancePointer;
     LinkedList* nodePointer;
 
@@ -180,7 +179,7 @@ void KON_EntityCollisions(KONDevice* KDevice, SceneHandle* scene) {
     }
 
     /* Entity / Entity Collisions */
-    KON_EntityEntityCollisionCheck(KDevice, scene);
+    KON_EntityEntityCollisionCheck(scene);
 
     /* Apply/raz entity movement */
     nodePointer = scene->entityInstanceList;

@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,21 +19,26 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Koneko.h"
 #include "Graphics.h"
 #include "System.h"
 #include "Map.h"
 
-void KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer){
+/*
+    SUMMARY : Draws a bitmap layer on screen.
+    INPUT   : MapLayer* Layer : The bitmap layer to draw
+*/
+void KON_DrawBitMap(MapLayer* Layer) {
     Vector2d pos;
 
-    pos.x = (int)(Layer->pos.x - DDevice->Camera.x);
-    pos.y = (int)(Layer->pos.y - DDevice->Camera.y);
+    pos.x = (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
+    pos.y = (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
 
-    KON_DrawSurface(DDevice, (KON_Surface*)Layer->layerData, &pos);
+    KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
 }
 
 
-void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y){
+void KON_DrawTile(MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y){
     /* Declaration */
     KON_Rect SrcTile, DstTile;
     unsigned int tileSize;
@@ -43,16 +48,16 @@ void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigne
     /* Init */
     SrcTile.x = (TileID % map->tMSizeX) * tileSize;
     SrcTile.y = (TileID / map->tMSizeX) * tileSize;
-    DstTile.x = X * tileSize + (int)(Layer->pos.x - DDevice->Camera.x);
-    DstTile.y = Y * tileSize + (int)(Layer->pos.y - DDevice->Camera.y);
+    DstTile.x = X * tileSize + (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
+    DstTile.y = Y * tileSize + (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
 
     SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
     /* Logic */
 
-    KON_DrawScaledSurfaceRect(DDevice, map->tileSet, &SrcTile, &DstTile);
+    KON_DrawScaledSurfaceRect(map->tileSet, &SrcTile, &DstTile);
 }
 
-void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){
+void KON_DrawTileMap(MapLayer* Layer){
     /* Declaration */
     unsigned int i, j;
     TileMap* map;
@@ -63,7 +68,7 @@ void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){
     if (Layer->shown && (Layer->layerType == KON_LAYER_TILEMAP)){
         for (i = 0; i < map->MapSizeY; i++){
             for (j = 0; j < map->MapSizeX; j++){
-                KON_DrawTile(DDevice, Layer, map, map->MapData[i][j], j, i);
+                KON_DrawTile(Layer, map, map->MapData[i][j], j, i);
             }
         }
     }
@@ -136,32 +141,32 @@ bool RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect){
     return true;
 }
 
-bool RectOnScreen(DisplayDevice* DDevice, const KON_Rect* Rect){
+bool RectOnScreen(const KON_Rect* Rect){
     KON_Rect BaseRect = {0};
     
-    BaseRect.w = DDevice->InternalResolution.x;
-    BaseRect.h = DDevice->InternalResolution.y;
+    BaseRect.w = Koneko.dDevice.InternalResolution.x;
+    BaseRect.h = Koneko.dDevice.InternalResolution.y;
     return RectOnRect(Rect, &BaseRect);
 }
 
-void CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y){
-    DDevice->Camera.x = X - (DDevice->InternalResolution.x / 2);
-    DDevice->Camera.y = Y - (DDevice->InternalResolution.y / 2);
+void CenterCameraOnCoordinates(double X, double Y){
+    Koneko.dDevice.Camera.x = X - (Koneko.dDevice.InternalResolution.x / 2);
+    Koneko.dDevice.Camera.y = Y - (Koneko.dDevice.InternalResolution.y / 2);
 }
 
-void BoundCameraToRegion(DisplayDevice* DDevice, KON_Rect Region){
-    if (DDevice->Camera.x + DDevice->InternalResolution.x > Region.x + Region.w){
-        DDevice->Camera.x = Region.x + Region.w - DDevice->InternalResolution.x;
+void BoundCameraToRegion(KON_Rect Region){
+    if (Koneko.dDevice.Camera.x + Koneko.dDevice.InternalResolution.x > Region.x + Region.w){
+        Koneko.dDevice.Camera.x = Region.x + Region.w - Koneko.dDevice.InternalResolution.x;
     }
-    if (DDevice->Camera.x < Region.x){
-        DDevice->Camera.x = Region.x;
+    if (Koneko.dDevice.Camera.x < Region.x){
+        Koneko.dDevice.Camera.x = Region.x;
     }
 
-    if (DDevice->Camera.y + DDevice->InternalResolution.y > Region.y + Region.h){
-        DDevice->Camera.y = Region.y + Region.h - DDevice->InternalResolution.y;
+    if (Koneko.dDevice.Camera.y + Koneko.dDevice.InternalResolution.y > Region.y + Region.h){
+        Koneko.dDevice.Camera.y = Region.y + Region.h - Koneko.dDevice.InternalResolution.y;
     }
-    if (DDevice->Camera.y < Region.y){
-        DDevice->Camera.y = Region.y;
+    if (Koneko.dDevice.Camera.y < Region.y){
+        Koneko.dDevice.Camera.y = Region.y;
     }
 }
 

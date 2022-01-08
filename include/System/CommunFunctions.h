@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
     #define MAX(x, y) (((x) > (y)) ? (x) : (y))
     #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-    int      gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
-    Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
+    int      gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
+    Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
     Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
 
     #define map(DstA, DstB, SrcA, SrcB, Value) {                                   \

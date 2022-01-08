@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "Graphics.h"
 
 /* Loads an Entity in memory */
-EntityInstance* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad){
+EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
     EntityInstance* newEntityInstance = NULL;
 
     /* Init */
@@ -35,7 +35,7 @@ EntityInstance* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityT
     newEntityInstance->descriptor = entityToLoad;
 
     /* Load */
-    KON_LoadSpriteFromXml(DDevice, &newEntityInstance->entitySprite, entityToLoad->spriteXmlPath);
+    KON_LoadSpriteFromXml(&newEntityInstance->entitySprite, entityToLoad->spriteXmlPath);
 
     /* Copy properties over */
     newEntityInstance->properties = entityToLoad->properties;
@@ -56,8 +56,8 @@ void KON_FreeEntity(EntityInstance* entityInstanceToFree){
 }
 
 /* potential caching possible (entity->commun->entityAnimations)*/
-void KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity) { /* Display "A" Character on screen  */
-    KON_DrawSprite(DDevice, &entity->entitySprite, entity->pos);
+void KON_DrawEntity(EntityInstance* entity) { /* Display "A" Character on screen  */
+    KON_DrawSprite(&entity->entitySprite, entity->pos);
 }
 
 void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){
@@ -73,7 +73,7 @@ bool KON_FindInEntityInstanceList(LinkedList* list, void* data){
     return false;
 }
 
-void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity){
+void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity){
     bool frameSelect = entity->collision.collisionFrameSelect;
     LinkedList* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     LinkedList* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
@@ -83,11 +83,11 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         if (KON_FindInEntityInstanceList(wereColidingEntities, nowColidingEntities->data)){
             /* Ongoing collision */
             if (call->OnCollisionStay)
-                call->OnCollisionStay(KDevice, scene, entity, (CollisionEvent*)nowColidingEntities->data);
+                call->OnCollisionStay(scene, entity, (CollisionEvent*)nowColidingEntities->data);
         } else {
             /* New collision */
             if (call->OnCollisionStart)
-                call->OnCollisionStart(KDevice, scene, entity, (CollisionEvent*)nowColidingEntities->data);
+                call->OnCollisionStart(scene, entity, (CollisionEvent*)nowColidingEntities->data);
         }
         nowColidingEntities = nowColidingEntities->next;
     }
@@ -96,7 +96,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
         if (!KON_FindInEntityInstanceList(nowColidingEntities, wereColidingEntities->data)){
             /* Outgoing collision */
             if (call->OnCollisionStop)
-                call->OnCollisionStop(KDevice, scene, entity, (CollisionEvent*)wereColidingEntities->data);
+                call->OnCollisionStop(scene, entity, (CollisionEvent*)wereColidingEntities->data);
         }
         wereColidingEntities = wereColidingEntities->next;
     }
@@ -115,11 +115,11 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     }
 }
 
-EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
+EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
 
-    newInstance = KON_LoadEntity(KDevice->DDevice, SpawnedEntity);
+    newInstance = KON_LoadEntity(SpawnedEntity);
 
     /* Load the new entity in memory */
     newInstance->pos.x = X;
@@ -128,7 +128,7 @@ EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDe
     newInstance->collision.generateCollisionEvents = true;
 
     if (newInstance->descriptor->OnSetup)
-        newInstance->descriptor->OnSetup(KDevice, scene, newInstance);
+        newInstance->descriptor->OnSetup(scene, newInstance);
 
     nodePointer = KON_AppendRefToLinkedList(&scene->entityInstanceList, newInstance);
     

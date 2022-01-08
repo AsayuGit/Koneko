@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Koneko.h"
 #include "Scene.h"
-#include "System.h"
 #include "Jukebox.h"
 #include "Graphics.h"
 #include "TileMap.h"
@@ -28,7 +28,7 @@
 
 #include "CommunFunctions.h"
 
-int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
+int KON_StartScene(SceneDescriptor* scenePointer){
     SceneHandle* scene = NULL;
     EntityInstance* entityInstancePointer = NULL;
     LinkedList* nodePointer = NULL;
@@ -38,53 +38,53 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     int i;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
-    scene->WorldMap = KON_LoadMap(KDevice->DDevice, scenePointer->WorldMapPath);
+    scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
     if (!scene->WorldMap){
         KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
     }
     if (scenePointer->OnSetup)
-        scenePointer->OnSetup(KDevice, scene);
+        scenePointer->OnSetup(scene);
 
 
     /* Main Loop */
     while (true){
 
         /* Events Loop */
-        while(SDL_PollEvent(&KDevice->IDevice->event)){
-            KON_SystemEvents(KDevice->DDevice, KDevice->IDevice); /* Engine events */
+        while(SDL_PollEvent(&Koneko.iDevice.event)){
+            KON_SystemEvents(&Koneko.iDevice); /* Engine events */
             if (scenePointer->OnEvent)
-                scenePointer->OnEvent(KDevice, scene);
+                scenePointer->OnEvent(scene);
 
             nodePointer = scene->entityInstanceList;
             while (nodePointer){
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
                 if (entityInstancePointer->descriptor->OnEvent)
-                    entityInstancePointer->descriptor->OnEvent(KDevice, scene, entityInstancePointer);
+                    entityInstancePointer->descriptor->OnEvent(scene, entityInstancePointer);
 
                 nodePointer = nodePointer->next;
             }
         }
 
         if (scenePointer->OnFrame)
-            scenePointer->OnFrame(KDevice, scene);
+            scenePointer->OnFrame(scene);
 
         /* Entity OnFrame Logic */
         nodePointer = scene->entityInstanceList;
         while (nodePointer){
             entityInstancePointer = ((EntityInstance*)nodePointer->data);
             if (entityInstancePointer->descriptor->OnFrame)
-                entityInstancePointer->descriptor->OnFrame(KDevice, scene, entityInstancePointer);
+                entityInstancePointer->descriptor->OnFrame(scene, entityInstancePointer);
 
             nodePointer = nodePointer->next;
         }
 
-        KON_EntityCollisions(KDevice, scene);
+        KON_EntityCollisions(scene);
 
         /* Music loop deamon */
         KON_MusicDaemon();
 
         /* Clear the screen before rendering a new frame */
-        SDL_RenderClear(KDevice->DDevice->Renderer);
+        SDL_RenderClear(Koneko.dDevice.Renderer);
 
         /* KON_Draw */
         for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
@@ -94,11 +94,11 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
                     switch (currentLayer->layerType)
                     {
                         case KON_LAYER_BITMAP:
-                            KON_DrawBitMap(KDevice->DDevice, currentLayer);
+                            KON_DrawBitMap(currentLayer);
                             break;
 
                         case KON_LAYER_TILEMAP:
-                            KON_DrawTileMap(KDevice->DDevice, currentLayer);
+                            KON_DrawTileMap(currentLayer);
                             break;
                         
                         default:
@@ -119,26 +119,24 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
             while (nodePointer){ /* Processing all entity instances */
                 entityInstancePointer = ((EntityInstance*)nodePointer->data);
                 if (entityInstancePointer->layerID == i) {
-                    KON_DrawEntity(KDevice->DDevice, entityInstancePointer);
+                    KON_DrawEntity(entityInstancePointer);
                     if (entityInstancePointer->descriptor->OnDraw)
-                        entityInstancePointer->descriptor->OnDraw(KDevice, scene, entityInstancePointer);
+                        entityInstancePointer->descriptor->OnDraw(scene, entityInstancePointer);
                 }
                 nodePointer = nodePointer->next;
             }
 
             /* Custom On_Draw() event */
             if (scenePointer->OnDraw)
-                scenePointer->OnDraw(KDevice, scene);
+                scenePointer->OnDraw(scene);
 
         }
 
-        KON_FinishFrame(KDevice->DDevice); /* Update the main window */
-
-        SDL_Delay(0); /* TEMPORARY Debug delay */
+        KON_FinishFrame(); /* Update the main window */
     }
 
     if (scenePointer->OnExit)
-        scenePointer->OnExit(KDevice, scene);
+        scenePointer->OnExit(scene);
 
     return returnValue;
 }

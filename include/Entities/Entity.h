@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
     #include "Collisions.h"
 
     typedef void (*functPtrEntityFree)(EntityInstance* entity);
-    typedef void (*functPtrEntity)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self);
-    typedef void (*functPtrEntityColison)(KONDevice* KDevice, SceneHandle* scene, EntityInstance* self, CollisionEvent* collision);
+    typedef void (*functPtrEntity)(SceneHandle* scene, EntityInstance* self);
+    typedef void (*functPtrEntityColison)(SceneHandle* scene, EntityInstance* self, CollisionEvent* collision);
 
     struct EntityProperties {
         bool isSolid;
@@ -85,13 +85,13 @@
         void* EntityInstanceContext;
     };
 
-    EntityInstance* KON_LoadEntity(DisplayDevice* DDevice, EntityDescriptor* entityToLoad);
+    EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad);
     void            KON_FreeEntity(EntityInstance* entityToFree);
-    void            KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
+    void            KON_DrawEntity(EntityInstance* entity);
     void            KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop);
-    void            KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
+    void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity);
     void            KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect);
-    EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
     void            KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
     
 #endif

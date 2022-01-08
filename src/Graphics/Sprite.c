@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Koneko.h"
 #include "Sprite.h"
 #include "Surface.h" /* Load textures from disk */
 #include "System.h" /* Draw texture on screen */
@@ -29,7 +30,6 @@ static const Sprite emptySprite;
 
 /*
     KON_LoadSprite() : Provided with a path loads a spite object in memory
-    INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
     INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
@@ -37,14 +37,14 @@ static const Sprite emptySprite;
     INPUT: uint32_t colorKey        : The colorKey the texture should use if keyed
     INPUT: uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not)
 */
-void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
     Vector2d spriteSize;
     
     if (!sprite)
         return;
 
     /* FIXME: This should change one we have the ressource manager implemented */
-    sprite->spriteTexture = KON_LoadSurface(spritePath, dDevice, colorKey, textureFlags);
+    sprite->spriteTexture = KON_LoadSurface(spritePath, colorKey, textureFlags);
     
     if (source)
         sprite->source = *source;
@@ -61,42 +61,39 @@ void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KO
 
 /*
     HON_LoadSpriteAlpha() : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags
-    INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
     INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
     INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
 */
-void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination) {
-    KON_LoadSprite(dDevice, sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
+void KON_LoadSpriteAlpha(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination) {
+    KON_LoadSprite(sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
 }
 
 /*
     HON_LoadSpriteKeyed() : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags
-    INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
     INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
     INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
 */
-void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
-    KON_LoadSprite(dDevice, sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
+void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
+    KON_LoadSprite(sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
 }
 
 /*
     KON_LoadSpriteFromXml() : Loads a sprite from a xml property file
-    INPUT: DisplayDevice* dDevice    : Pointer to the engine's display device
     INPUT: Sprite*                   : Pointer to the newly created sprite
     INPUT: char* spriteXmlPath       : Path the sprite should be loaded from
 */
-void KON_LoadSpriteFromXml(DisplayDevice* DDevice, Sprite* sprite, char* spriteXmlPath) {
+void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
     xmlDoc* spriteXml;
     xmlNode *spriteNode, *property;
     Uint32 colorKey;
     char* spritePath, *Buffer;
     bool sourceDestDefined = false;
 
-    if (!DDevice || !sprite || !spriteXmlPath)
+    if (!sprite || !spriteXmlPath)
         return;
 
     *sprite = emptySprite;
@@ -107,9 +104,9 @@ void KON_LoadSpriteFromXml(DisplayDevice* DDevice, Sprite* sprite, char* spriteX
     if ((spritePath = (char*)xmlGetProp(spriteNode, (xmlChar*)"texture"))){
         if ((Buffer = (char*)xmlGetProp(spriteNode, (xmlChar*)"colorKey"))){
             sscanf(Buffer, "%x", &colorKey);
-            KON_LoadSpriteKeyed(DDevice, sprite, spritePath, NULL, NULL, colorKey);
+            KON_LoadSpriteKeyed(sprite, spritePath, NULL, NULL, colorKey);
         } else {
-            KON_LoadSpriteAlpha(DDevice, sprite, spritePath, NULL, NULL);
+            KON_LoadSpriteAlpha(sprite, spritePath, NULL, NULL);
         }
     }
 
@@ -188,17 +185,16 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
 
 /*
     KON_DrawSprite() : Draws a sprite on screen
-    INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite* sprite         : Sprite to display
 */
-void KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite, Vector2d spritePosition) {    
+void KON_DrawSprite(Sprite* sprite, Vector2d spritePosition) {    
     if (!sprite || !sprite->isVisible)
         return;
     KON_UpdateSpriteAnimation(sprite);
     
     sprite->boundingBox = sprite->destination;
-    sprite->boundingBox.x += spritePosition.x - dDevice->Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
-    sprite->boundingBox.y += spritePosition.y - dDevice->Camera.y;
+    sprite->boundingBox.x += spritePosition.x - Koneko.dDevice.Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
+    sprite->boundingBox.y += spritePosition.y - Koneko.dDevice.Camera.y;
 
-    KON_DrawScaledSurfaceRectEx(dDevice, sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
+    KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
 }

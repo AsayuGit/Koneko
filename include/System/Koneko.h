@@ -19,44 +19,11 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Jukebox.h"
-#include "Music.h"
+#ifndef _KONEKO_H
+#define _KONEKO_H
 
-#include <stddef.h>
+    #include "System.h"
 
-static KON_Music Track_INTRO = NULL;
-static KON_Music Track_LOOP = NULL;
+    extern KONDevice Koneko;
 
-/* MUSIC QUEUE SYSTEM */
-void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath) {
-    KON_StopTrack();
-
-    if (Track_INTRO){
-        KON_FreeMusic(Track_INTRO);
-        Track_INTRO = NULL;
-    }
-
-    if (Track_LOOP){
-        KON_FreeMusic(Track_LOOP);
-        Track_LOOP = NULL;
-    }
-    
-    if (IntroPath)
-        Track_INTRO = KON_LoadMusic(IntroPath);
-    if (LoopPath){
-        Track_LOOP = KON_LoadMusic(LoopPath);
-    }
-
-    if (Track_INTRO)
-        KON_PlayMusic(Track_INTRO, 1);
-}
-
-void KON_MusicDaemon() {
-    if (!KON_IsMusicPlaying() && Track_LOOP){
-        KON_PlayMusic(Track_LOOP, -1);
-    }
-}
-
-void KON_StopTrack() {
-    KON_StopMusic();
-}
+#endif

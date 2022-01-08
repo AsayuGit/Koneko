@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
         void* sceneInstanceContext;
     };
 
-    typedef void (*functPtrScene)(KONDevice* KDevice, SceneHandle* scene);
+    typedef void (*functPtrScene)(SceneHandle* scene);
 
     /* Scene desctiptor data type */
     typedef struct {
@@ -51,9 +51,9 @@
     } SceneDescriptor;
 
     /* Start a Scene from a scene descroptor */
-    int             KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer);
+    int             KON_StartScene(SceneDescriptor* scenePointer);
     /* Spawn an entity at the specified coordinates */
-    EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
     void            KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
 
 #endif

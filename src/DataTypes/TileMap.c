@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,12 +29,11 @@
 
 /*
     SUMMARY : Loads a bitmap from map file.
-    INPUT   : DisplayDevice* dDevice : Koneko's DisplayDevice.
     INPUT   : FILE* titleMapFile     : Oppened tilemap file.
     INPUT   : char* rootDirectory    : Current Map's directory.
     OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
 */
-static KON_Surface* KON_LoadBitMap(DisplayDevice* dDevice, FILE* tileMapFile, char* rootDirectory) {
+static KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     KON_Surface* loadedSurface;
     uint32_t colorKey;
     char buffer[PATH_MAX];
@@ -49,14 +48,14 @@ static KON_Surface* KON_LoadBitMap(DisplayDevice* dDevice, FILE* tileMapFile, ch
     strcat(path, "/");
     strcat(path, buffer);
 
-    if (!(loadedSurface = KON_LoadSurface(path, dDevice, colorKey, SURFACE_KEYED)))
+    if (!(loadedSurface = KON_LoadSurface(path, colorKey, SURFACE_KEYED)))
         return NULL;
 
     return loadedSurface;
 }
 
 /* Load a tilemap from a map file */
-TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDirectory){
+TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory){
     TileMap* loadedTilemap = NULL;
     unsigned int nbOfSolidTiles;
     unsigned int i, j;
@@ -64,7 +63,7 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDi
     loadedTilemap = (TileMap*)malloc(sizeof(TileMap));
 
     /* Loading */
-    loadedTilemap->tileSet = KON_LoadBitMap(DDevice, tileMapFile, rootDirectory);
+    loadedTilemap->tileSet = KON_LoadBitMap(tileMapFile, rootDirectory);
 
     /* Properties */
     fscanf(tileMapFile, "%u %u %u %u %u\n", &loadedTilemap->MapSizeX, &loadedTilemap->MapSizeY, &loadedTilemap->tMSizeX, &loadedTilemap->tMSizeY, &loadedTilemap->TileSize);
@@ -89,7 +88,7 @@ TileMap* KON_LoadTileMap(DisplayDevice* DDevice, FILE* tileMapFile, char* rootDi
     return loadedTilemap;
 }
 
-Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
+Map* KON_LoadMap(char* MapFilePath){
     /* Declaration */
     Map* LoadedMap = NULL;
     MapLayer* currentLayer = NULL;
@@ -125,14 +124,14 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
         currentLayer = LoadedMap->MapLayer + i;
         switch (layerType){
             case KON_LAYER_BITMAP:
-                currentLayer->layerData = (void*)KON_LoadBitMap(DDevice, MapFile, MapRoot);
+                currentLayer->layerData = (void*)KON_LoadBitMap(MapFile, MapRoot);
 
                 KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
                 currentLayer->boundingBox = KON_InitRect(0, 0, bdSize.x, bdSize.y);
                 break;
                 
             case KON_LAYER_TILEMAP:
-                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(DDevice, MapFile, MapRoot);
+                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
                 currentLayer->boundingBox = KON_InitRect(0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
                 break;
 

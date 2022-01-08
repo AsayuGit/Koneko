@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@
         bool alimationLoop;
     } Sprite;
 
-    void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
-    void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination);
-    void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
-    void KON_LoadSpriteFromXml(DisplayDevice* dDevice, Sprite* sprite, char* spriteXmlPath);
+    void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
+    void KON_LoadSpriteAlpha(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination);
+    void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
+    void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath);
     void KON_FreeSprite(Sprite* sprite);
     void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool reset, bool loop);
-    void KON_DrawSprite(DisplayDevice* dDevice, Sprite* sprite, Vector2d spritePosition);
+    void KON_DrawSprite(Sprite* sprite, Vector2d spritePosition);
 
 #endif
