@@ -33,17 +33,10 @@
         SUMMARY : Logs a message to the console with the appropriate gravity level.
                   Will terminate the application when gravity = MESSAGE_ERROR.
         INPUT   : char* message          : The message to be printed.
-        INPUT   : char* extension        : The message's complementary informations.
         INPUT   : MessageGravity gravity : The gravity level of the messsage.
+        INPUT   : unsigned int nbExt     : The number of message extensions.
+        INPUT   : ...                    : nbExt number of string to be printed after.
     */
-    void KON_SystemMsgExt(const char* message, const char* extension, MessageGravity gravity);
-
-    /*
-        SUMMARY : Logs a message to the console with the appropriate gravity level.
-                  Will terminate the application when gravity = MESSAGE_ERROR.
-        INPUT   : char* message          : The message to be printed.
-        INPUT   : MessageGravity gravity : The gravity level of the messsage.
-    */
-    #define KON_SystemMsg(message, gravity) KON_SystemMsgExt(message, NULL, gravity)
+    void KON_SystemMsg(const char* message, MessageGravity gravity, unsigned int nbExt, ...);
 
 #endif

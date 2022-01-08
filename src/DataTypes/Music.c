@@ -42,7 +42,7 @@ KON_Music KON_LoadMusic(char* FilePath) {
         return loadingMusic;
 
     if (!(loadingMusic = Mix_LoadMUS(FilePath))) {
-        KON_SystemMsgExt("(KON_LoadMusic) Can't load music file : ", FilePath, MESSAGE_ERROR);
+        KON_SystemMsg("(KON_LoadMusic) Can't load music file : ", MESSAGE_ERROR, 2, FilePath, Mix_GetError());
         return NULL;
     }
 
@@ -61,7 +61,7 @@ KON_Sfx KON_LoadSoundEffect(char* FilePath) {
         return loadingSoundEffect;
 
     if (!(loadingSoundEffect = Mix_LoadWAV(FilePath))) {
-        KON_SystemMsgExt("(KON_LoadSoundEffect) Can't load sound effect file : ", FilePath, MESSAGE_ERROR);
+        KON_SystemMsg("(KON_LoadSoundEffect) Can't load sound effect file : ", MESSAGE_ERROR, 2, FilePath, Mix_GetError());
         return NULL;
     }
 

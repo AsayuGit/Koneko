@@ -22,6 +22,7 @@
 #include "Font.h"
 #include "Graphics.h"
 #include "RessourceManager.h"
+#include "Log.h"
 
 static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice, uint32_t FontColorKey) {
     BitmapFont* LoadingFont;
@@ -34,7 +35,8 @@ static BitmapFont* KON_LoadRawBitmapFont(char* FilePath, DisplayDevice* DDevice,
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
     LoadingSurface = KON_LoadCpuSurface(FilePath, DDevice, FontColorKey, SURFACE_KEYED);
     if (!LoadingSurface){
-        printf("ERROR: (KON_LoadBitmapFont) Can't load font %s\n", SDL_GetError());
+        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 2, FilePath, SDL_GetError());
+        return NULL;
     }
     
     FontTexW = LoadingSurface->w;

@@ -81,12 +81,12 @@ DisplayDevice* KON_CreateDisplayDevice(int resX, int resY, char* GameTitle) {
         Device->Screen = SDL_CreateWindow(GameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     #endif
     if (!Device->Screen){
-        KON_SystemMsgExt("(KON_CreateDisplayDevice) Can't create main window\n - %s\n", SDL_GetError(), MESSAGE_ERROR);
+        KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main window : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
     #ifndef _SDL
         Device->Renderer = SDL_CreateRenderer(Device->Screen , -1, 0);
         if (Device->Renderer == NULL){
-            KON_SystemMsgExt("(KON_CreateDisplayDevice) Can't create main renderer\n - %s", SDL_GetError(), MESSAGE_ERROR);
+            KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
         }
         SDL_GL_SetSwapInterval(true); /* VSync */
     #endif
@@ -106,7 +106,7 @@ void KON_FreeSoundDevice(void){
 
 void KON_CreateSoundDevice(){
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-        KON_SystemMsgExt("(KON_CreateSoundDevice) Can't create sound device\n - %s", SDL_GetError(), MESSAGE_ERROR);
+        KON_SystemMsg("(KON_CreateSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
 }
 
@@ -120,7 +120,7 @@ InputDevice* KON_InitInputs(void){
     InputDevice* Inputs;
     
     if (!(Inputs = (InputDevice*)calloc(1, sizeof(InputDevice))))
-        KON_SystemMsg("(KON_InitInputs) Out of memory", MESSAGE_ERROR);
+        KON_SystemMsg("(KON_InitInputs) Out of memory", MESSAGE_ERROR, 0);
 
     Inputs->Joy1 = NULL;
     if (SDL_NumJoysticks())
@@ -135,7 +135,7 @@ InputDevice* KON_InitInputs(void){
 
 /* FIXME : Implement memoru cleanup */
 void KON_Exit(KONDevice* KDevice){
-    KON_SystemMsg("(KON_Exit) Exit non implemented !", MESSAGE_WARNING);
+    KON_SystemMsg("(KON_Exit) Exit non implemented !", MESSAGE_WARNING, 0);
 }
 
 KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){
@@ -145,7 +145,7 @@ KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle){
 
     /* SDL Init */
     if (SDL_Init(flags) != 0){
-        KON_SystemMsgExt("(KON_Init) SDL Initialisation failed\n - %s\n", SDL_GetError(), MESSAGE_ERROR);
+        KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
 
     if (flags & KON_INIT_VIDEO)

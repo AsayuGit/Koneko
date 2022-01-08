@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <Bool.h>
+#include <stdarg.h>
 
 static char* messageLeader[] = {
     "[Message]",
@@ -32,8 +33,11 @@ static char* messageLeader[] = {
     "[Debug]"
 };
 
-void KON_SystemMsgExt(const char* message, const char* extension, MessageGravity gravity) {
+void KON_SystemMsg(const char* message, MessageGravity gravity, unsigned int nbExt, ...) {
     bool exitAfferPrint = false;
+    char* extension;
+    unsigned int i;
+    va_list args;
 
     /* Decode the message gravity level */
     switch (gravity) {
@@ -47,7 +51,16 @@ void KON_SystemMsgExt(const char* message, const char* extension, MessageGravity
             break;
     }
 
-    printf("%s %s%s\n",  messageLeader[gravity], message, extension);
+    printf("%s %s",  messageLeader[gravity], message);
+
+    va_start(args, nbExt);
+    for (i = 0; i < nbExt; i++) {
+        extension = va_arg(args, char*);
+        printf(" %s", extension);
+    }
+    va_end(args);
+
+    printf("\n");
 
     if (exitAfferPrint)
         exit(-1);

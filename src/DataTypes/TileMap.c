@@ -104,7 +104,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     /* Init */
     MapFile = fopen(MapFilePath, "r");
     if (!MapFile){
-        KON_SystemMsgExt("(KON_LoadMap) Couldn't load map file: ", MapFilePath, MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_WARNING, 1, MapFilePath);
         goto Error;
     }
 

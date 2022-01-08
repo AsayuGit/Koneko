@@ -59,14 +59,14 @@ static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uin
     if (!FilePath)
         return NULL;
     if (!(loadingCPUSurface = SDL_LoadBMP(FilePath))) {
-        KON_SystemMsgExt("(KON_LoadRawCPUSurface) Couldn't load : ", FilePath, MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
         return NULL;
     }
 
     if (SURFACE_KEYED & flags)
         KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
 
-    KON_SystemMsgExt("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface : ", FilePath, MESSAGE_LOG);
+    KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface : ", MESSAGE_LOG, 1, FilePath);
 
     return loadingCPUSurface;
 }
@@ -86,7 +86,7 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
     Vector2i surfaceSize;
     
     if (!FilePath || !Device) {
-        KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
     if (!(loadedCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags)))
@@ -96,14 +96,14 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
         KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
 
     if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(Device->Renderer, loadedCPUSurface))) {
-        KON_SystemMsgExt("(KON_LoadRawSurface) Couldn't upload surface %s to GPU !", FilePath, MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadRawSurface) Couldn't upload surface to GPU : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
         return NULL;
     }
     SDL_FreeSurface(loadedCPUSurface);
 
 
     if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
-        KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_WARNING, 0);
         return NULL;
     }
     
@@ -119,18 +119,18 @@ KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t Col
     KON_Surface* loadedSurface;
 
     if (!FilePath || !Device) {
-        KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING);
+        KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
 
     if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE))) {
         loadedSurface = KON_LoadRawSurface(FilePath, Device, ColorKey, flags);
         KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedSurface);
-        KON_SystemMsgExt("(KON_LoadSurface) Loaded NEW GPU Surface : ", FilePath, MESSAGE_LOG);
+        KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, FilePath);
         return loadedSurface;
     }
 
-    KON_SystemMsgExt("(KON_LoadSurface) Referenced GPU Surface : ", FilePath, MESSAGE_LOG);
+    KON_SystemMsg("(KON_LoadSurface) Referenced GPU Surface : ", MESSAGE_LOG, 1, FilePath);
     return loadedSurface;
 }
 
