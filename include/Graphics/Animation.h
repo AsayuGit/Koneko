@@ -22,17 +22,12 @@
 #ifndef _ANIMATION_H
 #define _ANIMATION_H
 
-    #include "Types.h"
-
-    #ifdef _XBOX
-        #include <libxml/parser.h>
-    #else
-        #include <libxml2/libxml/parser.h>
-    #endif
+    #include "Rect.h"
+    #include "XML.h"
 
     typedef struct{
-        SDL_Rect SrcRect;       /* Character source rect */
-        SDL_Rect DstRect;       /* Character destination */
+        KON_Rect SrcRect;       /* Character source rect */
+        KON_Rect DstRect;       /* Character destination */
         int NbOfFrames;         /* Number of frames in an animation */
         int Framerate;          /* Number of milliseconds between two frames */
     } Animation;

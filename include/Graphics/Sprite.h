@@ -22,15 +22,17 @@
 #ifndef _SPRITE_H
 #define _SPRITE_H
 
-    #include "Types.h"
     #include "Animation.h"
     #include "Surface.h"
+    #include "Rect.h"
+    
+    #include "System.h"
 
     typedef struct {
         /* Texture */
-        SDL_Rect source;
-        SDL_Rect destination;
-        SDL_Rect boundingBox;
+        KON_Rect source;
+        KON_Rect destination;
+        KON_Rect boundingBox;
         uint32_t colorKey;
         KON_Surface* spriteTexture;
         bool flipX;                       /* Defines if the sprite should be drawned flipped */
@@ -45,9 +47,9 @@
         bool alimationLoop;
     } Sprite;
 
-    void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey, Uint8 textureFlags);
-    void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination);
-    void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey);
+    void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
+    void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination);
+    void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
     void KON_LoadSpriteFromXml(DisplayDevice* dDevice, Sprite* sprite, char* spriteXmlPath);
     void KON_FreeSprite(Sprite* sprite);
     void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool reset, bool loop);

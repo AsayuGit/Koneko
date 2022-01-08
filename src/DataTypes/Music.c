@@ -21,7 +21,10 @@
 
 #include "Music.h"
 #include "RessourceManager.h"
-#include "Types.h"
+#include "Log.h"
+#include "API.h"
+
+#include <stddef.h>
 
 #define KON_LoadRawMusic(FilePath) Mix_LoadMUS(FilePath)
 #define KON_LoadRawSoundEffect(FilePath) Mix_LoadWAV(FilePath)
@@ -39,7 +42,7 @@ KON_Music KON_LoadMusic(char* FilePath) {
         return loadingMusic;
 
     if (!(loadingMusic = Mix_LoadMUS(FilePath))) {
-        fprintf(stderr, "Can't load music %s\n", Mix_GetError());
+        KON_SystemMsgExt("(KON_LoadMusic) Can't load music file : ", FilePath, MESSAGE_ERROR);
         return NULL;
     }
 
@@ -58,7 +61,7 @@ KON_Sfx KON_LoadSoundEffect(char* FilePath) {
         return loadingSoundEffect;
 
     if (!(loadingSoundEffect = Mix_LoadWAV(FilePath))) {
-        fprintf(stderr, "Can't load sound effect %s\n", Mix_GetError());
+        KON_SystemMsgExt("(KON_LoadSoundEffect) Can't load sound effect file : ", FilePath, MESSAGE_ERROR);
         return NULL;
     }
 
@@ -79,4 +82,20 @@ void KON_FreeSoundEffect(KON_Sfx soundEffect) {
         return;
 
     KON_FreeRawSoundEffect(KON_FreeManagedRessourceByRef(soundEffect));
+}
+
+void KON_PlayMusic(KON_Music music, int loops) {
+    Mix_PlayMusic(music, loops);
+}
+
+void KON_PlaySoundEffect(KON_Sfx sfx) {
+
+}
+
+void KON_StopMusic() {
+    Mix_HaltMusic();
+}
+
+bool KON_IsMusicPlaying() {
+    return Mix_PlayingMusic();
 }

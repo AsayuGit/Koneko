@@ -22,7 +22,6 @@
 #ifndef _DISPLAYLIST_H
 #define _DISPLAYLIST_H
 
-    #include "Types.h"
     #include "LinkedList.h"
     #include "Sprite.h"
 

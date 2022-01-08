@@ -32,12 +32,12 @@ static const Sprite emptySprite;
     INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: SDL_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: SDL_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
+    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
+    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
     INPUT: uint32_t colorKey        : The colorKey the texture should use if keyed
     INPUT: uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not)
 */
-void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
     Vector2d spriteSize;
     
     if (!sprite)
@@ -64,10 +64,10 @@ void KON_LoadSprite(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SD
     INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: SDL_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: SDL_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
+    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
+    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
 */
-void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination) {
+void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination) {
     KON_LoadSprite(dDevice, sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
 }
 
@@ -76,10 +76,10 @@ void KON_LoadSpriteAlpha(DisplayDevice* dDevice, Sprite* sprite, char* spritePat
     INPUT: DisplayDevice* dDevice : Pointer to the engine's display device
     INPUT: Sprite*                : Pointer to the newly created sprite
     INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: SDL_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: SDL_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
+    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
+    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
 */
-void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, SDL_Rect* source, SDL_Rect* destination, Uint32 colorKey) {
+void KON_LoadSpriteKeyed(DisplayDevice* dDevice, Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
     KON_LoadSprite(dDevice, sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
 }
 

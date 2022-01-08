@@ -35,7 +35,7 @@ void KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer){
 
 void KON_DrawTile(DisplayDevice* DDevice, MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y){
     /* Declaration */
-    SDL_Rect SrcTile, DstTile;
+    KON_Rect SrcTile, DstTile;
     unsigned int tileSize;
 
     tileSize = map->TileSize;
@@ -69,11 +69,11 @@ void KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer){
     }
 }
 
-Uint32 getpixel(SDL_Surface *surface, int x, int y)
+uint32_t getpixel(SDL_Surface *surface, int x, int y)
 {
     /* Declaration */
     int bpp;
-    Uint8 *p;
+    uint8_t *p;
     
     /* Init */
     if (!surface){
@@ -85,7 +85,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
     }
 
     bpp = surface->format->BytesPerPixel;
-    p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp; /* Here p is the address to the pixel we want to retrieve */
+    p = (uint8_t *)surface->pixels + y * surface->pitch + x * bpp; /* Here p is the address to the pixel we want to retrieve */
 
     /*printf("%x %d %d %d %d\n", surface->pixels, y, surface->pitch, x, bpp);*/
 
@@ -98,7 +98,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
 
     case 2:
         /*printf("DEBUG 2)\n");*/
-        return *(Uint16 *)p;
+        return *(uint8_t *)p;
         break;
 
     case 3:
@@ -112,7 +112,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
     case 4:
         /*printf("DEBUG 4)\n");*/
         /*printf("Nyan 0x%.6x\n", *(Uint32*)p);*/
-        return *((Uint32*)p);
+        return *((uint32_t*)p);
         break;
 
     default:
@@ -122,75 +122,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
     return 0;
 }
 
-SDL_Surface* CreateEmptySurface(Uint32 flags, int Width, int Height){
-    #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        return SDL_CreateRGBSurface(flags, Width, Height, 32, 0x00000000, 0x00000000, 0x00000000, 0x000000FF);
-    #else
-        return SDL_CreateRGBSurface(flags, Width, Height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    #endif
-}
-
-#ifdef _SDL
-void FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag){
-    SDL_Rect LocalSrcRect;
-    SDL_Rect LocalDstRect;
-    
-    /* Changing */
-    SDL_Rect Src;
-    SDL_Rect Dst;
-
-    if (flipFlag){
-        if (SrcRect == NULL){
-            LocalSrcRect.x = LocalSrcRect.y = 0;
-            LocalSrcRect.h = SourceSurface->h;
-            LocalSrcRect.w = SourceSurface->w;
-        }else{
-            LocalSrcRect = *SrcRect;
-        }
-        if (DstRect == NULL){
-            LocalDstRect.x = LocalDstRect.y = 0;
-            LocalDstRect.h = ScreenTarget->h;
-            LocalDstRect.w = ScreenTarget->w;
-        }else{
-            LocalDstRect = *DstRect;
-        }
-
-        Src.x = LocalSrcRect.x;
-        Src.y = LocalSrcRect.y;
-        Src.h = LocalSrcRect.h;
-        Src.w = 1;
-
-        Dst.x = LocalDstRect.x + LocalDstRect.w;
-        Dst.y = LocalDstRect.y;
-        Dst.h = LocalDstRect.h;
-        Dst.w = 1;
-
-
-        for (; Src.x < LocalSrcRect.x + LocalSrcRect.w; Src.x++){
-            SDL_BlitSurface(SourceSurface, &Src, ScreenTarget, &Dst);
-            if (Dst.x > LocalDstRect.x){
-                Dst.x--;
-            }else{
-                break;
-            }
-        }
-    }else{
-        if (SrcRect){
-            LocalSrcRect = *SrcRect;
-        } else {
-            LocalSrcRect = KON_InitRect(0, 0, SourceSurface->w, SourceSurface->h);
-        }
-        if (DstRect){
-            LocalDstRect = *DstRect;
-        } else {
-            LocalDstRect = KON_InitRect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
-        }
-        SDL_BlitSurface(SourceSurface, &LocalSrcRect, ScreenTarget, &LocalDstRect);
-    }
-}
-#endif
-
-bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect){
+bool RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect){
     if (!SrcRect || !DstRect)
         return false;
     if ((SrcRect->x + SrcRect->w) < DstRect->x)
@@ -204,25 +136,10 @@ bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect){
     return true;
 }
 
-bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
-    SDL_Rect BaseRect;
+bool RectOnScreen(DisplayDevice* DDevice, const KON_Rect* Rect){
+    KON_Rect BaseRect;
     BaseRect = KON_InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
     return RectOnRect(Rect, &BaseRect);
-}
-
-/* FIXME: Should't law levels draws be in system ? */
-void DrawFrame(DisplayDevice* DDevice){
-    #ifdef _SDL
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[0], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[1], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[2], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[3], 0x000000);
-    #else
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
-    #endif
 }
 
 void CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y){
@@ -230,7 +147,7 @@ void CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y){
     DDevice->Camera.y = Y - (DDevice->InternalResolution.y / 2);
 }
 
-void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
+void BoundCameraToRegion(DisplayDevice* DDevice, KON_Rect Region){
     if (DDevice->Camera.x + DDevice->InternalResolution.x > Region.x + Region.w){
         DDevice->Camera.x = Region.x + Region.w - DDevice->InternalResolution.x;
     }

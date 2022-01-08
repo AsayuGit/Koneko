@@ -22,6 +22,8 @@
 #ifndef _MUSIC_H
 #define _MUSIC_H
 
+    #include <Bool.h>
+
     typedef void* KON_Music;
     typedef void* KON_Sfx;
 
@@ -50,5 +52,28 @@
         INPUT   : KON_Sfx soundEffect : The sound effect to free.
     */
     void KON_FreeSoundEffect(KON_Sfx soundEffect);
+
+    /*
+        SUMMARY : Play the music file passed in parameters
+        INPUT   : KON_Music music : The music file to play
+    */
+    void KON_PlayMusic(KON_Music music, int loops);
+
+    /*
+        SUMMARY : Plays the sound effect file passed in parameters
+        INPUT   : KON_Sfx sfx : The sound effect to play
+    */
+    void KON_PlaySoundEffect(KON_Sfx sfx);
+
+
+    /*
+        SUMMARY : Stop the currently playing music file if any
+    */
+    void KON_StopMusic();
+
+    /*
+        SUMMARY :
+    */
+    bool KON_IsMusicPlaying();
 
 #endif

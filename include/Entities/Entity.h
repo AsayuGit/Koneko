@@ -22,7 +22,6 @@
 #ifndef _ENTITY_H
 #define _ENTITY_H
 
-    #include "Types.h"
     #include "Sprite.h"
     #include "Animation.h"
     typedef struct EntityInstance EntityInstance;
@@ -91,7 +90,7 @@
     void            KON_DrawEntity(DisplayDevice* DDevice, EntityInstance* entity);
     void            KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop);
     void            KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, EntityInstance* entity);
-    void            KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect);
+    void            KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect);
     EntityInstance* KON_SpawnEntity(KONDevice* KDevice, SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
     void            KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
     

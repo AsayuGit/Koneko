@@ -22,7 +22,7 @@
 #ifndef _XML_H
 #define _XML_H
 
-    #include "Types.h"
+    #include "Rect.h"
 
     #ifdef _XBOX
         #include <libxml/parser.h>
@@ -31,6 +31,6 @@
     #endif
 
     xmlDoc* KON_LoadXml(char* filePath);
-    void    KON_LoadRectFromXmlNode(xmlNode* node, SDL_Rect* rect);
+    void    KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect);
 
 #endif

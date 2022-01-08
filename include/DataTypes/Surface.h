@@ -22,7 +22,10 @@
 #ifndef _SURFACE_H
 #define _SURFACE_H
 
-    #include "Types.h"
+
+    #include "Rect.h"
+    #include "System.h"
+    #include "API.h"
 
     enum {
         SURFACE_OPAQUE = 0,
@@ -39,8 +42,8 @@
 
     typedef struct KON_Surface KON_Surface;
 
-    KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
-    SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags);
+    KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags);
+    SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags);
     void         KON_FreeSurface(KON_Surface* surface);
 
     KON_Surface* KON_CpuToGpuSurface(DisplayDevice* dDevice, SDL_Surface* cpuSurface);
@@ -57,9 +60,9 @@
     #define      KON_DrawScaledSurface(dDevice, surface, dest) KON_DrawScaledSurfaceEx(dDevice, surface, dest, DRAW_DEFAULT)
     #define      KON_DrawSurface(dDevice, surface, pos) KON_DrawSurfaceEx(dDevice, surface, pos, DRAW_DEFAULT)
 
-    void         KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, SDL_Rect* dest, DrawFlags flags);
-    void         KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, Vector2d* pos, DrawFlags flags);
-    void         KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* dest, DrawFlags flags);
+    void         KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags);
+    void         KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
+    void         KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
     void         KON_DrawSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
 

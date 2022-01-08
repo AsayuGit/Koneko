@@ -22,7 +22,6 @@
 #ifndef _SCENE_H
 #define _SCENE_H
 
-    #include "Types.h"
     #include "LinkedList.h"
     #include "Map.h"
     typedef struct SceneHandle SceneHandle;

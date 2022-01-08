@@ -26,14 +26,12 @@
 
     void            KON_DrawBitMap(DisplayDevice* DDevice, MapLayer* Layer);
     void            KON_DrawTileMap(DisplayDevice* DDevice, MapLayer* Layer);
-    Uint32          getpixel(SDL_Surface *surface, int x, int y);
-    SDL_Surface*    CreateEmptySurface(Uint32 flags, int Width, int Height);
-    void            FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag);
-    bool            RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
-    bool            RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
-    void            DrawFrame(DisplayDevice* DDevice);
+    uint32_t        getpixel(SDL_Surface *surface, int x, int y);
+    void            FlipBlitSurface(SDL_Surface* SourceSurface, const KON_Rect* SrcRect, SDL_Surface* ScreenTarget, const KON_Rect* DstRect, bool flipFlag);
+    bool            RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect);
+    bool            RectOnScreen(DisplayDevice* DDevice, const KON_Rect* Rect);
     void            CenterCameraOnCoordinates(DisplayDevice* DDevice, double X, double Y);
-    void            BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
+    void            BoundCameraToRegion(DisplayDevice* DDevice, KON_Rect Region);
     unsigned int    KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y);
     unsigned int    KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y);
     bool            KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile);

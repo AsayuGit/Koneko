@@ -22,9 +22,9 @@
 #ifndef _MAP_H
 #define _MAP_H
 
-    #include "Types.h"
     #include "LinkedList.h"
     #include "Surface.h"
+    #include "Rect.h"
 
     enum {
         KON_LAYER_BITMAP = 1,
@@ -46,7 +46,7 @@
         unsigned int layerType;
         void* layerData;
         Vector2d pos;
-        SDL_Rect boundingBox;
+        KON_Rect boundingBox;
         bool shown;
     } MapLayer;
 

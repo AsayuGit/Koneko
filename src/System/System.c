@@ -45,8 +45,8 @@ void KON_UpdateRenderRect(DisplayDevice* DDevice){
     DDevice->RenderRect.w = DDevice->InternalResolution.x * DDevice->IRScalar;
     DDevice->RenderRect.h = DDevice->InternalResolution.y * DDevice->IRScalar;
 
-    DDevice->RenderRect.x = (DDevice->ScreenResolution.x - DDevice->RenderRect.w) >> 1;
-    DDevice->RenderRect.y = (DDevice->ScreenResolution.y - DDevice->RenderRect.h) >> 1;
+    DDevice->RenderRect.x = (int)(DDevice->ScreenResolution.x - DDevice->RenderRect.w) >> 1;
+    DDevice->RenderRect.y = (int)(DDevice->ScreenResolution.y - DDevice->RenderRect.h) >> 1;
 
     DDevice->OffScreenRender = false;
 
@@ -166,6 +166,13 @@ int KON_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
 #else
     return SDL_SetRenderTarget(DDevice->Renderer, surface);
 #endif
+}
+
+static void DrawFrame(DisplayDevice* DDevice){
+    SDL_RenderFillRect(DDevice->Renderer, (SDL_Rect*)&DDevice->Frame[0]);
+    SDL_RenderFillRect(DDevice->Renderer, (SDL_Rect*)&DDevice->Frame[1]);
+    SDL_RenderFillRect(DDevice->Renderer, (SDL_Rect*)&DDevice->Frame[2]);
+    SDL_RenderFillRect(DDevice->Renderer, (SDL_Rect*)&DDevice->Frame[3]);
 }
 
 void KON_FinishFrame(DisplayDevice* DDevice){

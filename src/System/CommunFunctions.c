@@ -28,7 +28,7 @@
 
 int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */
-    SDL_Rect DstLetter, SrcLetter;
+    KON_Rect DstLetter, SrcLetter;
 
     /* Init */
     if (!DDevice){ /* DDevice check */
@@ -69,7 +69,7 @@ Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
 
 /* Could use the same engine as dialogue for bonds checking */
 /* Or a letter by letter mode */
-Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const SDL_Rect* Bounds){
+Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds){
     /* Declaration */
     unsigned int CharID, sizeTmp, DimX, textColor = 0;
     size_t BufferLen = 0;
@@ -152,8 +152,8 @@ char* astrcpy(char** dst, char* src){
     return *dst;
 }
 
-SDL_Rect RectToVieport(const SDL_Rect* InputRect, const SDL_Rect* ViewPort, const Vector2i* Position){
-    SDL_Rect Return;
+KON_Rect RectToVieport(const KON_Rect* InputRect, const KON_Rect* ViewPort, const Vector2i* Position){
+    KON_Rect Return;
 
     Return.x = InputRect->x + Position->x - ViewPort->x;
     Return.y = InputRect->y + Position->y - ViewPort->y;
@@ -171,7 +171,7 @@ Vector2i KON_Vector2dTo2i(Vector2d* vect){
     return KON_InitVector2i(vect->x, vect->y);
 }
 
-unsigned char KON_BoundVect2iToRect(Vector2i* vect, SDL_Rect* rect){
+unsigned char KON_BoundVect2iToRect(Vector2i* vect, KON_Rect* rect){
     unsigned char result;
     Vector2d vect2d = KON_Vector2iTo2d(vect);
 
@@ -181,7 +181,7 @@ unsigned char KON_BoundVect2iToRect(Vector2i* vect, SDL_Rect* rect){
     return result;
 }
 
-unsigned char KON_BoundVect2dToRect(Vector2d* vect, SDL_Rect* rect){
+unsigned char KON_BoundVect2dToRect(Vector2d* vect, KON_Rect* rect){
     unsigned char result = 0;
 
     if (vect->x > rect->x + rect->w){
@@ -211,68 +211,11 @@ void KON_SetPositive(void* valuePointer, size_t dataSize) {
     *((Uint64*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
 }
 
-SDL_Rect KON_GetRectVectAddition(SDL_Rect rect, Vector2d vect) {
+KON_Rect KON_GetRectVectAddition(KON_Rect rect, Vector2d vect) {
     rect.x += vect.x;
     rect.y += vect.y;
     
     return rect;
-}
-
-double KON_GetVectNorm(Vector2d vect) {
-    return sqrt(vect.x * vect.x + vect.y * vect.y);
-}
-
-double KON_GetVectCrossProduct(Vector2d vect1, Vector2d vect2) {
-    return (vect1.x * vect2.y) - (vect1.y * vect2.x);
-}
-
-Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar) {
-    vect.x *= scalar;
-    vect.y *= scalar;
-
-    return vect;
-}
-
-Vector2d KON_GetVectScalarDivision(Vector2d vect, double scalar) {
-    vect.x /= scalar;
-    vect.y /= scalar;
-
-    return vect;
-}
-
-Vector2d KON_GetVectAddition(Vector2d vect1, Vector2d vect2){
-    vect1.x += vect2.x;
-    vect1.y += vect2.y;
-
-    return vect1;
-}
-
-Vector2d KON_GetVectScalarAddition(Vector2d vect, double scalar){
-    vect.x += scalar;
-    vect.y += scalar;
-
-    return vect;
-}
-
-Vector2d KON_GetVectScalarSubstraction(Vector2d vect, double scalar){
-    vect.x -= scalar;
-    vect.y -= scalar;
-
-    return vect;
-}
-
-Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2){
-    vect1.x -= vect2.x;
-    vect1.y -= vect2.y;
-
-    return vect1;
-}
-
-Vector2d KON_GetVectProduct(Vector2d vect1, Vector2d vect2) {
-    vect1.x *= vect2.x;
-    vect1.y *= vect2.y;
-
-    return vect1;
 }
 
 
@@ -305,7 +248,7 @@ bool KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2St
     return false;
 }
 
-bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
+bool KON_GetLineRectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
     if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
         return true;
     } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
@@ -316,10 +259,6 @@ bool KON_GetLineRectIntersect(SDL_Rect rect, Vector2d segStart, Vector2d segEnd,
         return true;
     }
     return false;
-}
-
-void KON_PrintRect(SDL_Rect Rect) {
-    printf("{%d, %d, %d, %d}\n", Rect.x, Rect.y, Rect.w, Rect.h);
 }
 
 /*

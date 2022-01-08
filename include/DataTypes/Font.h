@@ -22,12 +22,12 @@
 #ifndef _FONT_H
 #define _FONT_H
 
-    #include "Types.h"
+    #include "Rect.h"
     #include "Surface.h"
 
     typedef struct{
         KON_Surface* FontSurface;
-        SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
+        KON_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 
     /*

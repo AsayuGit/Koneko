@@ -102,7 +102,7 @@ void KON_ProcessEntityCollisionsCalls(KONDevice* KDevice, SceneHandle* scene, En
     }
 }
 
-void KON_BoundEntityInstanceToRect(EntityInstance* entity, SDL_Rect* rect){
+void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     unsigned char result;
     Vector2d vect = KON_GetVectAddition(entity->pos, entity->mov);
 

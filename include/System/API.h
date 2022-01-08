@@ -19,23 +19,29 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "XML.h"
+#ifndef _API_H
+#define _API_H
 
-xmlDoc* KON_LoadXml(char* filePath){
-    xmlKeepBlanksDefault(0); /* Ignore white space */
-
-    #ifdef _XBOX
-        return xmlParseFile(filePath); /* Load File into memory */
+    #if defined(_XBOX)
+        #define SDLMAIN <SDL.h>
+        /*#define SDLIMAGE <SDL2/SDL_image.h>*/
+        #define SDLMIXER <SDL_mixer.h>
     #else
-        return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+        #define SDLMAIN <SDL2/SDL.h>
+        #define SDLIMAGE <SDL2/SDL_image.h>
+        #define SDLMIXER <SDL2/SDL_mixer.h>
     #endif
-}
 
-void KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect) {
-    *rect = KON_InitRect(
-        atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
-    );
-}
+    #include SDLMAIN
+    /*#include SDLIMAGE*/
+    #include SDLMIXER
+
+    #if defined(_XBOX)
+        #define PADKEY jbutton.button
+        #define PAD_KEYDOWN SDL_JOYBUTTONDOWN
+    #else
+        #define PADKEY key.keysym.scancode
+        #define PAD_KEYDOWN SDL_KEYDOWN
+    #endif
+
+#endif

@@ -22,8 +22,9 @@
 #ifndef _COLLISIONS_H
 #define _COLLISIONS_H
 
-    #include "Types.h"
+    #include "Bool.h"
     #include "LinkedList.h"
+    #include "Vector.h"
 
     /*
         struct Collision : Contains all properties regarding an entity's collision

@@ -19,23 +19,26 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "XML.h"
+#ifndef _RECT_H
+#define _RECT_H
 
-xmlDoc* KON_LoadXml(char* filePath){
-    xmlKeepBlanksDefault(0); /* Ignore white space */
+    #include "Vector.h"
+    #include "Bool.h"
 
-    #ifdef _XBOX
-        return xmlParseFile(filePath); /* Load File into memory */
-    #else
-        return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
-    #endif
-}
+    #include <stddef.h>
 
-void KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect) {
-    *rect = KON_InitRect(
-        atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
-    );
-}
+    typedef struct {
+        int x;
+        int y;
+        int w;
+        int h;
+    } KON_Rect;
+
+    KON_Rect KON_InitRect(int x, int y, int w, int h);
+    KON_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh);
+    KON_Rect KON_RectPlusVector2i(KON_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
+    KON_Rect KON_RectMinusVector2i(KON_Rect* Rect, Vector2i* Vect);
+    bool     KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect);
+    void     KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
+
+#endif

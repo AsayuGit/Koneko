@@ -23,7 +23,11 @@
 #define _SYSTEM_H
 
     #include "Log.h"
-    #include "Types.h"
+    
+    #include "API.h" /* FIXME: Temporary */
+    #include "Rect.h"
+
+    #include <Bool.h>
 
     enum {
         KON_INIT_AUDIO = SDL_INIT_AUDIO,
@@ -32,6 +36,48 @@
 
         KON_INIT_EVERYTHING = 0x70u
     };
+
+     typedef struct{
+        SDL_Window *Screen;
+        #ifdef _SDL
+            SDL_Surface* Renderer;
+        #else
+            SDL_Renderer *Renderer;
+        #endif
+
+        KON_Rect Frame[4];              /* Screen Border Frame */
+
+        KON_Rect RenderRect;            /* Where the game is drawn on screen */
+        Vector2i InternalResolution;    /* Internal render resolution of the game */
+        Vector2i ScreenResolution;      /* The external resolution of the game */
+        double IRScalar;                /* The scaling nessary match the external resolution */
+        bool integerScalling;           /* If set to true then the output will be pixel perfect (provided the winow is big enough) */
+        Vector2d Camera;                /* The coordinates of the in game camera */
+
+        bool OffScreenRender;
+
+        /* Timing control */
+        Uint32 lastFrame;
+        Uint32 frametime;
+    } DisplayDevice;
+
+    typedef struct{
+        /* Events */
+        SDL_Event event;
+        bool EventEnabled;
+
+        /* Key Presses */
+        const Uint8* KeyStates; /* Pointer to the keypresses */
+        
+        /* Joystick */
+        SDL_Joystick* Joy1; /* Pointers to the Joypad */
+        bool JoyEnabled;
+    } InputDevice;
+
+    typedef struct {
+        DisplayDevice* DDevice;
+        InputDevice* IDevice;
+    } KONDevice;
 
     void       KON_Exit(KONDevice* KDevice);
     KONDevice* KON_Init(Uint32 flags, int resX, int resY, char* GameTitle);

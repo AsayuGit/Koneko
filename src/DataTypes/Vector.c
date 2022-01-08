@@ -19,29 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Types.h"
-
-SDL_Rect KON_InitRect(int x, int y, int w, int h){
-    SDL_Rect rect;
-    
-    rect.x = x;
-    rect.y = y;
-    rect.w = w;
-    rect.h = h;
-
-    return rect;
-}
-
-SDL_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh) {
-    SDL_Rect rect;
-
-    rect.x = xy->x;
-    rect.y = xy->y;
-    rect.w = wh->x;
-    rect.h = wh->y;
-
-    return rect;
-}
+#include "Vector.h"
 
 Vector2d KON_InitVector2d(double x, double y){
     Vector2d vector;
@@ -61,24 +39,51 @@ Vector2i KON_InitVector2i(int x, int y){
     return vector;
 }
 
-SDL_Rect KON_RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect){
-    SDL_Rect Result;
+Vector2d KON_GetVectScalarProduct(Vector2d vect, double scalar) {
+    vect.x *= scalar;
+    vect.y *= scalar;
 
-    Result.x = Rect->x + Vect->x;
-    Result.y = Rect->y + Vect->y;
-    Result.w = Rect->w;
-    Result.h = Rect->h;
-
-    return Result;
+    return vect;
 }
 
-SDL_Rect KON_RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
-    SDL_Rect Result;
+Vector2d KON_GetVectScalarDivision(Vector2d vect, double scalar) {
+    vect.x /= scalar;
+    vect.y /= scalar;
 
-    Result.x = Rect->x - Vect->x;
-    Result.y = Rect->y - Vect->y;
-    Result.w = Rect->w;
-    Result.h = Rect->h;
+    return vect;
+}
 
-    return Result;
+Vector2d KON_GetVectAddition(Vector2d vect1, Vector2d vect2){
+    vect1.x += vect2.x;
+    vect1.y += vect2.y;
+
+    return vect1;
+}
+
+Vector2d KON_GetVectScalarAddition(Vector2d vect, double scalar){
+    vect.x += scalar;
+    vect.y += scalar;
+
+    return vect;
+}
+
+Vector2d KON_GetVectScalarSubstraction(Vector2d vect, double scalar){
+    vect.x -= scalar;
+    vect.y -= scalar;
+
+    return vect;
+}
+
+Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2){
+    vect1.x -= vect2.x;
+    vect1.y -= vect2.y;
+
+    return vect1;
+}
+
+Vector2d KON_GetVectProduct(Vector2d vect1, Vector2d vect2) {
+    vect1.x *= vect2.x;
+    vect1.y *= vect2.y;
+
+    return vect1;
 }

@@ -89,7 +89,7 @@ void KON_AppendNewCollisionEvent(LinkedList** list, EntityInstance **colidingEnt
     KON_AppendToLinkedList(list, &newCollisonEvent, sizeof(CollisionEvent));
 }
 
-Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBPos, SDL_Rect collisionResult) {
+Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBPos, KON_Rect collisionResult) {
     /* FIXME: Kind of a hack, good enough for testing */
     if (entityAPos.x < entityBPos.x) {
         if (entityAPos.y < entityBPos.y) {
@@ -116,10 +116,10 @@ Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBP
     INPUT : SceneHanle* scene  : Pointer to the current scene
 */
 void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
-    SDL_Rect collisionResult;
+    KON_Rect collisionResult;
     EntityInstance *entityA, *entityB;
     LinkedList* nodePointer, *nodePointerB, *nextEntity;
-    SDL_Rect entityABoundingBox, entityBBoundingBox;
+    KON_Rect entityABoundingBox, entityBBoundingBox;
 
     nodePointer = scene->entityInstanceList;
     while (nodePointer){
@@ -134,7 +134,7 @@ void KON_EntityEntityCollisionCheck(KONDevice* KDevice, SceneHandle* scene) {
                 /* Collision test */
                 entityABoundingBox = KON_GetRectVectAddition(entityA->entitySprite.boundingBox, entityA->mov);
                 entityBBoundingBox = KON_GetRectVectAddition(entityB->entitySprite.boundingBox, entityB->mov);
-                if (SDL_IntersectRect(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
                     
                     if (entityA->properties.isSolid) {
                         /* Prevent entity A from going into entity B */

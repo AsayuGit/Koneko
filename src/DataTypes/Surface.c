@@ -23,7 +23,6 @@
 #include "RessourceManager.h"
 #include <linux/limits.h>
 #include "Log.h"
-#include "System.h"
 
 #include "Graphics.h" /* RectOnScreen() */
 #include "CommunFunctions.h"
@@ -116,7 +115,7 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, DisplayDevice* Device, ui
     return loadedSurface;
 }
 
-KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
+KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags) {
     KON_Surface* loadedSurface;
 
     if (!FilePath || !Device) {
@@ -136,7 +135,7 @@ KON_Surface* KON_LoadSurface(char* FilePath, DisplayDevice* Device, Uint32 Color
 }
 
 /* Unmanaged */
-SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, Uint32 ColorKey, Uint8 flags) {
+SDL_Surface* KON_LoadCpuSurface(char* FilePath, DisplayDevice* Device, uint32_t ColorKey, uint8_t flags) {
     if (!FilePath || !Device)
         return NULL;
 
@@ -165,17 +164,17 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
 }
 
 /* API level draw */
-static int KON_DrawEx(DisplayDevice* dDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, uint8_t flags) {
+static int KON_DrawEx(DisplayDevice* dDevice, SDL_Texture* texture, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
 
     /* Flags decoding */
 
-    return SDL_RenderCopyEx(dDevice->Renderer, texture, srcrect, dstrect, 0, 0, flags);
+    return SDL_RenderCopyEx(dDevice->Renderer, texture, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
 }
 
 #define KON_Draw(dDevice, texture, srcrect, dstrect) KON_DrawEx(dDevice, texture, srcrect, dstrect, DRAW_DEFAULT)
 
-void KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, SDL_Rect* dest, DrawFlags flags) {
-    SDL_Rect ScaledDstRect;
+void KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
+    KON_Rect ScaledDstRect;
 
     ScaledDstRect = KON_InitRect(0, 0, dDevice->InternalResolution.x, dDevice->InternalResolution.y);
     if (!surface || !RectOnScreen(dDevice, dest))
@@ -195,18 +194,18 @@ void KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, S
     KON_DrawEx(dDevice, surface->surface, rect, &ScaledDstRect, flags);
 }
 
-void KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* rect, Vector2d* pos, DrawFlags flags) {
-    SDL_Rect dest = KON_CatVectToRect(pos, &surface->size);
+void KON_DrawSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
+    KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
 
     KON_DrawScaledSurfaceRectEx(dDevice, surface, rect, &dest, flags);
 }
 
-void KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, SDL_Rect* dest, DrawFlags flags) {
+void KON_DrawScaledSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, KON_Rect* dest, DrawFlags flags) {
     KON_DrawScaledSurfaceRectEx(dDevice, surface, NULL, dest, flags);
 }
 
 void KON_DrawSurfaceEx(DisplayDevice* dDevice, KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
-    SDL_Rect dest = KON_CatVectToRect(pos, &surface->size);
+    KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
 
     KON_DrawScaledSurfaceRectEx(dDevice, surface, NULL, &dest, flags);
 }
