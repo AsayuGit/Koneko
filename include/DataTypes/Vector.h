@@ -22,7 +22,7 @@
 #ifndef _VECTOR_H
 #define _VECTOR_H
 
-    #include "math.h"
+    #include "Bool.h"
 
     typedef struct{
         int x;
@@ -58,5 +58,14 @@
     Vector2d  KON_GetVectScalarSubstraction(Vector2d vect, double scalar);
     Vector2d  KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2);
     Vector2d  KON_GetVectProduct(Vector2d vect1, Vector2d vect2);
+
+
+    #define   KON_VectToVect(dest, src) { \
+        dest.x = src.x;                   \
+        dest.y = src.y;                   \
+    }                                     \
+
+    bool      KON_GetVectIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection);
+    Direction KON_GetDirectionFromVector(Vector2d vect);
 
 #endif

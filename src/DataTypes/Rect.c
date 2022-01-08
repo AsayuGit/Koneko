@@ -46,30 +46,42 @@ KON_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh) {
     return rect;
 }
 
-KON_Rect KON_RectPlusVector2i(KON_Rect* Rect, Vector2i* Vect){
-    KON_Rect Result;
+#define KON_RectPlusVect(rect, vect, result) { \
+    result.x = rect->x + vect->x;              \
+    result.y = rect->y + vect->y;              \
+    result.w = rect->w;                        \
+    result.h = rect->h;                        \
+}                                              \
 
-    Result.x = Rect->x + Vect->x;
-    Result.y = Rect->y + Vect->y;
-    Result.w = Rect->w;
-    Result.h = Rect->h;
+KON_Rect KON_RectPlusVect2i(KON_Rect* rect, Vector2i* vect) {
+    KON_Rect result;
 
-    return Result;
+    KON_RectPlusVect(rect, vect, result);
+    return result;
 }
 
-KON_Rect KON_RectMinusVector2i(KON_Rect* Rect, Vector2i* Vect){
-    KON_Rect Result;
+KON_Rect KON_RectPlusVect2d(KON_Rect* rect, Vector2d* vect) {
+    KON_Rect result;
 
-    Result.x = Rect->x - Vect->x;
-    Result.y = Rect->y - Vect->y;
-    Result.w = Rect->w;
-    Result.h = Rect->h;
-
-    return Result;
+    KON_RectPlusVect(rect, vect, result);
+    return result;
 }
 
 bool KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect) {
     return SDL_IntersectRect((SDL_Rect*)rectA, (SDL_Rect*)rectB, (SDL_Rect*)resultRect);
+}
+
+bool KON_GetRectVectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
+    if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
+        return true;
+    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
+        return true;
+    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y), intersection)){ /* Up */
+        return true;
+    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y + rect.h), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Down */
+        return true;
+    }
+    return false;
 }
 
 void KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen) {

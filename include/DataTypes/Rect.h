@@ -36,9 +36,13 @@
 
     KON_Rect KON_InitRect(int x, int y, int w, int h);
     KON_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh);
-    KON_Rect KON_RectPlusVector2i(KON_Rect* Rect, Vector2i* Vect); /* FIXME: present in CommunFunctions (Vector2d) */
-    KON_Rect KON_RectMinusVector2i(KON_Rect* Rect, Vector2i* Vect);
+
+    KON_Rect KON_RectPlusVect2i(KON_Rect* rect, Vector2i* vect);
+    KON_Rect KON_RectPlusVect2d(KON_Rect* rect, Vector2d* vect);
+
     bool     KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect);
+    bool     KON_GetRectVectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection);
+
     void     KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
 
 #endif

@@ -132,16 +132,6 @@ Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCh
     return Dimensions;
 }
 
-int map(int DstA, int DstB, int SrcA, int SrcB, int Value){
-    int mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA);
-    return (mappedValue < DstB) ? mappedValue : DstB;
-}
-
-double dmap(double DstA, double DstB, double SrcA, double SrcB, double Value){
-    double mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA);
-    return (mappedValue < DstB) ? mappedValue : DstB;
-}
-
 char* astrcpy(char** dst, char* src){
     size_t length;
 
@@ -209,77 +199,4 @@ void KON_SetNegative(void* valuePointer, size_t dataSize) {
 
 void KON_SetPositive(void* valuePointer, size_t dataSize) {
     *((Uint64*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
-}
-
-KON_Rect KON_GetRectVectAddition(KON_Rect rect, Vector2d vect) {
-    rect.x += vect.x;
-    rect.y += vect.y;
-    
-    return rect;
-}
-
-
-bool KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection){
-    Vector2d seg1Vect, seg2Vect, segStartDiff;
-    double segVectCrossProduct, seg1IntersectPoint, seg2IntersectPoint;
-
-    /* We compute the two segments's vectors */
-    seg1Vect = KON_GetVectSubstraction(seg1End, seg1Start);
-    seg2Vect = KON_GetVectSubstraction(seg2End, seg2Start);
-
-    /* Then we compute the diff between the two vector's starting position */
-    segStartDiff = KON_GetVectSubstraction(seg2Start, seg1Start);
-    /* Followed by the cross product of the two */
-    segVectCrossProduct = KON_GetVectCrossProduct(seg1Vect, seg2Vect);
-
-    /* t = ( q - p ) × s / ( r × s ) */
-    seg1IntersectPoint = KON_GetVectCrossProduct(segStartDiff, seg2Vect) / segVectCrossProduct;
-    /* u = ( q - p ) × r / ( r × s ) */
-    seg2IntersectPoint = KON_GetVectCrossProduct(segStartDiff, seg1Vect) / segVectCrossProduct;
-
-    if ((seg1IntersectPoint >= 0 && seg1IntersectPoint <= 1) && (seg2IntersectPoint >= 0 && seg2IntersectPoint <= 1)){
-        /* Segment intersection */
-        if (intersection){
-            /* p + t  r = q + u  s */
-            *intersection = KON_GetVectAddition(KON_GetVectScalarProduct(seg1Vect, seg1IntersectPoint), seg1Start);
-        }
-        return true;
-    }
-    return false;
-}
-
-bool KON_GetLineRectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
-    if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
-        return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
-        return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y), intersection)){ /* Up */
-        return true;
-    } else if (KON_GetLinesIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y + rect.h), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Down */
-        return true;
-    }
-    return false;
-}
-
-/*
-    KON_GetDirectionFromVector() : Returns the direction corresponding to the vector's direction
-    INPUT: Vector2d vect : Vector from which we want to know the direction
-    OUTPUT: Direction :  : The direction corresponding to the vector vect
-*/
-Direction KON_GetDirectionFromVector(Vector2d vect) {
-    const double piStep = M_PI / 8.0;
-    double vectAngle;
-    unsigned int i;
-    
-    vectAngle = atan2(vect.y, vect.x);
-    if (vectAngle < 0)
-        vectAngle += 2 * M_PI;
-
-    for (i = 1; i < 16; i += 2) {
-        if (vectAngle < piStep * i) {
-            return (i - 1) / 2;
-        }
-    }
-
-    return 0;
 }

@@ -32,8 +32,12 @@
     int      gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
     Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
     Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
-    int      map(int SrcA, int SrcB, int DstA, int DstB, int Value);
-    double   dmap(double DstA, double DstB, double SrcA, double SrcB, double Value);
+
+    #define map(DstA, DstB, SrcA, SrcB, Value) {                                   \
+        int mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA); \
+        return (mappedValue < DstB) ? mappedValue : DstB;                          \
+    }                                                                              \
+
     /* Copy a source string to a newly allocated destination */
     char*    astrcpy(char** dst, char* src);
     KON_Rect RectToVieport(const KON_Rect* InputRect, const KON_Rect* ViewPort, const Vector2i* Position);
@@ -43,19 +47,5 @@
     /* Bitwise Operations */
     void      KON_SetNegative(void* valuePointer, size_t dataSize);
     void      KON_SetPositive(void* valuePointer, size_t dataSize);
-
-    /* Rect Operations */
-    KON_Rect  KON_GetRectVectAddition(KON_Rect rect, Vector2d vect);
-
-    /* Vector Operations */
-    #define   KON_VectToVect(dest, src) { \
-        dest.x = src.x;                   \
-        dest.y = src.y;                   \
-    }                                     \
-
-
-    bool      KON_GetLinesIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection);
-    bool      KON_GetLineRectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection);
-    Direction KON_GetDirectionFromVector(Vector2d vect);
 
 #endif
