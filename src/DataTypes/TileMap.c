@@ -104,8 +104,8 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     /* Init */
     MapFile = fopen(MapFilePath, "r");
     if (!MapFile){
-        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_WARNING, 1, MapFilePath);
-        goto Error;
+        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, MapFilePath);
+        return NULL;
     }
 
     LoadedMap = (Map*)malloc(sizeof(Map));
@@ -137,7 +137,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
                 break;
 
             default:
-                printf("ERROR: unknown layer mode\n");
+                KON_SystemMsg("(KON_LoadMap) unknown layer mode", MESSAGE_WARNING, 0);
                 break;
         }
         LoadedMap->MapLayer[i].layerType = layerType;
@@ -145,7 +145,6 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     }
 
     /* free */
-Error:
     if (MapFile)
         fclose(MapFile);
 
@@ -165,8 +164,8 @@ void KON_SaveTileMap(Map* MapToSave) {
     /* Init */
     MapFile = fopen(MapToSave->MapFilePath, "w");
     if (!MapFile){
-        printf("Couldn't load map file: %s !\n", MapToSave->MapFilePath);
-        goto Error;
+        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, MapToSave->MapFilePath);
+        return;
     }
 
     /* Logic */
@@ -218,8 +217,6 @@ void KON_SaveTileMap(Map* MapToSave) {
         fprintf(MapFile, "\n");
     }
 
-    /* free */
-Error:
     if (MapFile)
         fclose(MapFile);
 }

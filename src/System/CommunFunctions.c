@@ -21,6 +21,7 @@
 
 #include "CommunFunctions.h"
 #include "Surface.h"
+#include "Log.h"
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -32,12 +33,12 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, 
 
     /* Init */
     if (!DDevice){ /* DDevice check */
-        printf("ERROR: Invalid DisplayDevice !\n");
-        goto Exit;
+        KON_SystemMsg("(gputc) Invalid DisplayDevice !", MESSAGE_WARNING, 0);
+        return 0;
     }
     if (!Font){ /* Font check */
-        printf("ERROR: No Font to print with!\n");
-        goto Exit;
+        KON_SystemMsg("(gputc) No Font to print with !", MESSAGE_WARNING, 0);
+        return 0;
     }
     c -= 32; /* We only want the printable characters*/
     
@@ -59,7 +60,6 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, 
         KON_DrawScaledSurfaceRectEx(DDevice, Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
     }
 
-Exit:
     return DstLetter.w;
 }
 

@@ -24,6 +24,7 @@
 #include "Jukebox.h"
 #include "Graphics.h"
 #include "TileMap.h"
+#include "Log.h"
 
 #include "CommunFunctions.h"
 
@@ -39,8 +40,7 @@ int KON_StartScene(KONDevice* KDevice, SceneDescriptor* scenePointer){
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadMap(KDevice->DDevice, scenePointer->WorldMapPath);
     if (!scene->WorldMap){
-        printf("Error Loading Scene Data !\n");
-        exit(-1);
+        KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
     }
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(KDevice, scene);
