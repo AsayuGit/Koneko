@@ -114,7 +114,7 @@ Map* KON_LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     MapRoot = dirname(filepath);
 
     fscanf(MapFile, "%u", &nbOfLayers);
-    LoadedMap->MapLayer = (MapLayer*)malloc(sizeof(MapLayer)*nbOfLayers);
+    LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));
     LoadedMap->nbOfLayers = nbOfLayers;
 
     /* Logic */

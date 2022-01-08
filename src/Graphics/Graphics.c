@@ -137,8 +137,10 @@ bool RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect){
 }
 
 bool RectOnScreen(DisplayDevice* DDevice, const KON_Rect* Rect){
-    KON_Rect BaseRect;
-    BaseRect = KON_InitRect(0, 0, DDevice->InternalResolution.x, DDevice->InternalResolution.y);
+    KON_Rect BaseRect = {0};
+    
+    BaseRect.w = DDevice->InternalResolution.x;
+    BaseRect.h = DDevice->InternalResolution.y;
     return RectOnRect(Rect, &BaseRect);
 }
 

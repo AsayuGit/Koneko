@@ -177,10 +177,13 @@ void KON_DrawScaledSurfaceRectEx(DisplayDevice* dDevice, KON_Surface* surface, K
     KON_Rect ScaledDstRect;
 
     ScaledDstRect = KON_InitRect(0, 0, dDevice->InternalResolution.x, dDevice->InternalResolution.y);
-    if (!surface || !RectOnScreen(dDevice, dest))
+    
+    if (!dDevice || !surface)
         return;
 
     if (dest){
+        if (!RectOnScreen(dDevice, dest))
+            return;
         ScaledDstRect = KON_InitRect(
             (dest->x * dDevice->IRScalar) + dDevice->RenderRect.x,
             (dest->y * dDevice->IRScalar) + dDevice->RenderRect.y,
