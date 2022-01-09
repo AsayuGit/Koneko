@@ -32,7 +32,7 @@ xmlDoc* KON_LoadXml(char* filePath){
 }
 
 void KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect) {
-    *rect = KON_InitRect(
+    KON_InitRect((*rect),
         atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
         atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
         atoi((char*)xmlGetProp(node, (xmlChar*)"W")),

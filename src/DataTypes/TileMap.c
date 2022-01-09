@@ -88,7 +88,7 @@ TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory){
     return loadedTilemap;
 }
 
-Map* KON_LoadMap(char* MapFilePath){
+Map* KON_LoadMap(char* mapFilePath){
     /* Declaration */
     Map* LoadedMap = NULL;
     MapLayer* currentLayer = NULL;
@@ -101,15 +101,15 @@ Map* KON_LoadMap(char* MapFilePath){
     char filepath[PATH_MAX];
 
     /* Init */
-    MapFile = fopen(MapFilePath, "r");
+    MapFile = fopen(mapFilePath, "r");
     if (!MapFile){
-        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, MapFilePath);
+        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, mapFilePath);
         return NULL;
     }
 
     LoadedMap = (Map*)malloc(sizeof(Map));
-    astrcpy(&LoadedMap->MapFilePath, MapFilePath);
-    strcpy(filepath, MapFilePath);
+    astrcpy(&LoadedMap->MapFilePath, mapFilePath);
+    strcpy(filepath, mapFilePath);
     MapRoot = dirname(filepath);
 
     fscanf(MapFile, "%u", &nbOfLayers);
@@ -127,12 +127,12 @@ Map* KON_LoadMap(char* MapFilePath){
                 currentLayer->layerData = (void*)KON_LoadBitMap(MapFile, MapRoot);
 
                 KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
-                currentLayer->boundingBox = KON_InitRect(0, 0, bdSize.x, bdSize.y);
+                KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
                 break;
                 
             case KON_LAYER_TILEMAP:
                 loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
-                currentLayer->boundingBox = KON_InitRect(0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
+                KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
                 break;
 
             default:
@@ -151,7 +151,7 @@ Map* KON_LoadMap(char* MapFilePath){
 }
 
 /* FIXME: retreive colorKey*/
-void KON_SaveTileMap(Map* MapToSave) {
+void KON_SaveTileMap(Map* mapToSave) {
     /* Declaration */
     FILE* MapFile;
     MapLayer* currentMapLayer = NULL;
@@ -161,17 +161,17 @@ void KON_SaveTileMap(Map* MapToSave) {
     TileMap* currentTileMap;
 
     /* Init */
-    MapFile = fopen(MapToSave->MapFilePath, "w");
+    MapFile = fopen(mapToSave->MapFilePath, "w");
     if (!MapFile){
-        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, MapToSave->MapFilePath);
+        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, mapToSave->MapFilePath);
         return;
     }
 
     /* Logic */
-    nbOfLayers = MapToSave->nbOfLayers;
+    nbOfLayers = mapToSave->nbOfLayers;
     fprintf(MapFile, "%u\n", nbOfLayers);
     for (k = 0; k < nbOfLayers; k++){
-        currentMapLayer = MapToSave->MapLayer + k;
+        currentMapLayer = mapToSave->MapLayer + k;
         /* Print Layer header */
 
         fprintf(MapFile, "%u\n", currentMapLayer->layerType);

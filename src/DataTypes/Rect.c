@@ -24,49 +24,6 @@
 
 #include <stdio.h>
 
-KON_Rect KON_InitRect(int x, int y, int w, int h){
-    KON_Rect rect;
-    
-    rect.x = x;
-    rect.y = y;
-    rect.w = w;
-    rect.h = h;
-
-    return rect;
-}
-
-KON_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh) {
-    KON_Rect rect;
-
-    rect.x = xy->x;
-    rect.y = xy->y;
-    rect.w = wh->x;
-    rect.h = wh->y;
-
-    return rect;
-}
-
-#define KON_RectPlusVect(rect, vect, result) { \
-    result.x = rect->x + vect->x;              \
-    result.y = rect->y + vect->y;              \
-    result.w = rect->w;                        \
-    result.h = rect->h;                        \
-}                                              \
-
-KON_Rect KON_RectPlusVect2i(KON_Rect* rect, Vector2i* vect) {
-    KON_Rect result;
-
-    KON_RectPlusVect(rect, vect, result);
-    return result;
-}
-
-KON_Rect KON_RectPlusVect2d(KON_Rect* rect, Vector2d* vect) {
-    KON_Rect result;
-
-    KON_RectPlusVect(rect, vect, result);
-    return result;
-}
-
 bool KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect) {
     return SDL_IntersectRect((SDL_Rect*)rectA, (SDL_Rect*)rectB, (SDL_Rect*)resultRect);
 }
@@ -85,5 +42,6 @@ bool KON_GetRectVectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd,
 }
 
 void KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen) {
+    /* FIXME : use buffLen */
     sprintf(buffer, "{%d, %d, %d, %d}\n", rect->x, rect->y, rect->w, rect->h);
 }

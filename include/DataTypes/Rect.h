@@ -34,14 +34,39 @@
         int h;
     } KON_Rect;
 
-    KON_Rect KON_InitRect(int x, int y, int w, int h);
-    KON_Rect KON_CatVectToRect(Vector2d* xy, Vector2d* wh);
+    /*
+        SUMMARY : Initialise a KON_Rect with the provided values.
+        INPUT : int X, Y, W, H : The values to set the rect to.
+    */
+    #define KON_InitRect(rect, X, Y, W, H) { \
+        rect.x = X;                          \
+        rect.y = Y;                          \
+        rect.w = W;                          \
+        rect.h = H;                          \
+    }                                        \
 
-    KON_Rect KON_RectPlusVect2i(KON_Rect* rect, Vector2i* vect);
-    KON_Rect KON_RectPlusVect2d(KON_Rect* rect, Vector2d* vect);
+    /*
+        SUMMARY : Concatenates two vects into a Rect.
+        INPUT   : Vector2X xy, wh : The vectors to cat from.
+        OUTPUT  : KON_Rect rect   : The rect to cat the values into.
+    */
+    #define KON_CatVectToRect(rect, xy, wh) { \
+        rect.x = xy.x; rect.y = xy.y;         \
+        rect.w = wh.x; rect.h = wh.y;         \
+    }                                         \
 
-    bool     KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect);
-    bool     KON_GetRectVectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection);
+    /*
+        SUMMARY : Adds a vect to the upper part of a rect.
+        INPUT   : KON_Rect rect   : The rect to add to.
+        INPUT   : Vect2X vect     : The vect to add.
+        OUTPUT  : KON_Rect result : The resulting rect.
+    */
+    #define KON_RectPlusVect(result, rect, vect) { \
+        result.x = rect.x + vect.x;                \
+        result.y = rect.y + vect.y;                \
+        result.w = rect.w;                         \
+        result.h = rect.h;                         \
+    }                                              \
 
     void     KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
 

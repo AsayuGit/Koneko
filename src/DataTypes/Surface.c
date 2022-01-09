@@ -48,7 +48,7 @@ struct KON_Surface {
 #define KON_KeyCpuSurface(SurfaceToKey, ColorKey) SDL_SetColorKey(SurfaceToKey, true, ColorKey)
 
 /*
-    SUMMARY : Loads a CPU-Side Surface from disk
+    SUMMARY : Loads a CPU-Side Surface from disk (Unmanaged)
     INPUT   : char* FilePath        : Path to the surface to load
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
@@ -73,7 +73,7 @@ static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uin
 }
 
 /*
-    SUMMARY : Loads a GPU-Side Surface from disk
+    SUMMARY : Loads a GPU-Side Surface from disk (Unmanaged)
     INPUT   : char* FilePath        : Path to the surface to load
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
@@ -115,31 +115,31 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     return loadedSurface;
 }
 
-KON_Surface* KON_LoadSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
     KON_Surface* loadedSurface;
 
-    if (!FilePath) {
+    if (!filePath) {
         KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
 
-    if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(FilePath, RESSOURCE_GPU_SURFACE))) {
-        loadedSurface = KON_LoadRawSurface(FilePath, ColorKey, flags);
-        KON_AddManagedRessource(FilePath, RESSOURCE_GPU_SURFACE, loadedSurface);
-        KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, FilePath);
+    if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(filePath, RESSOURCE_GPU_SURFACE))) {
+        loadedSurface = KON_LoadRawSurface(filePath, colorKey, flags);
+        KON_AddManagedRessource(filePath, RESSOURCE_GPU_SURFACE, loadedSurface);
+        KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, filePath);
         return loadedSurface;
     }
 
-    KON_SystemMsg("(KON_LoadSurface) Referenced GPU Surface : ", MESSAGE_LOG, 1, FilePath);
+    KON_SystemMsg("(KON_LoadSurface) Referenced GPU Surface : ", MESSAGE_LOG, 1, filePath);
     return loadedSurface;
 }
 
 /* Unmanaged */
-SDL_Surface* KON_LoadCpuSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
-    if (!FilePath)
+SDL_Surface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
+    if (!filePath)
         return NULL;
 
-    return KON_LoadRawCPUSurface(FilePath, ColorKey, flags);
+    return KON_LoadRawCPUSurface(filePath, colorKey, flags);
 }
 
 void KON_FreeSurface(KON_Surface* surface) {
@@ -151,7 +151,9 @@ KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface) {
     int w, h;
     KON_Surface* newSurface = (KON_Surface*)malloc(sizeof(KON_Surface));
 
-    newSurface->surface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, cpuSurface);
+    if (!(newSurface->surface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, cpuSurface)))
+        return NULL;
+
     SDL_QueryTexture(newSurface->surface, NULL, NULL, &w, &h);
     newSurface->size = KON_InitVector2d(w, h);
 
@@ -176,7 +178,7 @@ static int KON_DrawEx(SDL_Texture* texture, const KON_Rect* srcrect, const KON_R
 void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
     KON_Rect ScaledDstRect;
 
-    ScaledDstRect = KON_InitRect(0, 0, Koneko.dDevice.InternalResolution.x, Koneko.dDevice.InternalResolution.y);
+    KON_InitRect(ScaledDstRect, 0, 0, Koneko.dDevice.InternalResolution.x, Koneko.dDevice.InternalResolution.y);
     
     if (!surface)
         return;
@@ -184,7 +186,7 @@ void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect*
     if (dest){
         if (!RectOnScreen(dest))
             return;
-        ScaledDstRect = KON_InitRect(
+        KON_InitRect(ScaledDstRect,
             (dest->x * Koneko.dDevice.IRScalar) + Koneko.dDevice.RenderRect.x,
             (dest->y * Koneko.dDevice.IRScalar) + Koneko.dDevice.RenderRect.y,
             dest->w * Koneko.dDevice.IRScalar,
@@ -198,8 +200,9 @@ void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect*
 }
 
 void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
-    KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
+    KON_Rect dest;
 
+    KON_CatVectToRect(dest, (*pos), surface->size);
     KON_DrawScaledSurfaceRectEx(surface, rect, &dest, flags);
 }
 
@@ -208,7 +211,8 @@ void KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags fla
 }
 
 void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
-    KON_Rect dest = KON_CatVectToRect(pos, &surface->size);
-
+    KON_Rect dest;
+    
+    KON_CatVectToRect(dest, (*pos), surface->size);
     KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
 }
