@@ -104,7 +104,7 @@ void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity
 
 void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     unsigned char result;
-    Vector2d vect = KON_GetVectAddition(entity->pos, entity->mov);
+    Vector2d vect = KON_GetVectAddition(&entity->pos, &entity->mov);
 
     result = KON_BoundVect2dToRect(&vect, rect);
     if (result & 1){

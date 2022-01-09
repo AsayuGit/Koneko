@@ -23,6 +23,7 @@
 #define _VECTOR_H
 
     #include "Bool.h"
+    #include <math.h>
 
     typedef struct{
         int x;

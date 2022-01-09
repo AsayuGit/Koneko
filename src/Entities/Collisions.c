@@ -205,13 +205,12 @@ void KON_EntityCollisions(SceneHandle* scene) {
     OUTPUT: Vector2d                   : Unit Vector of the collision
 */
 Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect) {
-    Vector2d collisionUnitVector;
+    Vector2d collisionUnitVector, collidingPosition, lastPosition;
 
     /* Curent Position - Last Position */
-    collisionUnitVector = KON_GetVectSubstraction(
-        KON_GetVectSubstraction(collision[frameSelect].entityCollidingPosition, self->pos),
-        KON_GetVectSubstraction(collision[frameSelect].entityLastPosition, self->lastPos)
-    );
+    collidingPosition = KON_GetVectSubstraction(&collision[frameSelect].entityCollidingPosition, &self->pos);
+    lastPosition = KON_GetVectSubstraction(&collision[frameSelect].entityLastPosition, &self->lastPos);
+    collisionUnitVector = KON_GetVectSubstraction(&collidingPosition, &lastPosition);
 
     /* Return Normalized vector */
     return KON_GetVectScalarDivision(collisionUnitVector, KON_GetVectNorm(collisionUnitVector));

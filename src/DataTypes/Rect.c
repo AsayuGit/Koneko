@@ -28,16 +28,21 @@ bool KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* res
     return SDL_IntersectRect((SDL_Rect*)rectA, (SDL_Rect*)rectB, (SDL_Rect*)resultRect);
 }
 
-bool KON_GetRectVectIntersect(KON_Rect rect, Vector2d segStart, Vector2d segEnd, Vector2d* intersection) {
-    if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x, rect.y + rect.h), intersection)){ /* Left */
-        return true;
-    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x + rect.w, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Right */
-        return true;
-    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y), KON_InitVector2d(rect.x + rect.w, rect.y), intersection)){ /* Up */
-        return true;
-    } else if (KON_GetVectIntersect(segStart, segEnd, KON_InitVector2d(rect.x, rect.y + rect.h), KON_InitVector2d(rect.x + rect.w, rect.y + rect.h), intersection)){ /* Down */
-        return true;
-    }
+bool KON_GetRectVectIntersect(KON_Rect* rect, Vector2d* segStart, Vector2d* segEnd, Vector2d* intersection) {
+    Vector2d tempSegStart, tempSegEnd;
+
+    #define CheckIntersection(XS, YS, XE, YE) do {                                            \
+        tempSegStart = KON_InitVector2d(XS, YS);                                              \
+        tempSegEnd = KON_InitVector2d(XE, YE);                                                \
+        if (KON_GetVectIntersect(segStart, segEnd, &tempSegStart, &tempSegEnd, intersection)) \
+            return true;                                                                      \
+    } while (0)                                                                               \
+
+    CheckIntersection(rect->x, rect->y, rect->x, rect->y + rect->h); /* Left */
+    CheckIntersection(rect->x + rect->w, rect->y, rect->x + rect->w, rect->y + rect->h); /* Right */
+    CheckIntersection(rect->x, rect->y, rect->x + rect->w, rect->y); /* Up */
+    CheckIntersection(rect->x, rect->y + rect->h, rect->x + rect->w, rect->y + rect->h); /* Down */
+
     return false;
 }
 

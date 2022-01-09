@@ -18,27 +18,30 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
+#define _GNU_SOURCE /* M_PI */
 #include "Vector.h"
 
-#define _GNU_SOURCE /* M_PI */
-#include <math.h>
+/*
+    SUMMARY : Initialize a Vector2x with the provided values.
+    INPUT   : X, Y        : The values to initialize the vector with.
+    OUTPUT  : Vect2x vect : THe vector to initialize.
+*/
+#define   KON_InitVect(vect, X, Y) { \
+    vect.x = X;                      \
+    vect.y = Y;                      \
+}                                    \
 
 Vector2d KON_InitVector2d(double x, double y){
     Vector2d vector;
 
-    vector.x = x;
-    vector.y = y;
-
+    KON_InitVect(vector, x, y);
     return vector;
 }
 
 Vector2i KON_InitVector2i(int x, int y){
     Vector2i vector;
 
-    vector.x = x;
-    vector.y = y;
-
+    KON_InitVect(vector, x, y);
     return vector;
 }
 
@@ -56,43 +59,49 @@ Vector2d KON_GetVectScalarDivision(Vector2d vect, double scalar) {
     return vect;
 }
 
-Vector2d KON_GetVectAddition(Vector2d vect1, Vector2d vect2){
-    vect1.x += vect2.x;
-    vect1.y += vect2.y;
+Vector2d KON_GetVectAddition(Vector2d* vect1, Vector2d* vect2) {
+    Vector2d result;
 
-    return vect1;
+    result.x = vect1->x + vect2->x;
+    result.y = vect1->y + vect2->y;
+
+    return result;
 }
 
-Vector2d KON_GetVectScalarAddition(Vector2d vect, double scalar){
+Vector2d KON_GetVectScalarAddition(Vector2d vect, double scalar) {
     vect.x += scalar;
     vect.y += scalar;
 
     return vect;
 }
 
-Vector2d KON_GetVectScalarSubstraction(Vector2d vect, double scalar){
+Vector2d KON_GetVectScalarSubstraction(Vector2d vect, double scalar) {
     vect.x -= scalar;
     vect.y -= scalar;
 
     return vect;
 }
 
-Vector2d KON_GetVectSubstraction(Vector2d vect1, Vector2d vect2){
-    vect1.x -= vect2.x;
-    vect1.y -= vect2.y;
+Vector2d KON_GetVectSubstraction(Vector2d* vect1, Vector2d* vect2) {
+    Vector2d result;
 
-    return vect1;
+    result.x = vect1->x - vect2->x;
+    result.y = vect1->y - vect2->y;
+
+    return result;
 }
 
-Vector2d KON_GetVectProduct(Vector2d vect1, Vector2d vect2) {
-    vect1.x *= vect2.x;
-    vect1.y *= vect2.y;
+Vector2d KON_GetVectProduct(Vector2d* vect1, Vector2d* vect2) {
+    Vector2d result;
+    
+    result.x = vect1->x * vect2->x;
+    result.y = vect1->y * vect2->y;
 
-    return vect1;
+    return result;
 }
 
-bool KON_GetVectIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Start, Vector2d seg2End, Vector2d* intersection){
-    Vector2d seg1Vect, seg2Vect, segStartDiff;
+bool KON_GetVectIntersect(Vector2d* seg1Start, Vector2d* seg1End, Vector2d* seg2Start, Vector2d* seg2End, Vector2d* intersection){
+    Vector2d seg1Vect, seg2Vect, segStartDiff, scaledVector;
     double segVectCrossProduct, seg1IntersectPoint, seg2IntersectPoint;
 
     /* We compute the two segments's vectors */
@@ -113,7 +122,8 @@ bool KON_GetVectIntersect(Vector2d seg1Start, Vector2d seg1End, Vector2d seg2Sta
         /* Segment intersection */
         if (intersection){
             /* p + t  r = q + u  s */
-            *intersection = KON_GetVectAddition(KON_GetVectScalarProduct(seg1Vect, seg1IntersectPoint), seg1Start);
+            scaledVector = KON_GetVectScalarProduct(seg1Vect, seg1IntersectPoint);
+            *intersection = KON_GetVectAddition(&scaledVector, seg1Start);
         }
         return true;
     }
