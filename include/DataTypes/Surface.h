@@ -42,10 +42,41 @@
 
     typedef struct KON_Surface KON_Surface;
 
-    KON_Surface* KON_LoadSurface(char* FilePath, uint32_t ColorKey, uint8_t flags);
-    SDL_Surface* KON_LoadCpuSurface(char* FilePath, uint32_t ColorKey, uint8_t flags);
+    /*
+        SUMMARY : Loads a KON_Surface from disk.
+        INPUT   : char* filePath    : The path to the surface to load.
+        INPUT   : uint32_t colorKey : The color to key the surface with (if needs be).
+        INPUT   : uint8_t flags     : Flags ruling how to load the surface.
+        OUTPUT  : KON_Surface*      : The newly loaded surface (or NULL if error).
+    */
+    KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+
+    /*
+        SUMMARY : Loads a CPU-Side Surface from disk.
+        INPUT   : char* filePath    : The path to the surface to load.
+        INPUT   : uint32_t colorKey : The color to key the surface with (if needs be).
+        INPUT   : uint8_t flags     : Flags ruling how to load the surface.
+        OUTPUT  : SDL_Surface*      : The newly loaded surface (or NULL if error).
+    */
+    SDL_Surface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+
+    /*
+        SUMMARY : Free a previously loaded KON_Surface.
+        INPUT   : KON_Surface* surface : The surface to free.
+    */
     void         KON_FreeSurface(KON_Surface* surface);
 
+    /*
+        SUMMARY : Free a previously loaded CPU-Side surface.
+        INPUT   : SDL_Surface* surface : The surface to free.
+    */
+    /* TODO: void KON_FreeCpuSurface(SDL_Surface* surface) */
+
+    /*
+        SUMMARY : Loads a KON_Surface from a CPU-Side surface.
+        INPUT   : SDL_Surface* cpuSurface : The CPU-Side surface to load from.
+        OUTPUT  : KON_Surface*            : Tne newly loaded surface (or NULL on error).
+    */
     KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface);
 
     /*
@@ -55,15 +86,68 @@
     */
     void         KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size);
 
-    #define      KON_DrawScaledSurfaceRect(surface, rect, dest) KON_DrawScaledSurfaceRectEx(surface, rect, dest, DRAW_DEFAULT) 
+    /*
+        SUMMARY : Draws parts of a surface scaled to a new size and destination.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* rect       : The part to take out of the source surface.
+        INPUT   : KON_Rect* dest       : Where on the screen to draw it.
+    */
+    #define      KON_DrawScaledSurfaceRect(surface, rect, dest) KON_DrawScaledSurfaceRectEx(surface, rect, dest, DRAW_DEFAULT)
+
+    /*
+        SUMMARY : Draws part of a surface to the screen at a new location.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* rect       : The part to take out of the source surface.
+        INPUT   : Vector2d* pos        : Where to draw on the screen.
+    */
     #define      KON_DrawSurfaceRect(surface, rect, pos) KON_DrawSurfaceRectEx(surface, rect, pos, DRAW_DEFAULT)
+
+    /*
+        SUMMARY : Draws a surface at a new size and location.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* dest       : Where on the screen to draw it.
+    */
     #define      KON_DrawScaledSurface(surface, dest) KON_DrawScaledSurfaceEx(surface, dest, DRAW_DEFAULT)
+
+    /*
+        SUMMARY : Draws a surface on the screen.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : Vector2d* pos        : Where to draw on the screen.
+    */
     #define      KON_DrawSurface(surface, pos) KON_DrawSurfaceEx(surface, pos, DRAW_DEFAULT)
 
+    /*
+        SUMMARY : Draws parts of a surface scaled to a new size and destination with draw option flags.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* rect       : The part to take out of the source surface.
+        INPUT   : KON_Rect* dest       : Where on the screen to draw it.
+        INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
+    */
     void         KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags);
-    void         KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
-    void         KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
-    void         KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
+    /*
+        SUMMARY : Draws part of a surface to the screen at a new location with draw option flags.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* rect       : The part to take out of the source surface.
+        INPUT   : Vector2d* pos        : Where to draw on the screen.
+        INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
+    */
+    void         KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
+
+    /*
+        SUMMARY : Draws a surface at a new size and location with draw option flags.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : KON_Rect* dest       : Where on the screen to draw 
+        INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.it.
+    */
+    void         KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
+
+    /*
+        SUMMARY : Draws a surface on the screen with draw option flags.
+        INPUT   : KON_Surface* surface : The surface to draw.
+        INPUT   : Vector2d* pos        : Where to draw on the screen.
+        INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
+    */
+    void         KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
 #endif

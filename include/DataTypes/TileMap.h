@@ -24,7 +24,17 @@
 
     #include "Map.h"
 
-    Map*         KON_LoadMap(char* MapFilePath);
-    void         KON_SaveTileMap(Map* MapToSave);
+    /*
+        SUMMARY : Loads a Map form disk.
+        INPUT   : char* mapFilePath : The path to the map to load.
+        OUTPUT  : Map*              : The newly loaded map (or NULL on error).
+    */
+    Map* KON_LoadMap(char* mapFilePath);
+
+    /*
+        SUMMARY : Store a previously loaded Map on disk.
+        INPUT   : Map* mapToStore : The map to store on disk.
+    */
+    void KON_SaveTileMap(Map* mapToSave);
 
 #endif

@@ -68,6 +68,27 @@
         result.h = rect.h;                         \
     }                                              \
 
-    void     KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
+    /*
+        SUMMARY : Tells if two rects are intersecting and is so return the intersecting aera.
+        INPUT   : KON_Rect* rectA, *rectB : The Rects to get the intersection from.
+        OUTPUT  : KON_Rect* resultRect    : The resulting intersection aera (if any).
+    */
+    bool    KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect);
+
+    /*
+        SUMMARY : Tells is a rect and a segment intersect and if so returns the point of intersection.
+        INPUT   : KON_Rect rect             : The rect to compute the intersection with.
+        INPUT   : Vector2d segStart, segEnd : The segment to compute the intersection aginst.
+        OUTPUT  : Vector2d* intersection    : This resulting intersection point (if any).
+    */
+    bool    KON_GetRectVectIntersect(KON_Rect* rect, Vector2d* segStart, Vector2d* segEnd, Vector2d* intersection);
+
+    /*
+        SUMMARY : Write a string representation of a KON_Rect to a buffer of size buffLen.
+        INPUT   : KON_Rect* rect : The rect to convert.
+        INPUT   : size_t bufflen : The size of the buffer to write into.
+        OUTPUT  : char* buffer   : The buffer to write into.
+    */
+    void    KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
 
 #endif
