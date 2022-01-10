@@ -85,13 +85,63 @@
         void* EntityInstanceContext;
     };
 
+    /*
+        SUMMARY : Loads an entity from an EntityDescriptor.
+        INPUT   : EntityDescriptor* entityToLoad : The EntityDescriptor to load the entity from.
+        OUTPUT  : EntityInstance*                : The resulting loaded EntityInstance.
+    */
     EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad);
+
+    /*
+        SUMMARY : Frees a previously loaded EntityInstance.
+        INPUT   : EntityInstance* entityToFree : The EntityInstance to free.
+    */
     void            KON_FreeEntity(EntityInstance* entityToFree);
+
+    /*
+        SUMMARY : Draws an EntityInstance to the screen.
+        INPUT   : EntityInstance* entity : The EntityInstance to draw.
+    */
     void            KON_DrawEntity(EntityInstance* entity);
+
+    /*
+        SUMMARY : Starts a new animation for an entity.
+        INPUT   : EntityInstance* entity   : The EntityInstance to start the animation for.
+        INPUT   : unsigned int animationID : The animation to play.
+        INPUT   : bool reset               : If the animation should restart from the begining.
+        INPUT   : bool loop                : If the anumation should loop.
+    */
     void            KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop);
+
+    /*
+        SUMMARY : Calls the relevant function callbacks for the last processed collision.
+        INPUT   : SceneHandle* scene     : The scene where the colisions occured.
+        INPUT   : EntityInstance* entity : The entity to process the collision callbacks for.
+    */
     void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity);
+
+    /*
+        SUMMARY : Prevent an entity form going outside a specified rect.
+        INPUT   : EntityInstance* entity : The entity to restrict.
+        INPUT   : KON_Rect* rect         : The rect the entity should be restricted by.
+    */
     void            KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect);
-    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+
+    /*
+        SUMMARY : Spawns a new entity instance into the scene.
+        INPUT   : SceneHandle* scene              : The scene the new entity should be spawned in.
+        INPUT   : EntityDescriptor* spawnedEntity : The EntityDescriptor of the entity to be spawned.
+        INPUT   : unsigned int layerID            : The layer the new entity should be spawned on.
+        INPUT   : unsigned int X, Y               : The new entity's coordinates.
+        OUTPUT  : EntityInstance*                 : The spawned EntityInstance (or NULL on error).
+    */
+    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
+
+    /*
+        SUMMARY : Kills a previously spawned entity instance.
+        INPUT   : SceneHandle* scene                   : The scene in which the entity should be killed.
+        INPUT   : EntityInstance* entityInstanceToKill : The EntityInstance to be killed.
+    */
     void            KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
     
 #endif

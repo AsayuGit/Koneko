@@ -50,7 +50,19 @@
         EntityInstance* collidingEntitiy;
     };
 
+    /*
+        SUMMARY : Computes entity colisions (Entity/Scene) + (Entity/Entity)
+        INPUT   : SceneHandle* scene : The scene where the entities should be processed.
+    */
     void     KON_EntityCollisions(SceneHandle* scene);
+
+    /*
+        SUMMARY : Returns an Unit Vector describing the direction of the collision
+        INPUT   : EntityInstance* self        : Pointer to the EntityInstance wishing to get this information
+        INPUT   : CollisionEvent collision[2] : CollisionEvent present and past
+        INPUT   : bool frameSelect            : Determines which of the CollisionEvent is present and which is past
+        OUTPUT  : Vector2d                   : Unit Vector of the collision
+    */
     Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect);
 
 #endif

@@ -87,6 +87,12 @@
     void         KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size);
 
     /*
+        SUMMARY : Sets the render target for a CPU-Side surface.
+        INPUT   : SDL_Texture* surface : The CPu-Side surface to change the render target for.
+    */
+    int          KON_SetRenderTarget(SDL_Texture* surface);
+
+    /*
         SUMMARY : Draws parts of a surface scaled to a new size and destination.
         INPUT   : KON_Surface* surface : The surface to draw.
         INPUT   : KON_Rect* rect       : The part to take out of the source surface.

@@ -25,13 +25,17 @@
 #include "CommunFunctions.h"
 #include "System.h"
 #include "Graphics.h"
+#include "Log.h"
 
 /* Loads an Entity in memory */
 EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
     EntityInstance* newEntityInstance = NULL;
 
     /* Init */
-    newEntityInstance = (EntityInstance*)calloc(1, sizeof(EntityInstance));
+    if (!(newEntityInstance = (EntityInstance*)calloc(1, sizeof(EntityInstance)))) {
+        KON_SystemMsg("(KON_LoadEntity) Not enough memory !", MESSAGE_ERROR, 0);
+        return NULL;
+    }
     newEntityInstance->descriptor = entityToLoad;
 
     /* Load */
@@ -115,11 +119,12 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     }
 }
 
-EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
+EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
 
-    newInstance = KON_LoadEntity(SpawnedEntity);
+    if (!(newInstance = KON_LoadEntity(spawnedEntity)))
+        return NULL;
 
     /* Load the new entity in memory */
     newInstance->pos.x = X;

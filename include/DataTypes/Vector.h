@@ -76,17 +76,17 @@
     
     /*
         SUMMARY : Compute the scalar product of a vector by a scalar.
-        INPUT   : Vector2d vect :
-        INPUT   : double scalar :
-        OUTPUT  : Vector2d      :
+        INPUT   : Vector2d vect : The vector to multiply.
+        INPUT   : double scalar : The scalar to be multiplied by.
+        OUTPUT  : Vector2d      : The resulting vector.
     */
     Vector2d  KON_GetVectScalarProduct(Vector2d vect, double scalar);
 
     /*
         SUMMARY : Compute the scalar division of a vector by a scalar.
-        INPUT   : Vector2d vect :
-        INPUT   : double scalar :
-        OUTPUT  : Vector2d      :
+        INPUT   : Vector2d vect : The vector to divide.
+        INPUT   : double scalar : The scalar to be divided by.
+        OUTPUT  : Vector2d      : The resulting vector.
     */
     Vector2d  KON_GetVectScalarDivision(Vector2d vect, double scalar);
 

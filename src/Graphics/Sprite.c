@@ -28,15 +28,6 @@
 /* defines an empty sprite */
 static const Sprite emptySprite;
 
-/*
-    KON_LoadSprite() : Provided with a path loads a spite object in memory
-    INPUT: Sprite*                : Pointer to the newly created sprite
-    INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
-    INPUT: uint32_t colorKey        : The colorKey the texture should use if keyed
-    INPUT: uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not)
-*/
 void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
     Vector2d spriteSize;
     
@@ -59,33 +50,14 @@ void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect
     sprite->isVisible = true;
 }
 
-/*
-    HON_LoadSpriteAlpha() : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags
-    INPUT: Sprite*                : Pointer to the newly created sprite
-    INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
-*/
 void KON_LoadSpriteAlpha(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination) {
     KON_LoadSprite(sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
 }
 
-/*
-    HON_LoadSpriteKeyed() : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags
-    INPUT: Sprite*                : Pointer to the newly created sprite
-    INPUT: char* spritePath       : Path the sprite should be loaded from
-    INPUT: KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from
-    INPUT: KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at
-*/
 void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
     KON_LoadSprite(sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
 }
 
-/*
-    KON_LoadSpriteFromXml() : Loads a sprite from a xml property file
-    INPUT: Sprite*                   : Pointer to the newly created sprite
-    INPUT: char* spriteXmlPath       : Path the sprite should be loaded from
-*/
 void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
     xmlDoc* spriteXml;
     xmlNode *spriteNode, *property;
@@ -131,10 +103,6 @@ void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
     xmlFreeDoc(spriteXml);
 }
 
-/*
-    KON_FreeSprite() : Free a loaded sprite form memory
-    INPUT: Sprite** sprite : Pointer to a Sprite loaded in memory
-*/
 void KON_FreeSprite(Sprite* sprite) {
     if (!sprite) /* Check if sprite's not null */
         return;
@@ -183,10 +151,6 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
     sprite->lastFrame = SDL_GetTicks();
 }
 
-/*
-    KON_DrawSprite() : Draws a sprite on screen
-    INPUT: Sprite* sprite         : Sprite to display
-*/
 void KON_DrawSprite(Sprite* sprite, Vector2d spritePosition) {    
     if (!sprite || !sprite->isVisible)
         return;

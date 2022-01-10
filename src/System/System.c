@@ -56,8 +56,8 @@ static void KON_FreeDisplayDevice() {
     SDL_DestroyWindow(Koneko.dDevice.Screen);
 }
 
-void KON_CreateDisplayDevice(int resX, int resY, char* GameTitle) {
-    Koneko.dDevice.Screen = SDL_CreateWindow(GameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
+    Koneko.dDevice.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Koneko.dDevice.Renderer = SDL_CreateRenderer(Koneko.dDevice.Screen , -1, 0);
     if (Koneko.dDevice.Renderer == NULL){
         KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
@@ -103,23 +103,18 @@ void KON_Exit(){
     KON_FreeDisplayDevice();
 }
 
-void KON_Init(uint32_t flags, int resX, int resY, char* GameTitle){
+void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle){
     /* SDL Init */
     if (SDL_Init(flags) != 0){
         KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
 
     if (flags & KON_INIT_VIDEO)
-        KON_CreateDisplayDevice(resX, resY, GameTitle);
+        KON_CreateDisplayDevice(resX, resY, gameTitle);
     if (flags & KON_INIT_AUDIO)
         KON_CreateSoundDevice();
     if (flags & KON_INIT_INPUT)
         KON_InitInputs();
-}
-
-int KON_SetRenderTarget(SDL_Texture* surface){
-    Koneko.dDevice.OffScreenRender = (surface);
-    return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface);
 }
 
 static void DrawFrame(){

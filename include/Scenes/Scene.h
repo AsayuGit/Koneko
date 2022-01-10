@@ -50,10 +50,11 @@
         functPtrScene OnDraw;
     } SceneDescriptor;
 
-    /* Start a Scene from a scene descroptor */
-    int             KON_StartScene(SceneDescriptor* scenePointer);
-    /* Spawn an entity at the specified coordinates */
-    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* SpawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y);
-    void            KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill);
+    /*
+        SUMMARY : Starts up a Scene from a scene descroptor
+        INPUT   : SceneDescriptor* scenePointer : The scene to start up.
+        OUTPUT  : int                           : Success.
+    */
+    int KON_StartScene(SceneDescriptor* scenePointer);
 
 #endif

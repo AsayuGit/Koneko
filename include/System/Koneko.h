@@ -24,6 +24,9 @@
 
     #include "System.h"
 
+    /*
+        The Koneko Engine's handle.
+    */
     extern KONDevice Koneko;
 
 #endif

@@ -22,10 +22,21 @@
 #ifndef _JUKEBOX_H
 #define _JUKEBOX_H
 
-    extern char* EffectPath;
-
+    /*
+        SUMMARY : Plays a looping music file from disk.
+        INPUT   : char* IntroPath : Path to the intro part of the music.
+        INPUT   : char* LoopPath  : Path to the looping part of the music.
+    */
     void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath);
-    void KON_MusicDaemon(void);
-    void KON_StopTrack(void);
+
+    /*
+        SUMMARY : Process the transition between the into part and the looping part of background tracks.
+    */
+    void KON_MusicDaemon();
+
+    /*
+        SUMMARY : Stops any previously started music track.
+    */
+    void KON_StopTrack();
 
 #endif

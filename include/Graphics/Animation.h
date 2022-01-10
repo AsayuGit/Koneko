@@ -32,7 +32,17 @@
         int Framerate;          /* Number of milliseconds between two frames */
     } Animation;
 
+    /*
+        SUMMARY : Parses an Animation from a xmlNode.
+        INPUT   : xmlNode* array : The node the animation should be parsed from.
+        OUTPUT  : Animation*     : The parsed animation.
+    */
     Animation* KON_ParseAnimation(xmlNode* array);
+
+    /*
+        SUMMARY : Frees a previously loaded animation.
+        INPUT   : Animation* anim : The animation to free.
+    */
     void       KON_FreeAnimation(Animation* anim);
 
 #endif

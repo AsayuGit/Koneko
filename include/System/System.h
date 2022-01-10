@@ -75,12 +75,27 @@
         InputDevice iDevice;
     } KONDevice;
 
+    /*
+        SUMMARY : Properly exits Koneko.
+    */
     void KON_Exit();
-    void KON_Init(uint32_t flags, int resX, int resY, char* GameTitle);
 
-    int  KON_SetRenderTarget(SDL_Texture* surface);
+    /*
+        SUMMARY : Initialize the Koneko Engine.
+        INPUT   : uint32_t flags  : Any combination of initialisation flags.
+        INPUT   : int resX, resY  : The screen resolution.
+        INPUT   : char* gameTitle : The game's title.
+    */
+    void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle);
 
+    /*
+        SUMMARY : Finalise the current frame and displays it in the game's window.
+    */
     void KON_FinishFrame();
+
+    /*
+        SUMMARY : Process Koneko's system events.
+    */
     void KON_SystemEvents();
 
 #endif

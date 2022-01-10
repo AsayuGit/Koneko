@@ -165,6 +165,11 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
         *size = surface->size;
 }
 
+int KON_SetRenderTarget(SDL_Texture* surface) {
+    Koneko.dDevice.OffScreenRender = (surface);
+    return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface);
+}
+
 /* API level draw */
 static int KON_DrawEx(SDL_Texture* texture, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
 

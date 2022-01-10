@@ -30,7 +30,18 @@
         #include <libxml2/libxml/parser.h>
     #endif
 
+    /*
+        SUMMARY : Loads a XML file from disk.
+        INPUT   : char* filePath : The path to the xml file to load.
+        OUTPUT  : xmlDoc*        : The newly loaded xml file (or NULL on error).
+    */
     xmlDoc* KON_LoadXml(char* filePath);
+    
+    /*
+        SUMMARY : Parses a KON_Rect from a xml node.
+        INPUT   : xmlNode* node  : The node where the rect should be parsed from.
+        OUTPUT  : KON_Rect* rect : The resulting parsed rect.
+    */
     void    KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect);
 
 #endif
