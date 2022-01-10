@@ -22,21 +22,58 @@
 #ifndef _DISPLAYLIST_H
 #define _DISPLAYLIST_H
 
-    #include "LinkedList.h"
     #include "Sprite.h"
 
-    typedef struct {
-        int index;
-        Sprite* sprite;
-    } DisplayListItem;
+    typedef struct DisplayList DisplayList;
 
-    /* A DisplayList is a LinkedList of DisplayListItems */
-    typedef LinkedList DisplayList;
+    /*
+        SUMMARY : Initialize a new DisplayList.
+        OUTPUT  : DisplayList* : The newly allocated DisplayList.
+    */
+    DisplayList* KON_InitDisplayList();
 
-    DisplayList* KON_AddSpriteToDisplayListAtIndex(DisplayList** list, Sprite* sprite, int index);
-    DisplayList* KON_AddSpriteToDisplayList(DisplayList** list, Sprite* sprite);
-    void         KON_RemoveItemFromDisplayList(DisplayList** list, DisplayListItem* item);
-    void         KON_SetDisplayListItemIndex(DisplayList** list, DisplayListItem* item, int index);
-    void         KON_FreeDisplayList(DisplayList** list);
+    /*
+        SUMMARY : Frees a previously allocated DisplayList.
+        INPUT   : DisplayList* listToFree : The DisplayList to be freed.
+    */
+    void         KON_FreeDisplayList(DisplayList* listToFree);
+
+    /*
+        SUMMARY : Add a Sprite to a DisplayList.
+        INPUT   : DisplayList* list     : The DisplayList to add the Sprite to.
+        INPUT   : Sprite* sprite        : The Sprite to add to the DisplayList.
+        INPUT   : unsigned int priority : The priority level the Sprite should be drawn with (0 to inf / back to front).
+    */
+    void         KON_AddToDisplayList(DisplayList* list, Sprite* sprite, unsigned int priority);
+
+    /*
+        SUMMARY : Remove a previously added Sprite from a DisplayList.
+        INPUT   : DisplayList* list : The DisplayList the Sprite should be removed from.
+        INPUT   : Sprite* sprite    : The Sprite to be removed from the DisplayList.
+    */
+    void         KON_RemoveFromDisplayList(DisplayList* list, Sprite* sprite);
+
+    /*
+        SUMMARY : Clears a DisplayList of all its Sprites.
+        INPUT   : DisplayList* list : The displayList to be cleared.
+    */
+    void         KON_ClearDisplayList(DisplayList* list);
+
+    /*
+        SUMMARY : Set a Sprite's priority in a DisplayList.
+        INPUT   : DisplayList* list     : The DisplayList to set the Sprite's priority in.
+        INPUT   : Sprite* sprite        : The Sprite to set the priority of.
+        INPUT   : unsigned int priority : The priority level the Sprite should be drawn with (0 to inf / back to front).
+    */
+    #define      KON_SetSpritePrirority(list, sprite, priority) do { \
+        KON_RemoveFromDisplayList(list, sprite);                     \
+        KON_AddToDisplayList(list, sprite, priority);                \
+    } while (0)                                                      \
+
+    /*
+        SUMMARY : Draws a DisplayList to the screen.
+        INPUT   : DisplayList* list : The DisplayListToBeDrawn.
+    */
+    void         KON_DrawDisplayList(DisplayList* list);
 
 #endif

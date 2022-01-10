@@ -29,6 +29,7 @@
     #include "System.h"
 
     typedef struct {
+        Vector2d spritePosition;
         /* Texture */
         KON_Rect source;
         KON_Rect destination;
@@ -101,8 +102,7 @@
     /*
         SUMMARY : Draws a sprite on screen.
         INPUT   : Sprite* sprite          : Sprite to draw.
-        INPUT   : Vector2d spritePosition : Where to draw the sprite. 
     */
-    void KON_DrawSprite(Sprite* sprite, Vector2d spritePosition);
+    void KON_DrawSprite(Sprite* sprite);
 
 #endif

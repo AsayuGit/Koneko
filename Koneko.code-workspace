@@ -24,7 +24,9 @@
 			"valarray": "cpp",
 			"*.def": "cpp",
 			"collisions.h": "c",
-			"functional": "c"
+			"functional": "c",
+			"displaylist.h": "c",
+			"linkedlist.h": "c"
 		}
 	}
 }

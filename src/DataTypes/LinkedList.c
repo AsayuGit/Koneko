@@ -68,6 +68,20 @@ LinkedList* KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t da
     return *List;
 }
 
+LinkedList* KON_InsertRefIntoLinkedList(LinkedList** List, void* newDataRef) {
+    LinkedList* oldElement;
+
+    if (!List)
+        return NULL;
+
+    oldElement = *List;
+    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
+    (*List)->data = newDataRef;
+    (*List)->next = oldElement;
+
+    return *List;
+}
+
 void KON_SwapItemIntoLinkedList(LinkedList** from, LinkedList** to) {
     LinkedList* A, *B, *NA, *NB;
     

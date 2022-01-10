@@ -61,7 +61,8 @@ void KON_FreeEntity(EntityInstance* entityInstanceToFree){
 
 /* potential caching possible (entity->commun->entityAnimations)*/
 void KON_DrawEntity(EntityInstance* entity) { /* Display "A" Character on screen  */
-    KON_DrawSprite(&entity->entitySprite, entity->pos);
+    entity->entitySprite.spritePosition = entity->pos;
+    KON_DrawSprite(&entity->entitySprite);
 }
 
 void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){

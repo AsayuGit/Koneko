@@ -42,7 +42,7 @@
     /*
         SUMMARY : Appends New data (reference) to the end of a LinkedList.
         INPUT   : LinkedList** List : The list to append to.
-        INPUT   : void* newData     : The data to append to the LinkedList.
+        INPUT   : void* newData     : The reference to append to the LinkedList.
         OUTPUT  : LinkedList*       : The newly appeded node (or NULL if error).
     */
     LinkedList*  KON_AppendRefToLinkedList(LinkedList** List, void* newDataRef);
@@ -59,11 +59,11 @@
     /*
         SUMMARY : Insert New data (reference) before a LinkedList's node.
         INPUT   : LinkedList** List : The LinkedList's node to insert new data before.
-        INPUT   : void* newData     : The data to insert at the node location.
+        INPUT   : void* newRefData  : The reference to insert at the node location.
         INPUT   : size_t dataSize   : The size of the data to insert into the LinkedList.
         OUTPUT  : LinkedList*       : The newly inserted note (or NULL if error).
     */
-    /* LinkedList*  KON_InsertRefIntoLinkedList(LinkedList** List, void* newData; */
+    LinkedList*  KON_InsertRefIntoLinkedList(LinkedList** List, void* newDataRef);
 
     /*
         SUMMARY : Swaps two nodes positions in a LinkedList.

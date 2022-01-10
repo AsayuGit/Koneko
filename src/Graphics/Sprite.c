@@ -151,14 +151,14 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
     sprite->lastFrame = SDL_GetTicks();
 }
 
-void KON_DrawSprite(Sprite* sprite, Vector2d spritePosition) {    
+void KON_DrawSprite(Sprite* sprite) {    
     if (!sprite || !sprite->isVisible)
         return;
     KON_UpdateSpriteAnimation(sprite);
     
     sprite->boundingBox = sprite->destination;
-    sprite->boundingBox.x += spritePosition.x - Koneko.dDevice.Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
-    sprite->boundingBox.y += spritePosition.y - Koneko.dDevice.Camera.y;
+    sprite->boundingBox.x += sprite->spritePosition.x - Koneko.dDevice.Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
+    sprite->boundingBox.y += sprite->spritePosition.y - Koneko.dDevice.Camera.y;
 
     KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
 }
