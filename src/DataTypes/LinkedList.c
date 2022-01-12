@@ -137,3 +137,16 @@ void KON_DeleteLinkedListNode(LinkedList** node){
     free((*node));
     *node = nextNode;
 }
+
+LinkedList* KON_GetLinkedListNodeIndex(LinkedList* list, unsigned int index) {
+    unsigned int i;
+
+    for (i = 0; i < index; i++) {
+        if (list)
+            list = list->next;
+        else
+            break;
+    }
+
+    return list;
+}

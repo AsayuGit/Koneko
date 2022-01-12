@@ -98,4 +98,6 @@
     */
     void         KON_DeleteLinkedListNode(LinkedList** node);
 
+    LinkedList*  KON_GetLinkedListNodeIndex(LinkedList* list, unsigned int index);
+
 #endif
