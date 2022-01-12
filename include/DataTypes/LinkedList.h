@@ -87,7 +87,7 @@
     unsigned int KON_LinkedListCount(LinkedList* List);
 
     /*
-        SUMMARY : Free a previously allocated LinkedList.
+        SUMMARY : Free a previously allocated LinkedList (But not it's data).
         INPUT   : LinkedList** List : A pointer to the LinkedList to be freed.
     */
     void         KON_FreeLinkedList(LinkedList** List);

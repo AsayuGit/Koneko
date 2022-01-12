@@ -29,14 +29,34 @@
 
 #include "CommunFunctions.h"
 
+#define KON_EntityOnX(scene, function) {                                                   \
+    MapLayer* currentLayer;                                                                \
+    LinkedList* entityInstanceList;                                                        \
+    EntityInstance* entityInstancePointer;                                                 \
+    unsigned int i;                                                                        \
+                                                                                           \
+    /* For each layer */                                                                   \
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++){                                     \
+        currentLayer = scene->WorldMap->MapLayer + i;                                      \
+                                                                                           \
+        /* For each entity instance */                                                     \
+        entityInstanceList = currentLayer->entityInstanceList;                             \
+        while (entityInstanceList) {                                                       \
+                                                                                           \
+            entityInstancePointer = ((EntityInstance*)entityInstanceList->data);           \
+            if (entityInstancePointer->descriptor->function)                               \
+                entityInstancePointer->descriptor->function(scene, currentLayer, entityInstancePointer); \
+                                                                                           \
+            entityInstanceList = entityInstanceList->next;                                 \
+        }                                                                                  \
+    }                                                                                      \
+}                                                                                          \
+
+static void KON_MapEvents(SceneHandle* scene) { KON_EntityOnX(scene, OnEvent); }
+static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
+
 int KON_StartScene(SceneDescriptor* scenePointer){
-    SceneHandle* scene = NULL;
-    EntityInstance* entityInstancePointer = NULL;
-    LinkedList* nodePointer = NULL;
-    MapLayer* currentLayer = NULL;
-    int returnValue = 0;
-    int renderer = 1; /* TEMP */
-    int i;
+    SceneHandle* scene;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
@@ -52,93 +72,31 @@ int KON_StartScene(SceneDescriptor* scenePointer){
 
         /* Events Loop */
         while(SDL_PollEvent(&Koneko.iDevice.event)){
-            KON_SystemEvents(&Koneko.iDevice); /* Engine events */
+            KON_SystemEvents(); /* Engine events */
             if (scenePointer->OnEvent)
                 scenePointer->OnEvent(scene);
 
-            nodePointer = scene->entityInstanceList;
-            while (nodePointer){
-                entityInstancePointer = ((EntityInstance*)nodePointer->data);
-                if (entityInstancePointer->descriptor->OnEvent)
-                    entityInstancePointer->descriptor->OnEvent(scene, entityInstancePointer);
-
-                nodePointer = nodePointer->next;
-            }
+            KON_MapEvents(scene);
         }
 
         if (scenePointer->OnFrame)
             scenePointer->OnFrame(scene);
 
         /* Entity OnFrame Logic */
-        nodePointer = scene->entityInstanceList;
-        while (nodePointer){
-            entityInstancePointer = ((EntityInstance*)nodePointer->data);
-            if (entityInstancePointer->descriptor->OnFrame)
-                entityInstancePointer->descriptor->OnFrame(scene, entityInstancePointer);
+        KON_MapFrame(scene);
 
-            nodePointer = nodePointer->next;
-        }
-
+        /* Process entitiy collisions */
         KON_EntityCollisions(scene);
 
         /* Music loop deamon */
         KON_MusicDaemon();
 
-        /* Clear the screen before rendering a new frame */
-        SDL_RenderClear(Koneko.dDevice.Renderer);
-
-        /* KON_Draw */
-        for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
-            /* KON_Update all entities in the scene */
-            nodePointer = scene->entityInstanceList;
-            while (nodePointer){ /* Processing all entity instances */
-                entityInstancePointer = ((EntityInstance*)nodePointer->data);
-                if (entityInstancePointer->layerID == i) {
-                    KON_DrawEntity(entityInstancePointer);
-                    if (entityInstancePointer->descriptor->OnDraw)
-                        entityInstancePointer->descriptor->OnDraw(scene, entityInstancePointer);
-                }
-                nodePointer = nodePointer->next;
-            }
-
-            switch (renderer) {
-                case 1: /* 2D */
-                    currentLayer = scene->WorldMap->MapLayer + i;
-                    switch (currentLayer->layerType)
-                    {
-                        case KON_LAYER_BITMAP:
-                            KON_DrawBitMap(currentLayer);
-                            break;
-
-                        case KON_LAYER_TILEMAP:
-                            KON_DrawTileMap(currentLayer);
-                            break;
-                        
-                        default:
-                            break;
-                    }
-                    KON_DrawDisplayList(currentLayer->displayList);
-                    break;
-
-                case 2: /* Raycast */
-                    /* code */
-                    break;
-                    
-                default:
-                    break;
-            }
-
-            /* Custom On_Draw() event */
-            if (scenePointer->OnDraw)
-                scenePointer->OnDraw(scene);
-
-        }
-
-        KON_FinishFrame(); /* Update the main window */
+        /* Draws the loaded map and its content on scren */
+        KON_DrawMap(scene->WorldMap);
     }
 
     if (scenePointer->OnExit)
         scenePointer->OnExit(scene);
 
-    return returnValue;
+    return 0;
 }

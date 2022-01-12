@@ -29,9 +29,6 @@
 
     struct SceneHandle {
         Map* WorldMap;
-        LinkedList* entityList;
-        LinkedList* entityInstanceList;
-
         void* sceneInstanceContext;
     };
 
@@ -47,7 +44,6 @@
         functPtrScene OnExit;
         functPtrScene OnEvent;
         functPtrScene OnFrame;
-        functPtrScene OnDraw;
     } SceneDescriptor;
 
     /*

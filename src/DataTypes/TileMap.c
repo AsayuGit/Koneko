@@ -20,21 +20,14 @@
 */
 
 #include "TileMap.h"
+#include "Map.h"
 #include "Surface.h"
 #include "Log.h"
 #include "CommunFunctions.h"
 #include "DisplayList.h"
 #include <linux/limits.h>
-#include <libgen.h> /* dirname() */
 
-
-/*
-    SUMMARY : Loads a bitmap from map file.
-    INPUT   : FILE* titleMapFile     : Oppened tilemap file.
-    INPUT   : char* rootDirectory    : Current Map's directory.
-    OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
-*/
-static KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
+KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     KON_Surface* loadedSurface;
     uint32_t colorKey;
     char buffer[PATH_MAX];
@@ -55,8 +48,7 @@ static KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     return loadedSurface;
 }
 
-/* Load a tilemap from a map file */
-TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory){
+TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
     TileMap* loadedTilemap = NULL;
     unsigned int nbOfSolidTiles;
     unsigned int i, j;
@@ -87,69 +79,6 @@ TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory){
     }
 
     return loadedTilemap;
-}
-
-Map* KON_LoadMap(char* mapFilePath){
-    /* Declaration */
-    Map* LoadedMap = NULL;
-    MapLayer* currentLayer = NULL;
-    FILE* MapFile = NULL;
-    TileMap* loadedTileMap = NULL;
-    Vector2d bdSize;
-    unsigned int nbOfLayers, layerType;
-    unsigned int i;
-    char* MapRoot = NULL;
-    char filepath[PATH_MAX];
-
-    /* Init */
-    MapFile = fopen(mapFilePath, "r");
-    if (!MapFile){
-        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, mapFilePath);
-        return NULL;
-    }
-
-    LoadedMap = (Map*)malloc(sizeof(Map));
-    astrcpy(&LoadedMap->MapFilePath, mapFilePath);
-    strcpy(filepath, mapFilePath);
-    MapRoot = dirname(filepath);
-
-    fscanf(MapFile, "%u", &nbOfLayers);
-    LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));
-    LoadedMap->nbOfLayers = nbOfLayers;
-
-    /* Logic */
-    for (i = 0; i < nbOfLayers; i++){ /* For each layer */
-        /* Check layer type */
-        layerType = 0;
-        fscanf(MapFile, "%u\n", &layerType);
-        currentLayer = LoadedMap->MapLayer + i;
-        switch (layerType){
-            case KON_LAYER_BITMAP:
-                currentLayer->layerData = (void*)KON_LoadBitMap(MapFile, MapRoot);
-
-                KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
-                KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
-                break;
-                
-            case KON_LAYER_TILEMAP:
-                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
-                KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
-                break;
-
-            default:
-                KON_SystemMsg("(KON_LoadMap) unknown layer mode", MESSAGE_WARNING, 0);
-                break;
-        }
-        LoadedMap->MapLayer[i].layerType = layerType;
-        LoadedMap->MapLayer[i].shown = true;
-        LoadedMap->MapLayer[i].displayList = KON_InitDisplayList();
-    }
-
-    /* free */
-    if (MapFile)
-        fclose(MapFile);
-
-    return LoadedMap;
 }
 
 /* FIXME: retreive colorKey*/
@@ -220,4 +149,85 @@ void KON_SaveTileMap(Map* mapToSave) {
 
     if (MapFile)
         fclose(MapFile);
+}
+
+static void KON_DrawTile(MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y) {
+    /* Declaration */
+    KON_Rect SrcTile, DstTile;
+    unsigned int tileSize;
+
+    tileSize = map->TileSize;
+
+    /* Init */
+    SrcTile.x = (TileID % map->tMSizeX) * tileSize;
+    SrcTile.y = (TileID / map->tMSizeX) * tileSize;
+    DstTile.x = X * tileSize + (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
+    DstTile.y = Y * tileSize + (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
+
+    SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
+    /* Logic */
+
+    KON_DrawScaledSurfaceRect(map->tileSet, &SrcTile, &DstTile);
+}
+
+void KON_DrawTileMap(MapLayer* Layer) {
+    /* Declaration */
+    unsigned int i, j;
+    TileMap* map;
+
+    map = (TileMap*)Layer->layerData;
+
+    /* Logic */
+    if (Layer->shown && (Layer->layerType == KON_LAYER_TILEMAP)){
+        for (i = 0; i < map->MapSizeY; i++){
+            for (j = 0; j < map->MapSizeX; j++){
+                KON_DrawTile(Layer, map, map->MapData[i][j], j, i);
+            }
+        }
+    }
+}
+
+void KON_DrawBitMap(MapLayer* Layer) {
+    Vector2d pos;
+
+    pos.x = (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
+    pos.y = (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
+
+    KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
+}
+
+unsigned int KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y) {
+    if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY)
+        return 0;
+    return tileMap->MapData[Y][X];
+}
+
+unsigned int KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y) {
+    unsigned int tileSize;
+
+    tileSize = tileMap->TileSize;
+    X /= tileSize;
+    Y /= tileSize;
+    return KON_GetTile(tileMap, X, Y);
+}
+
+bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
+    LinkedList* tileList = NULL;
+    
+    tileList = tileMap->solidTiles;
+    while (tileList){
+        /* If we find the tile amongst the list of solid tiles */
+        if (tile == *(unsigned int*)(tileList->data))
+            return true;
+        tileList = tileList->next;
+    }
+    return false;
+}
+
+/* Returns true if the Map Tile is solid */
+bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y) {
+    if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY)
+        return true;
+
+    return KON_IsTileSolid(tileMap, KON_GetTile(tileMap, X, Y));
 }

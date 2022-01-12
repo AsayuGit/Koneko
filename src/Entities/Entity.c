@@ -61,9 +61,10 @@ void KON_FreeEntity(EntityInstance* entityInstanceToFree){
 }
 
 /* KON_UpdateEntity() */
-void KON_DrawEntity(EntityInstance* entity) { /* Display "A" Character on screen  */
-    entity->entitySprite.spritePosition = entity->pos;
-    /*KON_DrawSprite(&entity->entitySprite);*/
+void KON_UpdateEntityPosition(EntityInstance* entity) { /* Display "A" Character on screen  */
+    entity->lastPos = entity->pos;
+    entity->entitySprite.spritePosition = entity->pos = KON_GetVectAddition(&entity->pos, &entity->mov);
+    entity->mov = KON_InitVector2d(0, 0);
 }
 
 void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){
@@ -79,7 +80,7 @@ bool KON_FindInEntityInstanceList(LinkedList* list, void* data){
     return false;
 }
 
-void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity){
+void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, MapLayer* layer, EntityInstance* entity){
     bool frameSelect = entity->collision.collisionFrameSelect;
     LinkedList* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     LinkedList* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
@@ -89,11 +90,11 @@ void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity
         if (KON_FindInEntityInstanceList(wereColidingEntities, nowColidingEntities->data)){
             /* Ongoing collision */
             if (call->OnCollisionStay)
-                call->OnCollisionStay(scene, entity, (CollisionEvent*)nowColidingEntities->data);
+                call->OnCollisionStay(scene, layer, entity, (CollisionEvent*)nowColidingEntities->data);
         } else {
             /* New collision */
             if (call->OnCollisionStart)
-                call->OnCollisionStart(scene, entity, (CollisionEvent*)nowColidingEntities->data);
+                call->OnCollisionStart(scene, layer, entity, (CollisionEvent*)nowColidingEntities->data);
         }
         nowColidingEntities = nowColidingEntities->next;
     }
@@ -102,7 +103,7 @@ void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity
         if (!KON_FindInEntityInstanceList(nowColidingEntities, wereColidingEntities->data)){
             /* Outgoing collision */
             if (call->OnCollisionStop)
-                call->OnCollisionStop(scene, entity, (CollisionEvent*)wereColidingEntities->data);
+                call->OnCollisionStop(scene, layer, entity, (CollisionEvent*)wereColidingEntities->data);
         }
         wereColidingEntities = wereColidingEntities->next;
     }
@@ -124,6 +125,7 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
 EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
+    MapLayer* mapLayer;
 
     if (!(newInstance = KON_LoadEntity(spawnedEntity)))
         return NULL;
@@ -131,37 +133,23 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     /* Load the new entity in memory */
     newInstance->pos.x = X;
     newInstance->pos.y = Y;
-    newInstance->layerID = layerID;
     newInstance->collision.generateCollisionEvents = true;
 
+    /* The MapLayer to spawn the new entity in */
+    mapLayer = scene->WorldMap->MapLayer + layerID;
+
     if (newInstance->descriptor->OnSetup)
-        newInstance->descriptor->OnSetup(scene, newInstance);
+        newInstance->descriptor->OnSetup(scene, mapLayer, newInstance);
 
-    nodePointer = KON_AppendRefToLinkedList(&scene->entityInstanceList, newInstance);
+    nodePointer = KON_AppendRefToLinkedList(&mapLayer->entityInstanceList, newInstance);
 
-    KON_AddToDisplayList(scene->WorldMap->MapLayer[layerID].displayList, &newInstance->entitySprite, 0);
+    /* Add the entity's sprite to its mapLayer's DisplayList */
+    KON_AddToDisplayList(mapLayer->displayList, &newInstance->entitySprite, 0);
     
     return ((EntityInstance*)nodePointer->data);
 }
 
-/* TODO: Check that again */
+/* FIXME: Re-Implement */
 void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill) {
-    LinkedList** entityInstanceList = &scene->entityInstanceList;
-    bool instanceKilled = false;
-
-    while (*entityInstanceList){
-        if ((EntityInstance*)(*entityInstanceList)->data == entityInstanceToKill){
-            if (instanceKilled){
-                return;
-            } else {
-                /* Free entity instance */
-                KON_FreeEntity(entityInstanceToKill);
-                KON_DeleteLinkedListNode(entityInstanceList); /* Don't forget to clean the instance's context :3 */
-                instanceKilled = true;
-            }
-        }
-        if (!*entityInstanceList)
-            break;
-        entityInstanceList = &(*entityInstanceList)->next;
-    }
+    KON_SystemMsg("(KON_KillEntityInstance) Not Implemented !", MESSAGE_WARNING, 0);
 }

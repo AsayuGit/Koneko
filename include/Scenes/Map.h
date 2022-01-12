@@ -33,21 +33,11 @@
     }; /* TODO: KON_LayerType */
 
     typedef struct{
-        KON_Surface* tileSet;
-        unsigned int TileSize;          /* Size (in pixel) of a tile */
-        unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
-        unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
-        unsigned int MapSizeX;          /* Nb of tiles in the X direction */
-        unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
-        unsigned int** MapData;         /* Map Data */
-        LinkedList* solidTiles;               /* List Of tile to colide with */
-    } TileMap;
-
-    typedef struct{
         unsigned int layerType;
         void* layerData;
         Vector2d pos;
         KON_Rect boundingBox;
+        LinkedList* entityInstanceList;
         DisplayList* displayList;
         bool shown;
     } MapLayer;
@@ -57,5 +47,14 @@
         unsigned int nbOfLayers;
         MapLayer* MapLayer;
     } Map;
+
+    /*
+        SUMMARY : Loads a Map form disk.
+        INPUT   : char* mapFilePath : The path to the map to load.
+        OUTPUT  : Map*              : The newly loaded map (or NULL on error).
+    */
+    Map* KON_LoadMap(char* mapFilePath);
+
+    void KON_DrawMap(Map* map);
 
 #endif

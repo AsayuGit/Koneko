@@ -20,28 +20,36 @@
 */
 
 #include "Collisions.h"
-
+#include "Entity.h"
 #include "Graphics.h"
 #include "CommunFunctions.h"
+#include "TileMap.h"
 
 /* FIXME: Uses boundingboxes instead of raw position to check scene collisions */
-void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityInstancePointer){
-    MapLayer* currentLayer;
+static void KON_EntityLayerCollisionCheck(MapLayer* layer) {
+    EntityInstance* entityInstancePointer;
+    LinkedList* entityInstanceList;
     Vector2i entityNewTile;
+    TileMap* tileMap;
     unsigned int tileSize;
 
-    if (scene && entityInstancePointer->properties.isSolid){ /* If we need to check colisions */
-        /* we figure out where the entity is supposed to land */
-        currentLayer = scene->WorldMap->MapLayer + entityInstancePointer->layerID;
+    if (layer->layerType == KON_LAYER_TILEMAP) {
+        tileMap = (TileMap*)layer->layerData;
+        tileSize = tileMap->TileSize;
 
-        if (currentLayer->layerType == KON_LAYER_TILEMAP){
-            tileSize = ((TileMap*)currentLayer->layerData)->TileSize;
+        entityInstanceList = layer->entityInstanceList;
+        while (entityInstanceList) {
+            entityInstancePointer = (EntityInstance*)entityInstanceList->data;
+
+            /* Only process collision if the entity is actually solid */
+            if (!entityInstancePointer->properties.isSolid)
+                continue;
 
             entityNewTile.x = (entityInstancePointer->pos.x + entityInstancePointer->mov.x) / tileSize;
             entityNewTile.y = (entityInstancePointer->pos.y + entityInstancePointer->mov.y) / tileSize;
             
             /* X Collisions */
-            if (KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)){
+            if (KON_IsTileMapTileSolid(tileMap, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize)){
                 if (entityInstancePointer->mov.x > 0){
                     entityInstancePointer->mov.x = (entityNewTile.x * tileSize - 1) - entityInstancePointer->pos.x;
                 } else {
@@ -51,7 +59,7 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
             }
             
             /* Y Collisions */
-            if (KON_IsMapTileSolid(scene, entityInstancePointer->layerID, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)){
+            if (KON_IsTileMapTileSolid(tileMap, entityInstancePointer->pos.x / tileSize, entityNewTile.y)){
                 if (entityInstancePointer->mov.y > 0){
                     entityInstancePointer->mov.y = (entityNewTile.y * tileSize - 1) - entityInstancePointer->pos.y;
                 } else {
@@ -59,9 +67,17 @@ void KON_EntitySceneCollisionCheck(SceneHandle* scene, EntityInstance* entityIns
                 }
                 /*printf("DEBUG: EntitySceneCollision on Y axis\n");*/
             }
-            return;
+            
+            entityInstanceList = entityInstanceList->next;
         }
     }
+}
+
+static void KON_EntitySceneCollisionCheck(SceneHandle* scene) {
+    unsigned int i;
+
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++)
+        KON_EntityLayerCollisionCheck(scene->WorldMap->MapLayer + i);
 }
 
 /*
@@ -114,87 +130,80 @@ Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBP
     KON_EntityEntityCollisionCheck() : Check collisions between all entities
     INPUT : SceneHanle* scene  : Pointer to the current scene
 */
-void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
+static void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
     KON_Rect collisionResult;
     EntityInstance *entityA, *entityB;
     LinkedList* nodePointer, *nodePointerB, *nextEntity;
     KON_Rect entityABoundingBox, entityBBoundingBox;
+    MapLayer* layer;
+    unsigned int i;
 
-    nodePointer = scene->entityInstanceList;
-    while (nodePointer){
-        entityA = ((EntityInstance*)nodePointer->data);
-        entityA->collision.collisionFrameSelect ^= 1;
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++) {
+        layer = scene->WorldMap->MapLayer + i;
+        nodePointer = layer->entityInstanceList;
+        while (nodePointer){
+            entityA = ((EntityInstance*)nodePointer->data);
+            entityA->collision.collisionFrameSelect ^= 1;
 
-        nodePointerB = scene->entityInstanceList;
-        while (nodePointerB){
-            if (nodePointer != nodePointerB){ /* Prevent an entity from coliding with itself */
-                entityB = (EntityInstance*)nodePointerB->data;
+            nodePointerB = layer->entityInstanceList;
+            while (nodePointerB){
+                if (nodePointer != nodePointerB){ /* Prevent an entity from coliding with itself */
+                    entityB = (EntityInstance*)nodePointerB->data;
 
-                /* Collision test */
-                KON_RectPlusVect(entityABoundingBox, entityA->entitySprite.boundingBox, entityA->mov);
-                KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite.boundingBox, entityB->mov);
-                if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
-                    
-                    if (entityA->properties.isSolid) {
-                        /* Prevent entity A from going into entity B */
-                        /* We substract to the "Position" the smallest dimention of the collisionResult */
+                    /* Collision test */
+                    KON_RectPlusVect(entityABoundingBox, entityA->entitySprite.boundingBox, entityA->mov);
+                    KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite.boundingBox, entityB->mov);
+                    if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                        
+                        if (entityA->properties.isSolid) {
+                            /* Prevent entity A from going into entity B */
+                            /* We substract to the "Position" the smallest dimention of the collisionResult */
 
-                        if (collisionResult.w < collisionResult.h) {
-                            entityA->mov.x -= collisionResult.w;
-                        } else {
-                            entityA->mov.y -= collisionResult.h;
+                            if (collisionResult.w < collisionResult.h) {
+                                entityA->mov.x -= collisionResult.w;
+                            } else {
+                                entityA->mov.y -= collisionResult.h;
+                            }
                         }
+
+                        /* Append CollisionEvents */
+                        KON_AppendNewCollisionEvent(&(entityA->collision.collisionEvents[entityA->collision.collisionFrameSelect]), &entityB, KON_GetEntityCollisionDirection(entityA->pos, entityB->pos, collisionResult)); /* For entity A */
+                        KON_AppendNewCollisionEvent(&(entityB->collision.collisionEvents[entityB->collision.collisionFrameSelect]), &entityA, KON_GetEntityCollisionDirection(entityB->pos, entityA->pos, collisionResult)); /* For entity B */
                     }
-
-                    /* Append CollisionEvents */
-                    KON_AppendNewCollisionEvent(&(entityA->collision.collisionEvents[entityA->collision.collisionFrameSelect]), &entityB, KON_GetEntityCollisionDirection(entityA->pos, entityB->pos, collisionResult)); /* For entity A */
-                    KON_AppendNewCollisionEvent(&(entityB->collision.collisionEvents[entityB->collision.collisionFrameSelect]), &entityA, KON_GetEntityCollisionDirection(entityB->pos, entityA->pos, collisionResult)); /* For entity B */
                 }
+                nodePointerB = nodePointerB->next;
             }
-            nodePointerB = nodePointerB->next;
-        }
 
-        nextEntity = nodePointer->next;
-        if (entityA->collision.generateCollisionEvents)
-            KON_ProcessEntityCollisionsCalls(scene, entityA);
-        
-        nodePointer = nextEntity;
+            nextEntity = nodePointer->next;
+            if (entityA->collision.generateCollisionEvents)
+                KON_ProcessEntityCollisionsCalls(scene, layer, entityA);
+            
+            nodePointer = nextEntity;
+        }
     }
 }
 
 void KON_EntityCollisions(SceneHandle* scene) {
     EntityInstance *entityInstancePointer;
     LinkedList* nodePointer;
+    unsigned int i;
 
     /* Entity / Scene Collisions */
-    nodePointer = scene->entityInstanceList;
-    while (nodePointer){
-        entityInstancePointer = ((EntityInstance*)nodePointer->data);
+    KON_EntitySceneCollisionCheck(scene);
 
-        /* Free the CollisionEvent list for the current entity */
-        KON_FreeLinkedList(&(entityInstancePointer->collision.collisionEvents[entityInstancePointer->collision.collisionFrameSelect]));
+    /* Free the CollisionEvent list for all entities */
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++) {
+        nodePointer = scene->WorldMap->MapLayer[i].entityInstanceList;
+        while (nodePointer){
+            entityInstancePointer = ((EntityInstance*)nodePointer->data);
 
-        KON_EntitySceneCollisionCheck(scene, entityInstancePointer);
-        nodePointer = nodePointer->next;
+            KON_FreeLinkedList(&(entityInstancePointer->collision.collisionEvents[entityInstancePointer->collision.collisionFrameSelect]));
+            nodePointer = nodePointer->next;
+        }
     }
 
     /* Entity / Entity Collisions */
     KON_EntityEntityCollisionCheck(scene);
-
-    /* Apply/raz entity movement */
-    nodePointer = scene->entityInstanceList;
-    while (nodePointer){
-        entityInstancePointer = ((EntityInstance*)nodePointer->data);
-        
-        entityInstancePointer->lastPos = entityInstancePointer->pos;
-
-        entityInstancePointer->pos.x += entityInstancePointer->mov.x;
-        entityInstancePointer->pos.y += entityInstancePointer->mov.y;
-
-        entityInstancePointer->mov = KON_InitVector2d(0.0, 0.0);
-
-        nodePointer = nodePointer->next;
-    }
 }
 
 Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect) {

@@ -24,18 +24,11 @@
 
     #include "Scene.h"
 
-    void            KON_DrawBitMap(MapLayer* Layer);
-    void            KON_DrawTileMap(MapLayer* Layer);
     uint32_t        getpixel(SDL_Surface *surface, int x, int y);
     void            FlipBlitSurface(SDL_Surface* SourceSurface, const KON_Rect* SrcRect, SDL_Surface* ScreenTarget, const KON_Rect* DstRect, bool flipFlag);
     bool            RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect);
     bool            RectOnScreen(const KON_Rect* Rect);
     void            CenterCameraOnCoordinates(double X, double Y);
     void            BoundCameraToRegion(KON_Rect Region);
-    unsigned int    KON_GetTile(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y);
-    unsigned int    KON_GetTileAtCoordinates(SceneHandle* scene, unsigned int layerID, double X, double Y);
-    bool            KON_IsTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int tile);
-    bool            KON_IsMapTileSolid(SceneHandle* scene, unsigned int layerID, unsigned int X, unsigned int Y, unsigned int *tile);
-    bool            KON_IsWorldTileSolid(SceneHandle* scene, unsigned int layerID, double X, double Y, unsigned int *tile);
 
 #endif

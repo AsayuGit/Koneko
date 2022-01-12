@@ -31,8 +31,8 @@
     #include "Collisions.h"
 
     typedef void (*functPtrEntityFree)(EntityInstance* entity);
-    typedef void (*functPtrEntity)(SceneHandle* scene, EntityInstance* self);
-    typedef void (*functPtrEntityColison)(SceneHandle* scene, EntityInstance* self, CollisionEvent* collision);
+    typedef void (*functPtrEntity)(SceneHandle* scene, MapLayer* layer, EntityInstance* self);
+    typedef void (*functPtrEntityColison)(SceneHandle* scene, MapLayer* layer, EntityInstance* self, CollisionEvent* collision);
 
     struct EntityProperties {
         bool isSolid;
@@ -50,7 +50,6 @@
         functPtrEntityFree OnExit;
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
-        functPtrEntity OnDraw;
         functPtrEntityColison OnCollisionStart;
         functPtrEntityColison OnCollisionStay;
         functPtrEntityColison OnCollisionStop;
@@ -75,7 +74,6 @@
 
         /* Visual properties */
         Sprite entitySprite;
-        unsigned int layerID; /* TODO: Should that be a part of the sprite itself ? */
         Vector2d pos; /* Absolute position in space */
         Vector2d mov; /* Relative frame-to-frame movement (reset each frame) */
 
@@ -98,11 +96,7 @@
     */
     void            KON_FreeEntity(EntityInstance* entityToFree);
 
-    /*
-        SUMMARY : Draws an EntityInstance to the screen.
-        INPUT   : EntityInstance* entity : The EntityInstance to draw.
-    */
-    void            KON_DrawEntity(EntityInstance* entity);
+    void            KON_UpdateEntityPosition(EntityInstance* entity);
 
     /*
         SUMMARY : Starts a new animation for an entity.
@@ -118,7 +112,7 @@
         INPUT   : SceneHandle* scene     : The scene where the colisions occured.
         INPUT   : EntityInstance* entity : The entity to process the collision callbacks for.
     */
-    void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene, EntityInstance* entity);
+    void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene, MapLayer* layer, EntityInstance* entity);
 
     /*
         SUMMARY : Prevent an entity form going outside a specified rect.

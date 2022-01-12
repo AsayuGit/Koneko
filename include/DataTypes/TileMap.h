@@ -23,18 +23,43 @@
 #define _TILEMAP_H
 
     #include "Map.h"
+    #include "Surface.h"
+    #include "LinkedList.h"
+
+    typedef struct{
+        KON_Surface* tileSet;
+        unsigned int TileSize;          /* Size (in pixel) of a tile */
+        unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
+        unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
+        unsigned int MapSizeX;          /* Nb of tiles in the X direction */
+        unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
+        unsigned int** MapData;         /* Map Data */
+        LinkedList* solidTiles;               /* List Of tile to colide with */
+    } TileMap;
+
+    /* Load a tilemap from a map file */
+    TileMap*     KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory);
+
+    void         KON_DrawTileMap(MapLayer* Layer);
+
+    unsigned int KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y);
+    unsigned int KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y);
+    bool         KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
+    bool         KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y);
 
     /*
-        SUMMARY : Loads a Map form disk.
-        INPUT   : char* mapFilePath : The path to the map to load.
-        OUTPUT  : Map*              : The newly loaded map (or NULL on error).
+        SUMMARY : Loads a bitmap from map file.
+        INPUT   : FILE* titleMapFile     : Oppened tilemap file.
+        INPUT   : char* rootDirectory    : Current Map's directory.
+        OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
     */
-    Map* KON_LoadMap(char* mapFilePath);
+    KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory); /* TODO: convert to sprite */
 
     /*
-        SUMMARY : Store a previously loaded Map on disk.
-        INPUT   : Map* mapToStore : The map to store on disk.
+        SUMMARY : Draws a bitmap layer on screen.
+        INPUT   : MapLayer* Layer : The bitmap layer to draw
     */
-    void KON_SaveTileMap(Map* mapToSave);
+    void         KON_DrawBitMap(MapLayer* Layer);
+
 
 #endif

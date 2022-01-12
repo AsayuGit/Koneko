@@ -64,9 +64,9 @@ void KON_AddToDisplayList(DisplayList* list, Sprite* sprite, unsigned int priori
         KON_InsertRefIntoLinkedList(layerList, spriteLayer);
     }
 
-    /* Insert the sprite at the begining of its layer */
+    /* Insert the sprite at the end of its layer */
     spriteLayer = (DisplayListLayer*)(*layerList)->data;
-    KON_InsertRefIntoLinkedList(&spriteLayer->spriteList, sprite);
+    KON_AppendRefToLinkedList(&spriteLayer->spriteList, sprite);
 }
 
 void KON_RemoveFromDisplayList(DisplayList* list, Sprite* sprite) {
