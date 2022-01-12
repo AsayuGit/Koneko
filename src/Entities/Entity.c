@@ -122,7 +122,7 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     }
 }
 
-EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int X, unsigned int Y) {
+EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, unsigned int X, unsigned int Y) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
     MapLayer* mapLayer;
@@ -144,8 +144,8 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     nodePointer = KON_AppendRefToLinkedList(&mapLayer->entityInstanceList, newInstance);
 
     /* Add the entity's sprite to its mapLayer's DisplayList */
-    KON_AddToDisplayList(mapLayer->displayList, &newInstance->entitySprite, 0);
-    
+    KON_AddToDisplayList(mapLayer->displayList, &newInstance->entitySprite, priority);
+
     return ((EntityInstance*)nodePointer->data);
 }
 
