@@ -101,6 +101,15 @@ static void KON_UpdateLayerEntityPosition(MapLayer* layer) {
     }
 }
 
+void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsigned int priority) {
+    if (layerID >= map->nbOfLayers) {
+        KON_SystemMsg("(KON_AddSpriteToLayer) No such layer !", MESSAGE_ERROR, 0);
+        return;
+    }
+
+    KON_AddToDisplayList(map->MapLayer[layerID].displayList, sprite, priority);
+}
+
 void KON_DrawMap(Map* map) {
     MapLayer* currentLayer;
     int i;

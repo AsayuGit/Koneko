@@ -55,6 +55,8 @@
     */
     Map* KON_LoadMap(char* mapFilePath);
 
+    void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsigned int priority);
+
     void KON_DrawMap(Map* map);
 
 #endif
