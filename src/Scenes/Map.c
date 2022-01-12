@@ -109,7 +109,8 @@ void KON_DrawMap(Map* map) {
     SDL_RenderClear(Koneko.dDevice.Renderer);
 
     /* Draw each layer */
-    for (i = map->nbOfLayers - 1; i >= 0; i--) {
+    /*for (i = map->nbOfLayers - 1; i >= 0; i--) {*/
+    for (i = 0; i < map->nbOfLayers; i++) {
         currentLayer = map->MapLayer + i;
 
         /* Update all entities position */
