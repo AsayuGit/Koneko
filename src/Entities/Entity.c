@@ -26,6 +26,7 @@
 #include "System.h"
 #include "Graphics.h"
 #include "Log.h"
+#include "DisplayList.h"
 
 /* Loads an Entity in memory */
 EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
@@ -59,10 +60,10 @@ void KON_FreeEntity(EntityInstance* entityInstanceToFree){
     free(entityInstanceToFree);
 }
 
-/* potential caching possible (entity->commun->entityAnimations)*/
+/* KON_UpdateEntity() */
 void KON_DrawEntity(EntityInstance* entity) { /* Display "A" Character on screen  */
     entity->entitySprite.spritePosition = entity->pos;
-    KON_DrawSprite(&entity->entitySprite);
+    /*KON_DrawSprite(&entity->entitySprite);*/
 }
 
 void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){
@@ -137,6 +138,8 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
         newInstance->descriptor->OnSetup(scene, newInstance);
 
     nodePointer = KON_AppendRefToLinkedList(&scene->entityInstanceList, newInstance);
+
+    KON_AddToDisplayList(scene->WorldMap->MapLayer[layerID].displayList, &newInstance->entitySprite, 0);
     
     return ((EntityInstance*)nodePointer->data);
 }

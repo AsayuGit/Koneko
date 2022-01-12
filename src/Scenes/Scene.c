@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "TileMap.h"
 #include "Log.h"
+#include "DisplayList.h"
 
 #include "CommunFunctions.h"
 
@@ -88,6 +89,18 @@ int KON_StartScene(SceneDescriptor* scenePointer){
 
         /* KON_Draw */
         for (i = scene->WorldMap->nbOfLayers - 1; i >= 0; i--){
+            /* KON_Update all entities in the scene */
+            nodePointer = scene->entityInstanceList;
+            while (nodePointer){ /* Processing all entity instances */
+                entityInstancePointer = ((EntityInstance*)nodePointer->data);
+                if (entityInstancePointer->layerID == i) {
+                    KON_DrawEntity(entityInstancePointer);
+                    if (entityInstancePointer->descriptor->OnDraw)
+                        entityInstancePointer->descriptor->OnDraw(scene, entityInstancePointer);
+                }
+                nodePointer = nodePointer->next;
+            }
+
             switch (renderer) {
                 case 1: /* 2D */
                     currentLayer = scene->WorldMap->MapLayer + i;
@@ -103,7 +116,8 @@ int KON_StartScene(SceneDescriptor* scenePointer){
                         
                         default:
                             break;
-                    }    
+                    }
+                    KON_DrawDisplayList(currentLayer->displayList);
                     break;
 
                 case 2: /* Raycast */
@@ -112,18 +126,6 @@ int KON_StartScene(SceneDescriptor* scenePointer){
                     
                 default:
                     break;
-            }
-
-            /* KON_Draw all entities in the scene */
-            nodePointer = scene->entityInstanceList;
-            while (nodePointer){ /* Processing all entity instances */
-                entityInstancePointer = ((EntityInstance*)nodePointer->data);
-                if (entityInstancePointer->layerID == i) {
-                    KON_DrawEntity(entityInstancePointer);
-                    if (entityInstancePointer->descriptor->OnDraw)
-                        entityInstancePointer->descriptor->OnDraw(scene, entityInstancePointer);
-                }
-                nodePointer = nodePointer->next;
             }
 
             /* Custom On_Draw() event */

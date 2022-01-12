@@ -49,21 +49,24 @@ void KON_FreeDisplayList(DisplayList* listToFree) {
 }
 
 void KON_AddToDisplayList(DisplayList* list, Sprite* sprite, unsigned int priority) {
-    LinkedList** layerPointer = &list->layers;
-    DisplayListLayer* newLayer;
+    LinkedList** layerList = &list->layers;
+    DisplayListLayer* spriteLayer;
 
-    while ((*layerPointer)) { /* Search for the right priority layer */
-        if (((DisplayListLayer*)(*layerPointer)->data)->priority >= priority)
+    while (*layerList) { /* Search for the right priority layer */
+        if (((DisplayListLayer*)(*layerList)->data)->priority >= priority)
             break;
+        layerList = &(*layerList)->next;
     }
 
-    if (!(*layerPointer)) { /* Allocate a new layer if necessary */
-        newLayer = (DisplayListLayer*)calloc(1, sizeof(DisplayListLayer));
-        newLayer->priority = priority;
-        KON_InsertRefIntoLinkedList(layerPointer, newLayer);
+    if (!(*layerList)) { /* Allocate a new layer if necessary */
+        spriteLayer = (DisplayListLayer*)calloc(1, sizeof(DisplayListLayer));
+        spriteLayer->priority = priority;
+        KON_InsertRefIntoLinkedList(layerList, spriteLayer);
     }
 
-    KON_InsertRefIntoLinkedList(layerPointer, sprite); /* Insert the new sprite to the begining of the list */
+    /* Insert the sprite at the begining of its layer */
+    spriteLayer = (DisplayListLayer*)(*layerList)->data;
+    KON_InsertRefIntoLinkedList(&spriteLayer->spriteList, sprite);
 }
 
 void KON_RemoveFromDisplayList(DisplayList* list, Sprite* sprite) {

@@ -23,6 +23,7 @@
 #include "Surface.h"
 #include "Log.h"
 #include "CommunFunctions.h"
+#include "DisplayList.h"
 #include <linux/limits.h>
 #include <libgen.h> /* dirname() */
 
@@ -141,6 +142,7 @@ Map* KON_LoadMap(char* mapFilePath){
         }
         LoadedMap->MapLayer[i].layerType = layerType;
         LoadedMap->MapLayer[i].shown = true;
+        LoadedMap->MapLayer[i].displayList = KON_InitDisplayList();
     }
 
     /* free */

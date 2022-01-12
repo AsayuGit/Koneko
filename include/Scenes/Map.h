@@ -25,6 +25,7 @@
     #include "LinkedList.h"
     #include "Surface.h"
     #include "Rect.h"
+    #include "DisplayList.h"
 
     enum {
         KON_LAYER_BITMAP = 1,
@@ -47,6 +48,7 @@
         void* layerData;
         Vector2d pos;
         KON_Rect boundingBox;
+        DisplayList* displayList;
         bool shown;
     } MapLayer;
 
