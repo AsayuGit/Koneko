@@ -26,7 +26,8 @@
 			"collisions.h": "c",
 			"functional": "c",
 			"displaylist.h": "c",
-			"linkedlist.h": "c"
+			"linkedlist.h": "c",
+			"SFX.C": "cpp"
 		}
 	}
 }

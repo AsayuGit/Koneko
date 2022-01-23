@@ -19,44 +19,34 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Jukebox.h"
-#include "Music.h"
+#ifndef _MUSIC_H
+#define _MUSIC_H
 
-#include <stddef.h>
+    #include <Bool.h>
 
-static KON_Music Track_INTRO = NULL;
-static KON_Music Track_LOOP = NULL;
+    typedef struct KON_Music KON_Music;
 
-/* MUSIC QUEUE SYSTEM */
-void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath) {
-    KON_StopTrack();
+    /*
+        SUMMARY : Play the music file passed in parameters
+        INPUT   : char* introPath : The path of the music intro
+        INPUT   : char* loopPath  : The path of the music loop
+        INPUT   : int loops       : The number of times to play the music for (-1 = infinity)
+    */
+    void KON_PlayMusic(char* introPath, char* loopPath, int loops);
 
-    if (Track_INTRO){
-        KON_FreeMusic(Track_INTRO);
-        Track_INTRO = NULL;
-    }
+    /*
+        SUMMARY : Stop the currently playing music file if any
+    */
+    void KON_StopMusic();
 
-    if (Track_LOOP){
-        KON_FreeMusic(Track_LOOP);
-        Track_LOOP = NULL;
-    }
-    
-    if (IntroPath)
-        Track_INTRO = KON_LoadMusic(IntroPath);
-    if (LoopPath){
-        Track_LOOP = KON_LoadMusic(LoopPath);
-    }
+    /*
+        SUMMARY : Play the looping part of the currently playing music one the intro has ended (should be called every frame)
+    */
+    void KON_MusicDaemon();
 
-    if (Track_INTRO)
-        KON_PlayMusic(Track_INTRO, 1);
-}
+    /*
+        SUMMARY : Return wether music is currently playing or not.
+    */
+    bool KON_IsMusicPlaying();
 
-void KON_MusicDaemon() {
-    if (!KON_IsMusicPlaying() && Track_LOOP){
-        KON_PlayMusic(Track_LOOP, -1);
-    }
-}
-
-void KON_StopTrack() {
-    KON_StopMusic();
-}
+#endif

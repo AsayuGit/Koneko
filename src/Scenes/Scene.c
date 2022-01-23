@@ -21,11 +21,11 @@
 
 #include "Koneko.h"
 #include "Scene.h"
-#include "Jukebox.h"
 #include "Graphics.h"
 #include "TileMap.h"
 #include "Log.h"
 #include "DisplayList.h"
+#include "Music.h"
 
 #include "CommunFunctions.h"
 

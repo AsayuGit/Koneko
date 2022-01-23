@@ -19,24 +19,30 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _JUKEBOX_H
-#define _JUKEBOX_H
+#ifndef _SFX_H
+#define _SFX_H
+
+    typedef struct KON_Sfx KON_Sfx;
 
     /*
-        SUMMARY : Plays a looping music file from disk.
-        INPUT   : char* IntroPath : Path to the intro part of the music.
-        INPUT   : char* LoopPath  : Path to the looping part of the music.
+        SUMMARY : Load a sound effect file from disk.
+        INPUT   : char* filePath : The path to the sound effect file.
+        OUTPUT  : KON_Sfx*       : The newly loaded sound effect or NULL on error.
     */
-    void KON_PlayTrackFromDisk(char* IntroPath, char* LoopPath);
+    KON_Sfx* KON_LoadSoundEffect(char* filePath);
+
 
     /*
-        SUMMARY : Process the transition between the into part and the looping part of background tracks.
+        SUMMARY : Free a previously loaded sound effect.
+        INPUT   : KON_Sfx soundEffect : The sound effect to free.
     */
-    void KON_MusicDaemon();
+    void     KON_FreeSoundEffect(KON_Sfx* soundEffect);
 
     /*
-        SUMMARY : Stops any previously started music track.
+        SUMMARY : Plays the sound effect file passed in parameters
+        INPUT   : KON_Sfx sfx : The sound effect to play
+        INPUT   : int loops   : The number of times the sound effect should be played for
     */
-    void KON_StopTrack();
+    void     KON_PlaySoundEffect(KON_Sfx* sfx, int loops);
 
 #endif
