@@ -109,10 +109,8 @@
 
     /*
         SUMMARY : Calls the relevant function callbacks for the last processed collision.
-        INPUT   : SceneHandle* scene     : The scene where the colisions occured.
-        INPUT   : EntityInstance* entity : The entity to process the collision callbacks for.
     */
-    void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene, MapLayer* layer, EntityInstance* entity);
+    void            KON_ProcessEntityCollisionsCalls(SceneHandle* scene);
 
     /*
         SUMMARY : Prevent an entity form going outside a specified rect.

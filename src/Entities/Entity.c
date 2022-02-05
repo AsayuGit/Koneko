@@ -71,41 +71,79 @@ void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, b
     KON_PlaySpriteAnimation(&entity->entitySprite, animationID, reset, loop);
 }
 
-bool KON_FindInEntityInstanceList(LinkedList* list, void* data){
-    while (list){
-        if (*(EntityInstance**)list->data == *(EntityInstance**)data)
-            return true;
-        list = list->next;
-    }
-    return false;
-}
-
-void KON_ProcessEntityCollisionsCalls(SceneHandle* scene, MapLayer* layer, EntityInstance* entity){
+/*
+    SUMMARY : Calls the relevant entity collision callbacks.
+    INPUT   : SceneHandle* scene     : The scene in which the collisions happened.
+    INPUT   : MapLayer* layer        : The layer in which the collisions happened.
+    INPUT   : EntityInstance* entity : The entity to process the callbacks of.
+*/
+static void KON_ProcessEntityCollisionsCall(SceneHandle* scene, MapLayer* layer, EntityInstance* entity){
     bool frameSelect = entity->collision.collisionFrameSelect;
     LinkedList* nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     LinkedList* wereColidingEntities = entity->collision.collisionEvents[frameSelect ^ 1];
     EntityDescriptor* call = entity->descriptor;
 
     while (nowColidingEntities){
-        if (KON_FindInEntityInstanceList(wereColidingEntities, nowColidingEntities->data)){
+        if (!((CollisionEvent*)nowColidingEntities->data)->entityGenerateCollisionEvents) {
+            nowColidingEntities = nowColidingEntities->next;
+            continue;
+        }
+
+        if (KON_SearchDataInLinkedList(wereColidingEntities, nowColidingEntities->data)){
             /* Ongoing collision */
-            if (call->OnCollisionStay)
+
+            if (call->OnCollisionStay) {
+                /*KON_SystemMsg("(KON_ProcessEntityCollisionsCalls) Stay", MESSAGE_WARNING, 1, entity->descriptor->entityName);*/
                 call->OnCollisionStay(scene, layer, entity, (CollisionEvent*)nowColidingEntities->data);
+            }
         } else {
             /* New collision */
-            if (call->OnCollisionStart)
+
+            if (call->OnCollisionStart) {
+                /*KON_SystemMsg("(KON_ProcessEntityCollisionsCalls) Start", MESSAGE_WARNING, 1, entity->descriptor->entityName);*/
                 call->OnCollisionStart(scene, layer, entity, (CollisionEvent*)nowColidingEntities->data);
+            }
         }
+
         nowColidingEntities = nowColidingEntities->next;
     }
     nowColidingEntities = entity->collision.collisionEvents[frameSelect];
     while (wereColidingEntities){
-        if (!KON_FindInEntityInstanceList(nowColidingEntities, wereColidingEntities->data)){
+        if (!((CollisionEvent*)wereColidingEntities->data)->entityGenerateCollisionEvents) {
+            wereColidingEntities = wereColidingEntities->next;
+            continue;
+        }
+
+        if (!KON_SearchDataInLinkedList(nowColidingEntities, wereColidingEntities->data)){
             /* Outgoing collision */
-            if (call->OnCollisionStop)
+
+            if (call->OnCollisionStop) {
+                /*KON_SystemMsg("(KON_ProcessEntityCollisionsCalls) Stop", MESSAGE_WARNING, 1, entity->descriptor->entityName);*/
                 call->OnCollisionStop(scene, layer, entity, (CollisionEvent*)wereColidingEntities->data);
+            }
         }
         wereColidingEntities = wereColidingEntities->next;
+    }
+}
+
+void KON_ProcessEntityCollisionsCalls(SceneHandle* scene){
+    EntityInstance *entityInstance;
+    LinkedList* entityInstanceList;
+    MapLayer* layer;
+    unsigned int i;
+    
+    /* For each map plane */
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++) {
+        layer = scene->WorldMap->MapLayer + i;
+        entityInstanceList = layer->entityInstanceList;
+        while (entityInstanceList){
+            entityInstance = ((EntityInstance*)entityInstanceList->data);
+
+            if (entityInstance->collision.generateCollisionEvents)
+                KON_ProcessEntityCollisionsCall(scene, layer, entityInstance);
+
+            entityInstanceList = entityInstanceList->next;
+        }
     }
 }
 

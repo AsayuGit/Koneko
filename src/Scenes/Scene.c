@@ -86,7 +86,7 @@ int KON_StartScene(SceneDescriptor* scenePointer){
         KON_MapFrame(scene);
 
         /* Process entitiy collisions */
-        KON_EntityCollisions(scene);
+        KON_ProcessEntityCollisions(scene);
 
         /* Music loop deamon */
         KON_MusicDaemon();
