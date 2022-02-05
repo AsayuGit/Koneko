@@ -47,6 +47,7 @@
         Vector2d entityLastPosition;
         Vector2d entityCollidingPosition;
         Direction collisionDirection;
+        bool entityGenerateCollisionEvents;
         EntityInstance* collidingEntitiy;
     };
 
@@ -54,7 +55,7 @@
         SUMMARY : Computes entity colisions (Entity/Scene) + (Entity/Entity)
         INPUT   : SceneHandle* scene : The scene where the entities should be processed.
     */
-    void     KON_EntityCollisions(SceneHandle* scene);
+    void     KON_ProcessEntityCollisions(SceneHandle* scene);
 
     /*
         SUMMARY : Returns an Unit Vector describing the direction of the collision

@@ -101,6 +101,7 @@ void KON_AppendNewCollisionEvent(LinkedList** list, EntityInstance **colidingEnt
     newCollisonEvent.entityCollidingPosition = (*colidingEntity)->pos;
     newCollisonEvent.collisionDirection = collisonDirection;
     newCollisonEvent.entityLastPosition = (*colidingEntity)->lastPos;
+    newCollisonEvent.entityGenerateCollisionEvents = (*colidingEntity)->collision.generateCollisionEvents;
 
     KON_AppendToLinkedList(list, &newCollisonEvent, sizeof(CollisionEvent));
 }
@@ -127,13 +128,13 @@ Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBP
 }
 
 /*
-    KON_EntityEntityCollisionCheck() : Check collisions between all entities
-    INPUT : SceneHanle* scene  : Pointer to the current scene
+    SUMMARY : Check collisions between all entities
+    INPUT   : SceneHanle* scene : Pointer to the current scene
 */
 static void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
     KON_Rect collisionResult;
     EntityInstance *entityA, *entityB;
-    LinkedList* nodePointer, *nodePointerB, *nextEntity;
+    LinkedList* nodePointer, *nodePointerB;
     KON_Rect entityABoundingBox, entityBBoundingBox;
     MapLayer* layer;
     unsigned int i;
@@ -143,67 +144,72 @@ static void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
         nodePointer = layer->entityInstanceList;
         while (nodePointer){
             entityA = ((EntityInstance*)nodePointer->data);
-            entityA->collision.collisionFrameSelect ^= 1;
 
             nodePointerB = layer->entityInstanceList;
             while (nodePointerB){
-                if (nodePointer != nodePointerB){ /* Prevent an entity from coliding with itself */
-                    entityB = (EntityInstance*)nodePointerB->data;
+                if (nodePointer == nodePointerB) { /* Prevent an entity from coliding with itself */
+                    nodePointerB = nodePointerB->next;
+                    continue;
+                }
+                entityB = (EntityInstance*)nodePointerB->data;
 
-                    /* Collision test */
-                    KON_RectPlusVect(entityABoundingBox, entityA->entitySprite.boundingBox, entityA->mov);
-                    KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite.boundingBox, entityB->mov);
-                    if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
-                        
-                        if (entityA->properties.isSolid) {
-                            /* Prevent entity A from going into entity B */
-                            /* We substract to the "Position" the smallest dimention of the collisionResult */
+                /* Collision test */
+                KON_RectPlusVect(entityABoundingBox, entityA->entitySprite.boundingBox, entityA->mov);
+                KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite.boundingBox, entityB->mov);
+                if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
+                    
+                    if (entityA->properties.isSolid) {
+                        /* Prevent entity A from going into entity B */
+                        /* We substract to the "Position" the smallest dimention of the collisionResult */
 
-                            if (collisionResult.w < collisionResult.h) {
-                                entityA->mov.x -= collisionResult.w;
-                            } else {
-                                entityA->mov.y -= collisionResult.h;
-                            }
+                        if (collisionResult.w < collisionResult.h) {
+                            entityA->mov.x -= collisionResult.w;
+                        } else {
+                            entityA->mov.y -= collisionResult.h;
                         }
-
-                        /* Append CollisionEvents */
-                        KON_AppendNewCollisionEvent(&(entityA->collision.collisionEvents[entityA->collision.collisionFrameSelect]), &entityB, KON_GetEntityCollisionDirection(entityA->pos, entityB->pos, collisionResult)); /* For entity A */
-                        KON_AppendNewCollisionEvent(&(entityB->collision.collisionEvents[entityB->collision.collisionFrameSelect]), &entityA, KON_GetEntityCollisionDirection(entityB->pos, entityA->pos, collisionResult)); /* For entity B */
                     }
+
+                    /* Append CollisionEvents */
+                    KON_AppendNewCollisionEvent(entityA->collision.collisionEvents + entityA->collision.collisionFrameSelect, &entityB, KON_GetEntityCollisionDirection(entityA->pos, entityB->pos, collisionResult)); /* For entity A */
+                    KON_AppendNewCollisionEvent(entityB->collision.collisionEvents + entityB->collision.collisionFrameSelect, &entityA, KON_GetEntityCollisionDirection(entityB->pos, entityA->pos, collisionResult)); /* For entity B */
                 }
                 nodePointerB = nodePointerB->next;
             }
 
-            nextEntity = nodePointer->next;
-            if (entityA->collision.generateCollisionEvents)
-                KON_ProcessEntityCollisionsCalls(scene, layer, entityA);
-            
-            nodePointer = nextEntity;
+            nodePointer = nodePointer->next;
         }
     }
 }
 
-void KON_EntityCollisions(SceneHandle* scene) {
-    EntityInstance *entityInstancePointer;
-    LinkedList* nodePointer;
+/* Swap and initialise a new collision frame */
+static void KON_InitEntityCollisionFrame(SceneHandle* scene) {
+    EntityInstance *entityInstance;
+    LinkedList* entityInstanceList;
     unsigned int i;
-
-    /* Entity / Scene Collisions */
-    KON_EntitySceneCollisionCheck(scene);
-
-    /* Free the CollisionEvent list for all entities */
+    
+    /* For each map plane */
     for (i = 0; i < scene->WorldMap->nbOfLayers; i++) {
-        nodePointer = scene->WorldMap->MapLayer[i].entityInstanceList;
-        while (nodePointer){
-            entityInstancePointer = ((EntityInstance*)nodePointer->data);
+        entityInstanceList = scene->WorldMap->MapLayer[i].entityInstanceList;
+        while (entityInstanceList){
+            entityInstance = ((EntityInstance*)entityInstanceList->data);
 
-            KON_FreeLinkedList(&(entityInstancePointer->collision.collisionEvents[entityInstancePointer->collision.collisionFrameSelect]));
-            nodePointer = nodePointer->next;
+            /* Present collision frame becomes past collision frame */
+            entityInstance->collision.collisionFrameSelect ^= 1;
+
+            KON_FreeLinkedList(entityInstance->collision.collisionEvents + entityInstance->collision.collisionFrameSelect);
+            entityInstanceList = entityInstanceList->next;
         }
     }
+}
 
-    /* Entity / Entity Collisions */
+void KON_ProcessEntityCollisions(SceneHandle* scene) {
+    /* Entity -> Scene */
+    KON_EntitySceneCollisionCheck(scene); /* Doesn't generate collision events */
+
+    /* Entity -> Entity */
+    KON_InitEntityCollisionFrame(scene);
     KON_EntityEntityCollisionCheck(scene);
+    KON_ProcessEntityCollisionsCalls(scene);
 }
 
 Vector2d KON_GetEntityCollisionNormal(EntityInstance* self, CollisionEvent collision[2], bool frameSelect) {
