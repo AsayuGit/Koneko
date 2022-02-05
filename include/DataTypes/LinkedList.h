@@ -100,4 +100,6 @@
 
     LinkedList*  KON_GetLinkedListNodeIndex(LinkedList* list, unsigned int index);
 
+    LinkedList*  KON_SearchDataInLinkedList(LinkedList* list, void* data);
+
 #endif

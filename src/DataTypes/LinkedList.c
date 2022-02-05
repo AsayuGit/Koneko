@@ -150,3 +150,13 @@ LinkedList* KON_GetLinkedListNodeIndex(LinkedList* list, unsigned int index) {
 
     return list;
 }
+
+LinkedList*  KON_SearchDataInLinkedList(LinkedList* list, void* data) {
+    while (list){
+        if (list->data == data)
+            return list;
+        list = list->next;
+    }
+    
+    return NULL;
+}
