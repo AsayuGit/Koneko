@@ -49,4 +49,10 @@
     */
     bool KON_IsMusicPlaying();
 
+    /*
+        SUMMARY : Set the volume of the music track.
+        INPUT   : unsigned int volume : The new volume the music should be played at.
+    */
+    void KON_SetMusicVolume(unsigned int volume);
+
 #endif

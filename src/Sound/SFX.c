@@ -66,3 +66,7 @@ void KON_FreeSoundEffect(KON_Sfx* soundEffect) {
 void KON_PlaySoundEffect(KON_Sfx* sfx, int loops) {
     KON_PlayRawSoundEffect(sfx->sfx, loops);
 }
+
+void KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume) {
+    Mix_VolumeChunk(sfx->sfx, volume);
+}

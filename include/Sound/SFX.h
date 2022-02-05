@@ -45,4 +45,12 @@
     */
     void     KON_PlaySoundEffect(KON_Sfx* sfx, int loops);
 
+
+    /*
+        SUMMARY : Set the volume for a sound effect
+        INPUT   : KON_Sfx* sfx        : The sound effect to set the volume if
+        INPUT   : unsigned int volume : The new volume value
+    */
+    void     KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume);
+
 #endif

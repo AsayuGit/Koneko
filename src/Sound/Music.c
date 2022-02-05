@@ -105,3 +105,7 @@ void KON_MusicDaemon() {
 bool KON_IsMusicPlaying() {
     return Mix_PlayingMusic();
 }
+
+void KON_SetMusicVolume(unsigned int volume) {
+    Mix_VolumeMusic(volume);
+}
