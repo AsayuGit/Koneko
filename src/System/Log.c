@@ -26,6 +26,8 @@
 #include <Bool.h>
 #include <stdarg.h>
 
+#include "API.h"
+
 static char* messageLeader[] = {
     "[Message]",
     "[Warning]",
@@ -51,7 +53,7 @@ void KON_SystemMsg(const char* message, MessageGravity gravity, unsigned int nbE
             break;
     }
 
-    printf("%s %s",  messageLeader[gravity], message);
+    printf("{%u} %s %s", SDL_GetTicks(), messageLeader[gravity], message);
 
     va_start(args, nbExt);
     for (i = 0; i < nbExt; i++) {
