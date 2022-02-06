@@ -166,5 +166,5 @@ bool KON_IsTileMapTileSolid(TileMap* tileMap, double X, double Y, unsigned int* 
     if (tile)
         *tile = fetchedTile;
 
-    return KON_IsTileSolid(tileMap, *tile);
+    return KON_IsTileSolid(tileMap, fetchedTile);
 }

@@ -112,7 +112,7 @@ void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsign
 
 void KON_DrawMap(Map* map) {
     MapLayer* currentLayer;
-    int i;
+    unsigned int i;
     
     /* Clear the screen before rendering a new frame */
     SDL_RenderClear(Koneko.dDevice.Renderer);
