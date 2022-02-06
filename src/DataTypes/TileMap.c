@@ -126,19 +126,21 @@ void KON_DrawBitMap(MapLayer* Layer) {
     KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
 }
 
-unsigned int KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y) {
+bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile) {
     if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY)
-        return 0;
-    return tileMap->MapData[Y][X];
+        return false;
+    *tile = tileMap->MapData[Y][X];
+    return true;
 }
 
-unsigned int KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y) {
+bool KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile) {
     unsigned int tileSize;
 
     tileSize = tileMap->TileSize;
     X /= tileSize;
     Y /= tileSize;
-    return KON_GetTile(tileMap, X, Y);
+
+    return KON_GetTile(tileMap, X, Y, tile);
 }
 
 bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
@@ -155,9 +157,14 @@ bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
 }
 
 /* Returns true if the Map Tile is solid */
-bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y) {
-    if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY)
+bool KON_IsTileMapTileSolid(TileMap* tileMap, double X, double Y, unsigned int* tile) {
+    unsigned int fetchedTile;
+
+    if (!KON_GetTileAtCoordinates(tileMap, X, Y, &fetchedTile))
         return true;
 
-    return KON_IsTileSolid(tileMap, KON_GetTile(tileMap, X, Y));
+    if (tile)
+        *tile = fetchedTile;
+
+    return KON_IsTileSolid(tileMap, *tile);
 }
