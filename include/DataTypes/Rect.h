@@ -87,8 +87,7 @@
         SUMMARY : Write a string representation of a KON_Rect to a buffer of size buffLen.
         INPUT   : KON_Rect* rect : The rect to convert.
         INPUT   : size_t bufflen : The size of the buffer to write into.
-        OUTPUT  : char* buffer   : The buffer to write into.
     */
-    void    KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen);
+    int     KON_RectToString(KON_Rect* rect, char* buffer);
 
 #endif

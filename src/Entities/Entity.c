@@ -187,7 +187,7 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     return ((EntityInstance*)nodePointer->data);
 }
 
-/* FIXME: Re-Implement */
+/* FIXME: Implement */
 void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill) {
     KON_SystemMsg("(KON_KillEntityInstance) Not Implemented !", MESSAGE_WARNING, 0);
 }

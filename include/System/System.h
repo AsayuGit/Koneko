@@ -37,7 +37,7 @@
         KON_INIT_EVERYTHING = 0x70u
     };
 
-        typedef struct{
+    typedef struct{
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
 

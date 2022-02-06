@@ -107,7 +107,6 @@ void KON_AppendNewCollisionEvent(LinkedList** list, EntityInstance **colidingEnt
 }
 
 Direction KON_GetEntityCollisionDirection(Vector2d entityAPos, Vector2d entityBPos, KON_Rect collisionResult) {
-    /* FIXME: Kind of a hack, good enough for testing */
     if (entityAPos.x < entityBPos.x) {
         if (entityAPos.y < entityBPos.y) {
             /* LOW RIGHT */

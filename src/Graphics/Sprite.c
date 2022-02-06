@@ -34,7 +34,6 @@ void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect
     if (!sprite)
         return;
 
-    /* FIXME: This should change one we have the ressource manager implemented */
     sprite->spriteTexture = KON_LoadSurface(spritePath, colorKey, textureFlags);
     
     if (source)
@@ -107,7 +106,6 @@ void KON_FreeSprite(Sprite* sprite) {
     if (!sprite) /* Check if sprite's not null */
         return;
 
-    /* FIXME: This should change one we have the ressource manager implemented */
     KON_FreeSurface(sprite->spriteTexture);
     *sprite = emptySprite;
 }
@@ -128,6 +126,7 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
 
     spriteAnimation = sprite->animationArray + sprite->playingAnimation;
 
+    /* Early return if we shouldn't update the sprite frame yet */
     if (SDL_GetTicks() < (sprite->lastFrame + spriteAnimation->Framerate))
         return;
 
@@ -157,8 +156,11 @@ void KON_DrawSprite(Sprite* sprite) {
     KON_UpdateSpriteAnimation(sprite);
     
     sprite->boundingBox = sprite->destination;
-    sprite->boundingBox.x += sprite->spritePosition.x - Koneko.dDevice.Camera.x; /* FIXME: we shouldn't have to take the camera into account here since we're drawing in worldspace right ? */
+
+    /* Convert world space coordinates into screen space */
+    sprite->boundingBox.x += sprite->spritePosition.x - Koneko.dDevice.Camera.x;
     sprite->boundingBox.y += sprite->spritePosition.y - Koneko.dDevice.Camera.y;
 
+    /* Draws sprite in screen space*/
     KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
 }

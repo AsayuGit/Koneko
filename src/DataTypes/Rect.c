@@ -46,7 +46,6 @@ bool KON_GetRectVectIntersect(KON_Rect* rect, Vector2d* segStart, Vector2d* segE
     return false;
 }
 
-void KON_RectToString(KON_Rect* rect, char* buffer, size_t buffLen) {
-    /* FIXME : use buffLen */
-    sprintf(buffer, "{%d, %d, %d, %d}\n", rect->x, rect->y, rect->w, rect->h);
+int KON_RectToString(KON_Rect* rect, char* buffer) {
+    return sprintf(buffer, "{%d, %d, %d, %d}\n", rect->x, rect->y, rect->w, rect->h);
 }
