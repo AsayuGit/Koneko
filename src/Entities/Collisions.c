@@ -33,43 +33,46 @@ static void KON_EntityLayerCollisionCheck(MapLayer* layer) {
     TileMap* tileMap;
     unsigned int tileSize;
 
-    if (layer->layerType == KON_LAYER_TILEMAP) {
-        tileMap = (TileMap*)layer->layerData;
-        tileSize = tileMap->TileSize;
+    if (layer->layerType != KON_LAYER_TILEMAP)
+        return;
+    
+    tileMap = (TileMap*)layer->layerData;
+    tileSize = tileMap->TileSize;
 
-        entityInstanceList = layer->entityInstanceList;
-        while (entityInstanceList) {
-            entityInstancePointer = (EntityInstance*)entityInstanceList->data;
+    entityInstanceList = layer->entityInstanceList;
+    while (entityInstanceList) {
+        entityInstancePointer = (EntityInstance*)entityInstanceList->data;
 
-            /* Only process collision if the entity is actually solid */
-            if (!entityInstancePointer->properties.isSolid)
-                continue;
-
-            entityNewTile.x = (entityInstancePointer->pos.x + entityInstancePointer->mov.x) / tileSize;
-            entityNewTile.y = (entityInstancePointer->pos.y + entityInstancePointer->mov.y) / tileSize;
-            
-            /* X Collisions */
-            if (KON_IsTileMapTileSolid(tileMap, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize)){
-                if (entityInstancePointer->mov.x > 0){
-                    entityInstancePointer->mov.x = (entityNewTile.x * tileSize - 1) - entityInstancePointer->pos.x;
-                } else {
-                    entityInstancePointer->mov.x = ((entityNewTile.x + 1) * tileSize) - entityInstancePointer->pos.x;
-                }
-                /*printf("DEBUG: EntitySceneCollision on X axis\n");*/
-            }
-            
-            /* Y Collisions */
-            if (KON_IsTileMapTileSolid(tileMap, entityInstancePointer->pos.x / tileSize, entityNewTile.y)){
-                if (entityInstancePointer->mov.y > 0){
-                    entityInstancePointer->mov.y = (entityNewTile.y * tileSize - 1) - entityInstancePointer->pos.y;
-                } else {
-                    entityInstancePointer->mov.y = ((entityNewTile.y + 1) * tileSize) - entityInstancePointer->pos.y;
-                }
-                /*printf("DEBUG: EntitySceneCollision on Y axis\n");*/
-            }
-            
+        /* Only process collision if the entity is actually solid */
+        if (!entityInstancePointer->properties.isSolid) {
             entityInstanceList = entityInstanceList->next;
+            continue;
         }
+
+        entityNewTile.x = (entityInstancePointer->pos.x + entityInstancePointer->mov.x) / tileSize;
+        entityNewTile.y = (entityInstancePointer->pos.y + entityInstancePointer->mov.y) / tileSize;
+        
+        /* X Collisions */
+        if (KON_IsTileMapTileSolid(tileMap, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize)){
+            if (entityInstancePointer->mov.x > 0){
+                entityInstancePointer->mov.x = (entityNewTile.x * tileSize - 1) - entityInstancePointer->pos.x;
+            } else {
+                entityInstancePointer->mov.x = ((entityNewTile.x + 1) * tileSize) - entityInstancePointer->pos.x;
+            }
+            /*printf("DEBUG: EntitySceneCollision on X axis\n");*/
+        }
+        
+        /* Y Collisions */
+        if (KON_IsTileMapTileSolid(tileMap, entityInstancePointer->pos.x / tileSize, entityNewTile.y)){
+            if (entityInstancePointer->mov.y > 0){
+                entityInstancePointer->mov.y = (entityNewTile.y * tileSize - 1) - entityInstancePointer->pos.y;
+            } else {
+                entityInstancePointer->mov.y = ((entityNewTile.y + 1) * tileSize) - entityInstancePointer->pos.y;
+            }
+            /*printf("DEBUG: EntitySceneCollision on Y axis\n");*/
+        }
+        
+        entityInstanceList = entityInstanceList->next;
     }
 }
 
