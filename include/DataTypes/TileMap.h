@@ -45,7 +45,8 @@
     bool         KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
     bool         KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile);
     bool         KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
-    bool         KON_IsTileMapTileSolid(TileMap* tileMap, double X, double Y, unsigned int* tile);
+    bool         KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile);
+    bool         KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
 
     /*
         SUMMARY : Loads a bitmap from map file.

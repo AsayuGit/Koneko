@@ -156,8 +156,20 @@ bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
     return false;
 }
 
+bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile) {
+    unsigned int fetchedTile;
+
+    if (!KON_GetTile(tileMap, X, Y, &fetchedTile))
+        return true;
+
+    if (tile)
+        *tile = fetchedTile;
+
+    return KON_IsTileSolid(tileMap, fetchedTile);
+}
+
 /* Returns true if the Map Tile is solid */
-bool KON_IsTileMapTileSolid(TileMap* tileMap, double X, double Y, unsigned int* tile) {
+bool KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile) {
     unsigned int fetchedTile;
 
     if (!KON_GetTileAtCoordinates(tileMap, X, Y, &fetchedTile))

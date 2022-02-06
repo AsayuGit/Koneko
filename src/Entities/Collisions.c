@@ -53,7 +53,7 @@ static void KON_EntityLayerCollisionCheck(MapLayer* layer) {
         entityNewTile.y = (entityInstancePointer->pos.y + entityInstancePointer->mov.y) / tileSize;
         
         /* X Collisions */
-        if (KON_IsTileMapTileSolid(tileMap, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)){
+        if (KON_IsTileMapTileSolid(tileMap, entityNewTile.x, (int)entityInstancePointer->pos.y / tileSize, NULL)) {
             if (entityInstancePointer->mov.x > 0){
                 entityInstancePointer->mov.x = (entityNewTile.x * tileSize - 1) - entityInstancePointer->pos.x;
             } else {
@@ -63,7 +63,7 @@ static void KON_EntityLayerCollisionCheck(MapLayer* layer) {
         }
         
         /* Y Collisions */
-        if (KON_IsTileMapTileSolid(tileMap, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)){
+        if (KON_IsTileMapTileSolid(tileMap, entityInstancePointer->pos.x / tileSize, entityNewTile.y, NULL)) {
             if (entityInstancePointer->mov.y > 0){
                 entityInstancePointer->mov.y = (entityNewTile.y * tileSize - 1) - entityInstancePointer->pos.y;
             } else {
