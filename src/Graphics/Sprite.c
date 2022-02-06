@@ -150,7 +150,8 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
     sprite->lastFrame = SDL_GetTicks();
 }
 
-void KON_DrawSprite(Sprite* sprite) {    
+void KON_DrawSprite(Sprite* sprite) {
+    DrawFlags flags = 0;
     if (!sprite || !sprite->isVisible)
         return;
     KON_UpdateSpriteAnimation(sprite);
@@ -162,5 +163,7 @@ void KON_DrawSprite(Sprite* sprite) {
     sprite->boundingBox.y += sprite->spritePosition.y - Koneko.dDevice.Camera.y;
 
     /* Draws sprite in screen space*/
-    KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, DRAW_HORIZONTAL_FLIP);
+    if (sprite->flipX) flags |= DRAW_HORIZONTAL_FLIP;
+    if (sprite->flipY) flags |= DRAW_VERTICAL_FLIP;
+    KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, flags);
 }
