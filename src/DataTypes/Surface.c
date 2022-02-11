@@ -34,6 +34,10 @@ struct KON_Surface {
     Vector2d size;
 };
 
+struct KON_CPUSurface {
+    SDL_Surface* surface;
+};
+
 /*
     SUMMARY : Free a GPU-Side surface
     INPUT   : SDL_Texture* surface : Surface to be freed
@@ -42,24 +46,28 @@ struct KON_Surface {
 
 /*
     SUMMARY : Applies a ColorKey to a CPU-Side Surface
-    INPUT   : SDL_Surface* SurfaceToKey : Pointer to the Surface to key
+    INPUT   : KON_CPUSurface* SurfaceToKey : Pointer to the Surface to key
     INPUT   : uint8_t ColorKey          : The ColorKey to apply to the Surface
 */
-#define KON_KeyCpuSurface(SurfaceToKey, ColorKey) SDL_SetColorKey(SurfaceToKey, true, ColorKey)
+#define KON_KeyCpuSurface(SurfaceToKey, ColorKey) SDL_SetColorKey(SurfaceToKey->surface, true, ColorKey)
 
 /*
     SUMMARY : Loads a CPU-Side Surface from disk (Unmanaged)
     INPUT   : char* FilePath        : Path to the surface to load
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
-    OUTPUT  : SDL_Surface*          : Pointer to the loaded surface (UnMannaged)
+    OUTPUT  : KON_CPUSurface*          : Pointer to the loaded surface (UnMannaged)
 */
-static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
-    SDL_Surface* loadingCPUSurface = NULL;
+static KON_CPUSurface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+    KON_CPUSurface* loadingCPUSurface = NULL;
 
     if (!FilePath)
         return NULL;
-    if (!(loadingCPUSurface = SDL_LoadBMP(FilePath))) {
+    if (!(loadingCPUSurface = (KON_CPUSurface*)malloc(sizeof(KON_CPUSurface)))) {
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+    if (!(loadingCPUSurface->surface = SDL_LoadBMP(FilePath))) {
         KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
         return NULL;
     }
@@ -77,10 +85,10 @@ static SDL_Surface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uin
     INPUT   : char* FilePath        : Path to the surface to load
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
-    OUTPUT  : SDL_Surface*          : Pointer to the loaded surface (UnMannaged)
+    OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged)
 */
 static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
-    SDL_Surface* loadedCPUSurface = NULL;
+    KON_CPUSurface* loadedCPUSurface = NULL;
     SDL_Texture* loadedGPUSurface;
     KON_Surface* loadedSurface;
     Vector2i surfaceSize;
@@ -95,11 +103,11 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     if (SURFACE_KEYED & flags)
         KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
 
-    if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, loadedCPUSurface))) {
+    if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, loadedCPUSurface->surface))) {
         KON_SystemMsg("(KON_LoadRawSurface) Couldn't upload surface to GPU : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
         return NULL;
     }
-    SDL_FreeSurface(loadedCPUSurface);
+    KON_FreeCPUSurface(loadedCPUSurface);
 
 
     if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
@@ -135,23 +143,53 @@ KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
 }
 
 /* Unmanaged */
-SDL_Surface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
+KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
     if (!filePath)
         return NULL;
 
     return KON_LoadRawCPUSurface(filePath, colorKey, flags);
 }
 
+void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, Vector2i* size) {
+    size->x = surface->surface->w;
+    size->y = surface->surface->h;
+}
+
+void* KON_GetCPUSurfacePixelData(KON_CPUSurface* surface) {
+    return surface->surface->pixels;
+}
+
+void KON_LockCPUSurface(KON_CPUSurface* surface) {
+    SDL_LockSurface(surface->surface);
+}
+
+void KON_UnlockCPUSurface(KON_CPUSurface* surface) {
+    SDL_UnlockSurface(surface->surface);
+}
+
 void KON_FreeSurface(KON_Surface* surface) {
     KON_FreeRawSurface(KON_FreeManagedRessourceByRef(surface));
 }
 
+void KON_FreeCPUSurface(KON_CPUSurface* surface){
+    SDL_FreeSurface(surface->surface);
+    free(surface);
+}
+
+unsigned int KON_GetCPUSurfaceBPP(KON_CPUSurface* surface) {
+    return surface->surface->format->BytesPerPixel;
+}
+
+unsigned int KON_GetCPUSurfacePitch(KON_CPUSurface* surface) {
+    return surface->surface->pitch;
+}
+
 /* Unmanaged */
-KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface) {
+KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
     int w, h;
     KON_Surface* newSurface = (KON_Surface*)malloc(sizeof(KON_Surface));
 
-    if (!(newSurface->surface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, cpuSurface)))
+    if (!(newSurface->surface = SDL_CreateTextureFromSurface(Koneko.dDevice.Renderer, cpuSurface->surface)))
         return NULL;
 
     SDL_QueryTexture(newSurface->surface, NULL, NULL, &w, &h);
@@ -165,9 +203,9 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
         *size = surface->size;
 }
 
-int KON_SetRenderTarget(SDL_Texture* surface) {
-    Koneko.dDevice.OffScreenRender = (surface);
-    return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface);
+int KON_SetRenderTarget(KON_Surface* surface) {
+    Koneko.dDevice.OffScreenRender = (surface->surface);
+    return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface->surface);
 }
 
 /* API level draw */

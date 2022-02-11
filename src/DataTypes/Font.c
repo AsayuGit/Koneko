@@ -32,10 +32,10 @@
 */
 static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) {
     BitmapFont* LoadingFont;
-    SDL_Surface* LoadingSurface;
+    KON_CPUSurface* LoadingSurface;
     unsigned int FontPixX = 1, FontPixY;
     unsigned int LetterIndex = 0;
-    int FontTexW, FontTexH;
+    Vector2i FontTexSize;
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
@@ -45,12 +45,11 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
         return NULL;
     }
     
-    FontTexW = LoadingSurface->w;
-    FontTexH = LoadingSurface->h;
+    KON_GetCPUSurfaceSize(LoadingSurface, &FontTexSize);
 
     /* Fill-in rects for each letter */
-    SDL_LockSurface(LoadingSurface); /* Ensure that the pixel data is available for hw surfaces */ /* VERRRY SLOW AND INEFICIENT */
-    while ((FontPixX < FontTexW) && (LetterIndex < 95)){
+    KON_LockCPUSurface(LoadingSurface); /* Ensure that the pixel data is available for hw surfaces */ /* VERRRY SLOW AND INEFICIENT */
+    while ((FontPixX < FontTexSize.x) && (LetterIndex < 95)){
 
         /* Get letter coordinates */
         FontPixY = 0;
@@ -58,14 +57,14 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
         LoadingFont->Rects[LetterIndex].y = 1;
 
         /* Get letter width */
-        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixX < FontTexW)){
+        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixX < FontTexSize.x)){
             FontPixX++;
         }
         LoadingFont->Rects[LetterIndex].w = FontPixX - LoadingFont->Rects[LetterIndex].x;
         
         /* Get letter height */
         FontPixY = 1;
-        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixY < FontTexH)){
+        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixY < FontTexSize.y)){
             FontPixY++;
         }
         LoadingFont->Rects[LetterIndex].h = FontPixY - LoadingFont->Rects[LetterIndex].y;
@@ -73,10 +72,10 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
         FontPixX++;
         LetterIndex++;
     }
-    SDL_UnlockSurface(LoadingSurface);
+    KON_UnlockCPUSurface(LoadingSurface);
 
     LoadingFont->FontSurface = KON_CpuToGpuSurface(LoadingSurface);
-    SDL_FreeSurface(LoadingSurface);
+    KON_FreeCPUSurface(LoadingSurface);
 
     return LoadingFont;
 }

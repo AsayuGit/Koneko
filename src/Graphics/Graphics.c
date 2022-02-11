@@ -24,23 +24,24 @@
 #include "System.h"
 #include "TileMap.h"
 
-uint32_t getpixel(SDL_Surface *surface, int x, int y)
+uint32_t getpixel(KON_CPUSurface *surface, int x, int y)
 {
     /* Declaration */
-    int bpp;
+    unsigned int bpp;
     uint8_t *p;
-    
+    void* pixelData;
+
     /* Init */
     if (!surface){
         printf("ERROR: (getpixel) No surface provided !\n");
         return 0; /* Failsafe */
-    } else if (!surface->pixels){
+    } else if (!(pixelData = KON_GetCPUSurfacePixelData(surface))){
         /*printf("ERROR: (getpixel) No pixel data !\n");*/
         return 0; /* Failsafe */
     }
 
-    bpp = surface->format->BytesPerPixel;
-    p = (uint8_t *)surface->pixels + y * surface->pitch + x * bpp; /* Here p is the address to the pixel we want to retrieve */
+    bpp = KON_GetCPUSurfaceBPP(surface);
+    p = (uint8_t *)pixelData + y * KON_GetCPUSurfacePitch(surface) + x * bpp; /* Here p is the address to the pixel we want to retrieve */
 
     /*printf("%x %d %d %d %d\n", surface->pixels, y, surface->pitch, x, bpp);*/
 

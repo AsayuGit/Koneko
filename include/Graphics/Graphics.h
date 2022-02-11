@@ -24,7 +24,7 @@
 
     #include "Scene.h"
 
-    uint32_t        getpixel(SDL_Surface *surface, int x, int y);
+    uint32_t        getpixel(KON_CPUSurface *surface, int x, int y);
     void            FlipBlitSurface(SDL_Surface* SourceSurface, const KON_Rect* SrcRect, SDL_Surface* ScreenTarget, const KON_Rect* DstRect, bool flipFlag);
     bool            RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect);
     bool            RectOnScreen(const KON_Rect* Rect);

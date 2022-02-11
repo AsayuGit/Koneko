@@ -25,7 +25,6 @@
 
     #include "Rect.h"
     #include "System.h"
-    #include "API.h"
 
     enum {
         SURFACE_OPAQUE = 0,
@@ -41,6 +40,7 @@
     } DrawFlags;
 
     typedef struct KON_Surface KON_Surface;
+    typedef struct KON_CPUSurface KON_CPUSurface;
 
     /*
         SUMMARY : Loads a KON_Surface from disk.
@@ -56,9 +56,29 @@
         INPUT   : char* filePath    : The path to the surface to load.
         INPUT   : uint32_t colorKey : The color to key the surface with (if needs be).
         INPUT   : uint8_t flags     : Flags ruling how to load the surface.
-        OUTPUT  : SDL_Surface*      : The newly loaded surface (or NULL if error).
+        OUTPUT  : KON_CPUSurface*      : The newly loaded surface (or NULL if error).
     */
-    SDL_Surface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+    KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+
+    /*
+        TODO: Doc
+    */
+    void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, Vector2i* size);
+
+    /*
+        TODO: Doc
+    */
+    void KON_LockCPUSurface(KON_CPUSurface* surface);
+
+    /*
+        TODO: Doc
+    */
+    void KON_UnlockCPUSurface(KON_CPUSurface* surface);
+
+    /*
+        TODO: Doc
+    */
+    void* KON_GetCPUSurfacePixelData(KON_CPUSurface* surface);
 
     /*
         SUMMARY : Free a previously loaded KON_Surface.
@@ -68,16 +88,26 @@
 
     /*
         SUMMARY : Free a previously loaded CPU-Side surface.
-        INPUT   : SDL_Surface* surface : The surface to free.
+        INPUT   : KON_CPUSurface* surface : The surface to free.
     */
-    /* TODO: void KON_FreeCpuSurface(SDL_Surface* surface) */
+    void         KON_FreeCPUSurface(KON_CPUSurface* surface);
+
+    /*
+        TODO : Doc
+    */
+    unsigned int KON_GetCPUSurfaceBPP(KON_CPUSurface* surface);
+
+    /*
+        TODO : Doc
+    */
+    unsigned int KON_GetCPUSurfacePitch(KON_CPUSurface* surface);
 
     /*
         SUMMARY : Loads a KON_Surface from a CPU-Side surface.
-        INPUT   : SDL_Surface* cpuSurface : The CPU-Side surface to load from.
+        INPUT   : KON_CPUSurface* cpuSurface : The CPU-Side surface to load from.
         OUTPUT  : KON_Surface*            : Tne newly loaded surface (or NULL on error).
     */
-    KON_Surface* KON_CpuToGpuSurface(SDL_Surface* cpuSurface);
+    KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface);
 
     /*
         SUMMARY : When provided with a surface, allows the user to get its size.
@@ -88,9 +118,9 @@
 
     /*
         SUMMARY : Sets the render target for a CPU-Side surface.
-        INPUT   : SDL_Texture* surface : The CPu-Side surface to change the render target for.
+        INPUT   : KON_Surface* surface : The CPu-Side surface to change the render target for.
     */
-    int          KON_SetRenderTarget(SDL_Texture* surface);
+    int          KON_SetRenderTarget(KON_Surface* surface);
 
     /*
         SUMMARY : Draws parts of a surface scaled to a new size and destination.
