@@ -108,7 +108,7 @@ void KON_DrawTileMap(MapLayer* Layer) {
     map = (TileMap*)Layer->layerData;
 
     /* Logic */
-    if (Layer->shown && (Layer->layerType == KON_LAYER_TILEMAP)){
+    if (Layer->shown && (Layer->layerRenderer == RENDER_2D_TILEMAP)){
         for (i = 0; i < map->MapSizeY; i++){
             for (j = 0; j < map->MapSizeX; j++){
                 KON_DrawTile(Layer, map, map->MapData[i][j], j, i);

@@ -33,7 +33,7 @@ static void KON_EntityLayerCollisionCheck(MapLayer* layer) {
     TileMap* tileMap;
     unsigned int tileSize;
 
-    if (layer->layerType != KON_LAYER_TILEMAP)
+    if (layer->layerRenderer != RENDER_2D_TILEMAP)
         return;
     
     tileMap = (TileMap*)layer->layerData;

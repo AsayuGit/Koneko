@@ -6,15 +6,15 @@
 #include <linux/limits.h>
 #include <libgen.h> /* dirname() */
 
-Map* KON_LoadMap(char* mapFilePath){
+Map* KON_LoadMap(char* mapFilePath) {
     /* Declaration */
     Map* LoadedMap = NULL;
     MapLayer* currentLayer = NULL;
     FILE* MapFile = NULL;
     TileMap* loadedTileMap = NULL;
     Vector2d bdSize;
-    unsigned int nbOfLayers, layerType;
-    unsigned int i;
+    unsigned int nbOfLayers, i;
+    KON_Renderers layerRenderer;
     char* MapRoot = NULL;
     char filepath[PATH_MAX];
 
@@ -37,18 +37,19 @@ Map* KON_LoadMap(char* mapFilePath){
     /* Logic */
     for (i = 0; i < nbOfLayers; i++){ /* For each layer */
         /* Check layer type */
-        layerType = 0;
-        fscanf(MapFile, "%u\n", &layerType);
+        layerRenderer = 0;
+        fscanf(MapFile, "%u\n", &layerRenderer);
         currentLayer = LoadedMap->MapLayer + i;
-        switch (layerType){
-            case KON_LAYER_BITMAP:
+        switch (layerRenderer){
+            case RENDER_2D_BITMAP:
                 currentLayer->layerData = (void*)KON_LoadBitMap(MapFile, MapRoot);
 
                 KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
                 KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
                 break;
-                
-            case KON_LAYER_TILEMAP:
+            
+            case RENDER_2D_TILEMAP:
+            case RENDER_3D_RAYCAST:
                 loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
                 KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
                 break;
@@ -57,7 +58,7 @@ Map* KON_LoadMap(char* mapFilePath){
                 KON_SystemMsg("(KON_LoadMap) unknown layer mode", MESSAGE_WARNING, 0);
                 break;
         }
-        LoadedMap->MapLayer[i].layerType = layerType;
+        LoadedMap->MapLayer[i].layerRenderer = layerRenderer;
         LoadedMap->MapLayer[i].shown = true;
         LoadedMap->MapLayer[i].displayList = KON_InitDisplayList();
     }
@@ -68,27 +69,6 @@ Map* KON_LoadMap(char* mapFilePath){
 
     return LoadedMap;
 }
-
-/* DODO : Move to own header */
-static void KON_Draw2DLayer(MapLayer* layer) {
-    switch (layer->layerType)
-    {
-        case KON_LAYER_BITMAP:
-            KON_DrawBitMap(layer);
-            break;
-
-        case KON_LAYER_TILEMAP:
-            KON_DrawTileMap(layer);
-            break;
-        
-        default:
-            break;
-    }
-
-    KON_DrawDisplayList(layer->displayList);
-}
-
-static void KON_Draw3DLayer(MapLayer* layer) {}
 
 static void KON_UpdateLayerEntityPosition(MapLayer* layer) {
     LinkedList* entityInstanceList = layer->entityInstanceList;
@@ -125,18 +105,8 @@ void KON_DrawMap(Map* map) {
         /* Update all entities position */
         KON_UpdateLayerEntityPosition(currentLayer);
 
-        switch (1) {
-            case 1: /* 2D */
-                KON_Draw2DLayer(currentLayer);
-                break;
-
-            case 2: /* Raycast */
-                KON_Draw3DLayer(currentLayer);
-                break;
-                
-            default:
-                break;
-        }
+        KON_RenderLayer(currentLayer);
+        KON_DrawDisplayList(currentLayer->displayList);
     }
 
     KON_FinishFrame(); /* Update the main window */

@@ -27,20 +27,19 @@
     #include "Rect.h"
     #include "DisplayList.h"
 
-    enum {
-        KON_LAYER_BITMAP = 1,
-        KON_LAYER_TILEMAP
-    }; /* TODO: KON_LayerType */
+    typedef struct MapLayer MapLayer;
 
-    typedef struct{
-        unsigned int layerType;
+    #include "Renderer.h"
+
+    struct MapLayer {
+        KON_Renderers layerRenderer;
         void* layerData;
         Vector2d pos;
         KON_Rect boundingBox;
         LinkedList* entityInstanceList;
         DisplayList* displayList;
         bool shown;
-    } MapLayer;
+    };
 
     typedef struct{
         char* MapFilePath;
