@@ -3,8 +3,15 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include "CommunFunctions.h"
-#include <linux/limits.h>
-#include <libgen.h> /* dirname() */
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+	#include <string.h>
+#else
+	#include <linux/limits.h>
+	#include <libgen.h> /* dirname() */
+#endif
 
 Map* KON_LoadMap(char* mapFilePath) {
     /* Declaration */
@@ -13,10 +20,14 @@ Map* KON_LoadMap(char* mapFilePath) {
     FILE* MapFile = NULL;
     TileMap* loadedTileMap = NULL;
     Vector2d bdSize;
-    unsigned int nbOfLayers, i;
     KON_Renderers layerRenderer;
-    char* MapRoot = NULL;
+    unsigned int nbOfLayers, i;
     char filepath[PATH_MAX];
+	#ifdef _XBOX
+		char MapRoot[PATH_MAX];
+	#else
+		char* MapRoot = NULL;
+	#endif
 
     /* Init */
     MapFile = fopen(mapFilePath, "r");
@@ -28,7 +39,17 @@ Map* KON_LoadMap(char* mapFilePath) {
     LoadedMap = (Map*)malloc(sizeof(Map));
     astrcpy(&LoadedMap->MapFilePath, mapFilePath);
     strcpy(filepath, mapFilePath);
+
+#ifdef _XBOX
+	{
+		char MapPath[PATH_MAX];
+		
+		_splitpath(filepath, MapRoot, MapPath, NULL, NULL);
+		strcat(MapRoot, MapPath);
+	}
+#else
     MapRoot = dirname(filepath);
+#endif
 
     fscanf(MapFile, "%u", &nbOfLayers);
     LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));

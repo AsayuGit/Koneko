@@ -40,8 +40,8 @@ void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect
         sprite->source = *source;
     else {
         KON_GetSurfaceSize(sprite->spriteTexture, &spriteSize);
-        sprite->source.w = spriteSize.x;
-        sprite->source.h = spriteSize.y;
+        sprite->source.w = (int)spriteSize.x;
+        sprite->source.h = (int)spriteSize.y;
     }
     
     sprite->destination = (destination) ? *destination : sprite->source;
@@ -159,8 +159,8 @@ void KON_DrawSprite(Sprite* sprite) {
     sprite->boundingBox = sprite->destination;
 
     /* Convert world space coordinates into screen space */
-    sprite->boundingBox.x += sprite->spritePosition.x - Koneko.dDevice.Camera.x;
-    sprite->boundingBox.y += sprite->spritePosition.y - Koneko.dDevice.Camera.y;
+    sprite->boundingBox.x += (int)(sprite->spritePosition.x - Koneko.dDevice.Camera.x);
+    sprite->boundingBox.y += (int)(sprite->spritePosition.y - Koneko.dDevice.Camera.y);
 
     /* Draws sprite in screen space*/
     if (sprite->flipX) flags |= DRAW_HORIZONTAL_FLIP;

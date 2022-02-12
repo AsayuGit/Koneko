@@ -25,7 +25,7 @@
 #include "TileMap.h"
 #include "Log.h"
 #include "DisplayList.h"
-#include "Music.h"
+#include "KON_Music.h"
 
 #include "CommunFunctions.h"
 

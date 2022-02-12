@@ -1,0 +1,149 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=Windows-1252">
+</head>
+<body>
+<pre>
+<table width=100% bgcolor=#CFCFE5><tr> <td> <font face=arial size=+3>
+Build Log
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+<h3>------- Build started: Project: libxml2_so, Configuration: Debug|Win32 -------
+</h3>
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Command Lines
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\BAT000045.bat" with contents
+[
+@echo off
+cl /I"..\.." /I"..\..\include" /nologo /EP "c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2.def.src" > libxml2.def
+if errorlevel 1 goto VCReportError
+goto VCEnd
+:VCReportError
+echo Project : error PRJ0019: A tool returned an error code from "Performing Custom Build Step"
+exit 1
+:VCEnd
+]
+Creating command line ""c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\BAT000045.bat""
+Creating temporary file "c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\RSP000046.rsp" with contents
+[
+/Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "IN_LIBXML" /FD /EHsc /RTC1 /MD /GS /Fp".\libxml2_so/libxml2_so.pch" /Fo".\libxml2_so/" /Fd".\libxml2_so/" /FR".\libxml2_so/" /W3 /c /Zi
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xpointer.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xpath.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xmlmemory.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xmlIO.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xlink.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\xinclude.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\valid.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\uri.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\tree.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\SAX.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\parserInternals.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\parser.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\nanohttp.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\nanoftp.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\list.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\HTMLtree.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\HTMLparser.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\hash.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\error.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\entities.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\encoding.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\DOCBparser.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\debugXML.c"
+"\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\catalog.c"
+]
+Creating command line "cl.exe @"c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\RSP000046.rsp" /nologo"
+Creating temporary file "c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\RSP000047.rsp" with contents
+[
+/OUT:"libxml2_so/libxml2.dll" /INCREMENTAL:NO /NOLOGO /DLL /DEF:".\libxml2.def" /DEBUG /PDB:".\libxml2_so/libxml2.pdb" /IMPLIB:".\libxml2_so/libxml2.lib" /MACHINE:X86 wsock32.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+".\libxml2_so\catalog.obj"
+".\libxml2_so\debugXML.obj"
+".\libxml2_so\DOCBparser.obj"
+".\libxml2_so\encoding.obj"
+".\libxml2_so\entities.obj"
+".\libxml2_so\error.obj"
+".\libxml2_so\hash.obj"
+".\libxml2_so\HTMLparser.obj"
+".\libxml2_so\HTMLtree.obj"
+".\libxml2_so\list.obj"
+".\libxml2_so\nanoftp.obj"
+".\libxml2_so\nanohttp.obj"
+".\libxml2_so\parser.obj"
+".\libxml2_so\parserInternals.obj"
+".\libxml2_so\SAX.obj"
+".\libxml2_so\tree.obj"
+".\libxml2_so\uri.obj"
+".\libxml2_so\valid.obj"
+".\libxml2_so\xinclude.obj"
+".\libxml2_so\xlink.obj"
+".\libxml2_so\xmlIO.obj"
+".\libxml2_so\xmlmemory.obj"
+".\libxml2_so\xpath.obj"
+".\libxml2_so\xpointer.obj"
+]
+Creating command line "link.exe @"c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\RSP000047.rsp""
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Output Window
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Performing Custom Build Step
+libxml2.def.src
+Compiling...
+xpointer.c
+xpath.c
+xmlmemory.c
+xmlIO.c
+xlink.c
+xinclude.c
+valid.c
+uri.c
+tree.c
+\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\tree.c(2894) : warning C4028: formal parameter 1 different from declaration
+\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\tree.c(2909) : warning C4028: formal parameter 1 different from declaration
+SAX.c
+parserInternals.c
+parser.c
+nanohttp.c
+nanoftp.c
+list.c
+HTMLtree.c
+HTMLparser.c
+hash.c
+error.c
+entities.c
+Generating Code...
+Compiling...
+encoding.c
+DOCBparser.c
+debugXML.c
+catalog.c
+Generating Code...
+Linking...
+libxml2.def : error LNK2001: unresolved external symbol docbDefaultSAXHandler
+libxml2.def : error LNK2001: unresolved external symbol htmlDefaultSAXHandler
+libxml2.def : error LNK2001: unresolved external symbol oldXMLWDcompatibility
+libxml2.def : error LNK2001: unresolved external symbol xmlBufferAllocScheme
+libxml2.def : error LNK2001: unresolved external symbol xmlDefaultBufferSize
+libxml2.def : error LNK2001: unresolved external symbol xmlDefaultSAXHandler
+libxml2.def : error LNK2001: unresolved external symbol xmlDefaultSAXLocator
+libxml2.def : error LNK2001: unresolved external symbol xmlDoValidityCheckingDefaultValue
+libxml2.def : error LNK2001: unresolved external symbol xmlFree
+libxml2.def : error LNK2001: unresolved external symbol xmlGenericError
+libxml2.def : error LNK2001: unresolved external symbol xmlGenericErrorContext
+libxml2.def : error LNK2001: unresolved external symbol xmlGetWarningsDefaultValue
+libxml2.def : error LNK2001: unresolved external symbol xmlIndentTreeOutput
+libxml2.def : error LNK2001: unresolved external symbol xmlKeepBlanksDefaultValue
+libxml2.def : error LNK2001: unresolved external symbol xmlLoadExtDtdDefaultValue
+libxml2.def : error LNK2001: unresolved external symbol xmlMalloc
+libxml2.def : error LNK2001: unresolved external symbol xmlMemStrdup
+libxml2.def : error LNK2001: unresolved external symbol xmlParserDebugEntities
+libxml2.def : error LNK2001: unresolved external symbol xmlParserVersion
+libxml2.def : error LNK2001: unresolved external symbol xmlPedanticParserDefaultValue
+libxml2.def : error LNK2001: unresolved external symbol xmlRealloc
+libxml2.def : error LNK2001: unresolved external symbol xmlSaveNoEmptyTags
+libxml2.def : error LNK2001: unresolved external symbol xmlSubstituteEntitiesDefaultValue
+.\libxml2_so/libxml2.lib : fatal error LNK1120: 23 unresolved externals
+LINK : fatal error LNK1141: failure during build of exports file
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Results
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+Build log was saved at "file://c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\libxml2_so\BuildLog.htm"
+libxml2_so - 25 error(s), 2 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
+</font></table></body></html>

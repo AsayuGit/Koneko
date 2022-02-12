@@ -42,7 +42,7 @@ OUT_DIR = OUT
 BUILD_DIR = build
 
 # List of all the .c source files to compile
-SRC = $(call recursiveSearch,*.c)
+SRC = $(call recursiveSearch,src/*.c)
 
 # List of all the .o object files to produce
 OBJ = $(patsubst %,$(BUILD_DIR)/%,$(SRC:%.c=%.o))

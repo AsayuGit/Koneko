@@ -22,7 +22,14 @@
 #include "Koneko.h"
 #include "Surface.h"
 #include "RessourceManager.h"
-#include <linux/limits.h>
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+#else
+	#include <linux/limits.h>
+#endif
+
 #include "Log.h"
 
 #include "Graphics.h" /* RectOnScreen() */
@@ -204,7 +211,7 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
 }
 
 int KON_SetRenderTarget(KON_Surface* surface) {
-    Koneko.dDevice.OffScreenRender = (surface->surface);
+    Koneko.dDevice.OffScreenRender = (bool)surface->surface;
     return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface->surface);
 }
 
