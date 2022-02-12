@@ -25,7 +25,13 @@
 #include "Log.h"
 #include "CommunFunctions.h"
 #include "DisplayList.h"
-#include <linux/limits.h>
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+#else
+	#include <linux/limits.h>
+#endif
 
 KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     KON_Surface* loadedSurface;
@@ -140,7 +146,7 @@ bool KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int
     X /= tileSize;
     Y /= tileSize;
 
-    return KON_GetTile(tileMap, X, Y, tile);
+    return KON_GetTile(tileMap, (unsigned int)X, (unsigned int)Y, tile);
 }
 
 bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {

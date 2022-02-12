@@ -1,0 +1,21 @@
+#include <gnuversion.h>
+#define VER_FILEVERSION 2,4,12,0
+#define VER_FILEVERSION_STR "2.4.12"
+#define VER_LEGALCOPYRIGHT_STR "© 2001 Daniel Veillard <daniel@veillard.com>; Bjorn Reese <breese@users.sourceforge.net>; William Brack <wbrack@mmm.com.hk>"
+//#define VER_COMMENT_STR  ""	 
+
+#define VER_FILEDESCRIPTION_STR "LibXml2: parser for XML"
+#define VER_INTERNALNAME_STR "xmlcatalog"
+#define VER_ORIGINALFILENAME_STR "xmlcatalog.exe"
+#define VER_WWW_STR "http://xmlsoft.org"
+#define VER_COMPANYNAME_STR "XmlSoft"
+#define VER_LICENSE_STR "This program is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License;see http://www.gnu.org/copyleft/lesser.html."
+#define VER_LEGALTRADEMARKS_STR "LibXml2®, xmlcatalog®"
+
+#define VER_PRODUCTNAME_STR "LibXml2"
+#define VER_PRODUCTVERSION VER_FILEVERSION
+#define VER_PRODUCTVERSION_STR VER_FILEVERSION_STR
+
+#include <gnu.version>
+
+500 ICON MOVEABLE PURE LOADONCALL DISCARDABLE "libxml2.ico"

@@ -1,0 +1,170 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=Windows-1252">
+</head>
+<body>
+<pre>
+<table width=100% bgcolor=#CFCFE5><tr> <td> <font face=arial size=+3>
+Build Log
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+<h3>------- Build started: Project: testXPath, Configuration: Debug|Win32 -------
+</h3>
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Command Lines
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\testXPath\RSP00003A.rsp" with contents
+[
+/OUT:".\testXPath/testXPath.exe" /INCREMENTAL:NO /NOLOGO /DEBUG /PDB:".\testXPath/testXPath.pdb" /SUBSYSTEM:CONSOLE /MACHINE:X86 ws2_32.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+".\libxml2_a\libxml2.lib"
+".\testxpath\testXPath.obj"
+]
+Creating command line "link.exe @"c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\testXPath\RSP00003A.rsp""
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Output Window
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Linking...
+LINK : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlDefaultSAXHandler referenced in function _xmlParseXMLCatalogFile
+testXPath.obj : error LNK2001: unresolved external symbol _xmlDefaultSAXHandler
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlDefaultSAXHandler referenced in function _xmlParseElement
+libxml2.lib(SAX.obj) : error LNK2001: unresolved external symbol _xmlDefaultSAXHandler
+libxml2.lib(parserInternals.obj) : error LNK2019: unresolved external symbol _xmlDefaultSAXHandler referenced in function _xmlSetFeature
+testXPath.obj : error LNK2001: unresolved external symbol _xmlLoadExtDtdDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2019: unresolved external symbol _xmlLoadExtDtdDefaultValue referenced in function _xmlSetFeature
+testXPath.obj : error LNK2001: unresolved external symbol _xmlDoValidityCheckingDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2019: unresolved external symbol _xmlDoValidityCheckingDefaultValue referenced in function _xmlSetFeature
+libxml2.lib(debugXML.obj) : error LNK2019: unresolved external symbol _xmlGenericError referenced in function _xmlDebugDumpOneNode
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(nanoftp.obj) : error LNK2019: unresolved external symbol _xmlGenericError referenced in function _xmlNanoFTPConnect
+libxml2.lib(xmlIO.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(error.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(HTMLtree.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(valid.obj) : error LNK2019: unresolved external symbol _xmlGenericError referenced in function _vstateVPush
+libxml2.lib(catalog.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(entities.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(xpath.obj) : error LNK2019: unresolved external symbol _xmlGenericError referenced in function _xmlXPathDivValues
+libxml2.lib(xpointer.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+testXPath.obj : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlGenericError referenced in function _xmlParseEntityDecl
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlGenericError
+libxml2.lib(debugXML.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _xmlDebugDumpOneNode
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(nanoftp.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _xmlNanoFTPConnect
+libxml2.lib(xmlIO.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(error.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(HTMLtree.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _htmlAttrDump
+libxml2.lib(valid.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(catalog.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(entities.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(xpath.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _xmlXPathMultValues
+libxml2.lib(xpointer.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(parserInternals.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _xmlCheckVersion
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+testXPath.obj : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlGenericErrorContext referenced in function _xmlParseEntityDecl
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlGenericErrorContext
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(nanoftp.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlMemStrdup referenced in function _xmlDumpXMLCatalog
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(xmlIO.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlMemStrdup referenced in function _xmlParseConditionalSections
+libxml2.lib(tree.obj) : error LNK2019: unresolved external symbol _xmlMemStrdup referenced in function _xmlNewNode
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlMemStrdup
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(error.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(valid.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _xmlDumpElementDecl
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _xmlDumpXMLCatalog
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(entities.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(xpath.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _xmlXPathBooleanFunction
+libxml2.lib(xpointer.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlRealloc
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _xmlParseConditionalSections
+libxml2.lib(tree.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _xmlNewPI
+libxml2.lib(SAX.obj) : error LNK2019: unresolved external symbol _xmlRealloc referenced in function _attributeDecl
+libxml2.lib(hash.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(list.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(nanoftp.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(xmlIO.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(error.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(debugXML.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlDebugDumpEntityCallback
+libxml2.lib(valid.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlDumpElementDecl
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlDumpXMLCatalog
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(entities.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(xpath.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlXPathTranslateFunction
+libxml2.lib(xpointer.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlMalloc
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlParseConditionalSections
+libxml2.lib(tree.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _xmlNewDocProp
+libxml2.lib(SAX.obj) : error LNK2019: unresolved external symbol _xmlMalloc referenced in function _attributeDecl
+libxml2.lib(nanoftp.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(debugXML.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlDebugDumpEntityCallback
+libxml2.lib(hash.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(list.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(nanohttp.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(xmlIO.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(error.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(HTMLtree.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _htmlSetMetaEncoding
+libxml2.lib(valid.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlDumpElementDecl
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlDumpXMLCatalog
+libxml2.lib(uri.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(entities.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(xpath.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlXPathTranslateFunction
+libxml2.lib(xpointer.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(encoding.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(xmlmemory.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlParseConditionalSections
+libxml2.lib(tree.obj) : error LNK2019: unresolved external symbol _xmlFree referenced in function _xmlNewNsProp
+libxml2.lib(SAX.obj) : error LNK2001: unresolved external symbol _xmlFree
+libxml2.lib(parser.obj) : error LNK2001: unresolved external symbol _xmlParserDebugEntities
+libxml2.lib(parserInternals.obj) : error LNK2019: unresolved external symbol _xmlParserDebugEntities referenced in function _xmlSwitchEncoding
+libxml2.lib(parser.obj) : error LNK2001: unresolved external symbol _xmlDefaultSAXLocator
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlDefaultSAXLocator
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlInitThreads referenced in function _xmlInitParser
+libxml2.lib(parser.obj) : error LNK2019: unresolved external symbol _xmlCleanupThreads referenced in function _xmlCleanupParser
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlBufferAllocScheme
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlDefaultBufferSize
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlIndentTreeOutput
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlIndentTreeOutput
+libxml2.lib(tree.obj) : error LNK2001: unresolved external symbol _xmlSaveNoEmptyTags
+libxml2.lib(SAX.obj) : error LNK2001: unresolved external symbol _xmlGetWarningsDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlGetWarningsDefaultValue
+libxml2.lib(SAX.obj) : error LNK2001: unresolved external symbol _htmlDefaultSAXHandler
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _htmlDefaultSAXHandler
+libxml2.lib(SAX.obj) : error LNK2001: unresolved external symbol _docbDefaultSAXHandler
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlSubstituteEntitiesDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlKeepBlanksDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlLineNumbersDefaultValue
+libxml2.lib(HTMLparser.obj) : error LNK2001: unresolved external symbol _xmlLineNumbersDefaultValue
+libxml2.lib(parserInternals.obj) : error LNK2001: unresolved external symbol _xmlPedanticParserDefaultValue
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlRMutexUnlock referenced in function _xmlFetchXMLCatalogFile
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlRMutexLock referenced in function _xmlFetchXMLCatalogFile
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlGetThreadId referenced in function _xmlParseXMLCatalogFile
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlNewRMutex referenced in function _xmlInitializeCatalogData
+libxml2.lib(catalog.obj) : error LNK2019: unresolved external symbol _xmlFreeRMutex referenced in function _xmlCatalogCleanup
+.\testXPath/testXPath.exe : fatal error LNK1120: 29 unresolved externals
+</pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
+Results
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
+Build log was saved at "file://c:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\libxml2Box\win32\libxml2\testXPath\BuildLog.htm"
+testXPath - 140 error(s), 1 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
+</font></table></body></html>

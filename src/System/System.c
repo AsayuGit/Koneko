@@ -37,8 +37,8 @@ void KON_UpdateRenderRect(){
     Koneko.dDevice.ScreenResolution.x = ScreenWidth;
     Koneko.dDevice.ScreenResolution.y = ScreenHeight;
 
-    Koneko.dDevice.RenderRect.w = Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar;
-    Koneko.dDevice.RenderRect.h = Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar;
+    Koneko.dDevice.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
+    Koneko.dDevice.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
 
     Koneko.dDevice.RenderRect.x = (int)(Koneko.dDevice.ScreenResolution.x - Koneko.dDevice.RenderRect.w) >> 1;
     Koneko.dDevice.RenderRect.y = (int)(Koneko.dDevice.ScreenResolution.y - Koneko.dDevice.RenderRect.h) >> 1;
@@ -92,7 +92,7 @@ void KON_InitInputs(){
         Koneko.iDevice.Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
     
     Koneko.iDevice.KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-    Koneko.iDevice.JoyEnabled = (Koneko.iDevice.Joy1);
+    Koneko.iDevice.JoyEnabled = (bool)(Koneko.iDevice.Joy1);
     Koneko.iDevice.EventEnabled = true;
 }
 

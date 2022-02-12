@@ -22,8 +22,11 @@
 #ifndef _LINKEDLIST_H
 #define _LINKEDLIST_H
 
+#ifdef _XBOX
+	#include <stddef.h>
+#else
     #include <unistd.h> /* size_t */
-
+#endif
     typedef struct LinkedList LinkedList;
     struct LinkedList{
         void* data;

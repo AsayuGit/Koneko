@@ -18,7 +18,11 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#define _GNU_SOURCE /* M_PI */
+#ifdef _XBOX
+	#define _USE_MATH_DEFINES
+#else
+	#define _GNU_SOURCE /* M_PI */
+#endif
 #include "Vector.h"
 
 /*

@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2Box", "libxml2Box.vcproj", "{C11169F7-54EA-47B9-811A-CC33D13DBAB1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Profile = Profile
+		Profile_FastCap = Profile_FastCap
+		Release = Release
+		Release_LTCG = Release_LTCG
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Debug.ActiveCfg = Debug|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Debug.Build.0 = Debug|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Profile.ActiveCfg = Profile|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Profile.Build.0 = Profile|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Profile_FastCap.ActiveCfg = Profile_FastCap|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Profile_FastCap.Build.0 = Profile_FastCap|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Release.ActiveCfg = Release|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Release.Build.0 = Release|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Release_LTCG.ActiveCfg = Release_LTCG|Xbox
+		{C11169F7-54EA-47B9-811A-CC33D13DBAB1}.Release_LTCG.Build.0 = Release_LTCG|Xbox
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

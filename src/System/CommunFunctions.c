@@ -113,7 +113,7 @@ Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* 
             CharCoords.y += sizeTmp;
             CharCoords.x -= DimX;
             
-            if (DimX > Dimensions.x){
+            if (DimX > (unsigned int)Dimensions.x){
                 Dimensions.x = DimX - intCharSpce;
                 DimX = 0;
             }
@@ -121,7 +121,7 @@ Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* 
         CharID++;
     }
 
-    if (DimX > Dimensions.x) Dimensions.x = DimX - intCharSpce; /* Because we don't count the lase inter char space*/
+    if (DimX > (unsigned int)Dimensions.x) Dimensions.x = DimX - intCharSpce; /* Because we don't count the lase inter char space*/
 
     return Dimensions;
 }
@@ -148,11 +148,11 @@ KON_Rect RectToVieport(const KON_Rect* InputRect, const KON_Rect* ViewPort, cons
 }
 
 Vector2d KON_Vector2iTo2d(Vector2i* vect){
-    return KON_InitVector2d(vect->x, vect->y);
+    return KON_InitVector2d((double)vect->x, (double)vect->y);
 }
 
 Vector2i KON_Vector2dTo2i(Vector2d* vect){
-    return KON_InitVector2i(vect->x, vect->y);
+    return KON_InitVector2i((int)vect->x, (int)vect->y);
 }
 
 unsigned char KON_BoundVect2iToRect(Vector2i* vect, KON_Rect* rect){

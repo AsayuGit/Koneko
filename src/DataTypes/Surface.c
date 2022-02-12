@@ -22,7 +22,14 @@
 #include "Koneko.h"
 #include "Surface.h"
 #include "RessourceManager.h"
-#include <linux/limits.h>
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+#else
+	#include <linux/limits.h>
+#endif
+
 #include "Log.h"
 
 #include "Graphics.h" /* RectOnScreen() */

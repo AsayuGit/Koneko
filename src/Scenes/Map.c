@@ -3,8 +3,14 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include "CommunFunctions.h"
-#include <linux/limits.h>
-#include <libgen.h> /* dirname() */
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+#else
+	#include <linux/limits.h>
+	#include <libgen.h> /* dirname() */
+#endif
 
 Map* KON_LoadMap(char* mapFilePath){
     /* Declaration */
@@ -28,7 +34,12 @@ Map* KON_LoadMap(char* mapFilePath){
     LoadedMap = (Map*)malloc(sizeof(Map));
     astrcpy(&LoadedMap->MapFilePath, mapFilePath);
     strcpy(filepath, mapFilePath);
+
+#ifdef _XBOX
+	_splitpath(filepath, NULL, MapRoot, NULL, NULL);
+#else
     MapRoot = dirname(filepath);
+#endif
 
     fscanf(MapFile, "%u", &nbOfLayers);
     LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));
