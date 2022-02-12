@@ -45,7 +45,9 @@ KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     buffer[strcspn(buffer, "\n")] = '\0'; /* Remove trailing \n */
 
     strcat(path, rootDirectory);
-    strcat(path, "/");
+	#ifndef _XBOX
+		strcat(path, "/");
+	#endif
     strcat(path, buffer);
 
     if (!(loadedSurface = KON_LoadSurface(path, colorKey, SURFACE_KEYED)))

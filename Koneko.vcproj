@@ -38,7 +38,7 @@
 				Name="VCLibrarianTool"
 				AdditionalDependencies="libSDL2x.lib libSDL2x_mixer.lib libxml2Box.lib"
 				OutputFile="$(OutDir)/$(ProjectName).lib"
-				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\Koneko\XBOX_Dependencies\libSDL2x-master\libSDL2x_mixer\Debug&quot;"/>
+				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\Koneko\XBOX_Dependencies\libxml2Box-main\Debug&quot;;&quot;C:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\Koneko\XBOX_Dependencies\libSDL2x-master\Debug&quot;;&quot;C:\Documents and Settings\Asayu\Mes documents\Visual Studio Projects\Koneko\XBOX_Dependencies\libSDL2x-master\libSDL2x_mixer\Debug&quot;"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -212,7 +212,7 @@
 				Name="Sound"
 				Filter="">
 				<File
-					RelativePath=".\src\Sound\Music.c">
+					RelativePath=".\src\Sound\KON_Music.c">
 				</File>
 				<File
 					RelativePath=".\src\Sound\SFX.c">
@@ -307,7 +307,7 @@
 				Name="Sound"
 				Filter="">
 				<File
-					RelativePath=".\include\Sound\Music.h">
+					RelativePath=".\include\Sound\KON_Music.h">
 				</File>
 				<File
 					RelativePath=".\include\Sound\SFX.h">

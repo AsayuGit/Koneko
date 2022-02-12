@@ -19,7 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Music.h"
+#include "KON_Music.h"
 #include "RessourceManager.h"
 #include "Log.h"
 #include "API.h"

@@ -173,7 +173,7 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
 }
 
 int KON_SetRenderTarget(SDL_Texture* surface) {
-    Koneko.dDevice.OffScreenRender = (surface);
+    Koneko.dDevice.OffScreenRender = (bool)(surface);
     return SDL_SetRenderTarget(Koneko.dDevice.Renderer, surface);
 }
 

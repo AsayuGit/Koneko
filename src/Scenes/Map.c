@@ -7,6 +7,7 @@
 #ifdef _XBOX
 	#define _POSIX_
 	#include <limits.h>
+	#include <string.h>
 #else
 	#include <linux/limits.h>
 	#include <libgen.h> /* dirname() */
@@ -21,7 +22,11 @@ Map* KON_LoadMap(char* mapFilePath){
     Vector2d bdSize;
     unsigned int nbOfLayers, layerType;
     unsigned int i;
-    char* MapRoot = NULL;
+	#ifdef _XBOX
+		char MapRoot[PATH_MAX];
+	#else
+		char* MapRoot = NULL;
+	#endif
     char filepath[PATH_MAX];
 
     /* Init */
@@ -36,7 +41,12 @@ Map* KON_LoadMap(char* mapFilePath){
     strcpy(filepath, mapFilePath);
 
 #ifdef _XBOX
-	_splitpath(filepath, NULL, MapRoot, NULL, NULL);
+	{
+		char MapPath[PATH_MAX];
+		
+		_splitpath(filepath, MapRoot, MapPath, NULL, NULL);
+		strcat(MapRoot, MapPath);
+	}
 #else
     MapRoot = dirname(filepath);
 #endif
