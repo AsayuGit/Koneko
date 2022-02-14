@@ -27,7 +27,8 @@
 			"functional": "c",
 			"displaylist.h": "c",
 			"linkedlist.h": "c",
-			"SFX.C": "cpp"
+			"SFX.C": "cpp",
+			"tilemap.h": "c"
 		}
 	}
 }
