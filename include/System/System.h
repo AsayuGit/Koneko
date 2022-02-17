@@ -37,7 +37,12 @@
         KON_INIT_EVERYTHING = 0x70u
     };
 
-    typedef struct{
+    typedef struct {
+        Vector2d position;
+        Vector2d direction;
+    } KON_Camera;
+
+    typedef struct {
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
 
@@ -48,7 +53,7 @@
         Vector2i ScreenResolution;      /* The external resolution of the game */
         double IRScalar;                /* The scaling nessary match the external resolution */
         bool integerScalling;           /* If set to true then the output will be pixel perfect (provided the winow is big enough) */
-        Vector2d Camera;                /* The coordinates of the in game camera */
+        KON_Camera camera;              /* The in game camera */
 
         bool OffScreenRender;
 

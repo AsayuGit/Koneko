@@ -159,8 +159,8 @@ void KON_DrawSprite(Sprite* sprite) {
     sprite->boundingBox = sprite->destination;
 
     /* Convert world space coordinates into screen space */
-    sprite->boundingBox.x += (int)(sprite->spritePosition.x - Koneko.dDevice.Camera.x);
-    sprite->boundingBox.y += (int)(sprite->spritePosition.y - Koneko.dDevice.Camera.y);
+    sprite->boundingBox.x += (int)(sprite->spritePosition.x - Koneko.dDevice.camera.position.x);
+    sprite->boundingBox.y += (int)(sprite->spritePosition.y - Koneko.dDevice.camera.position.y);
 
     /* Draws sprite in screen space*/
     if (sprite->flipX) flags |= DRAW_HORIZONTAL_FLIP;

@@ -99,8 +99,8 @@ static void KON_DrawTile(MapLayer* Layer, TileMap* map, unsigned int TileID, uns
     /* Init */
     SrcTile.x = (TileID % map->tMSizeX) * tileSize;
     SrcTile.y = (TileID / map->tMSizeX) * tileSize;
-    DstTile.x = X * tileSize + (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
-    DstTile.y = Y * tileSize + (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
+    DstTile.x = X * tileSize + (int)(Layer->pos.x - Koneko.dDevice.camera.position.x);
+    DstTile.y = Y * tileSize + (int)(Layer->pos.y - Koneko.dDevice.camera.position.y);
 
     SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
     /* Logic */
@@ -128,8 +128,8 @@ void KON_DrawTileMap(MapLayer* Layer) {
 void KON_DrawBitMap(MapLayer* Layer) {
     Vector2d pos;
 
-    pos.x = (int)(Layer->pos.x - Koneko.dDevice.Camera.x);
-    pos.y = (int)(Layer->pos.y - Koneko.dDevice.Camera.y);
+    pos.x = (int)(Layer->pos.x - Koneko.dDevice.camera.position.x);
+    pos.y = (int)(Layer->pos.y - Koneko.dDevice.camera.position.y);
 
     KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
 }

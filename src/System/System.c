@@ -20,6 +20,7 @@
 */
 
 #include "Koneko.h"
+#include "System.h"
 #include "CommunFunctions.h"
 #include "KeyMap.h"
 #include "Graphics.h"
