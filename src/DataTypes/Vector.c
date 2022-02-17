@@ -156,3 +156,13 @@ Direction KON_GetDirectionFromVector(Vector2d vect) {
 
     return 0;
 }
+
+void KON_RotateVector(Vector2d* vect, double angle) {
+    Vector2d temp = *vect;
+    double coAngle = cos(angle);
+
+    angle = sin(angle);
+
+    vect->x = temp.x * coAngle - temp.y * angle;
+    vect->y = temp.x * angle + temp.y * coAngle;
+}

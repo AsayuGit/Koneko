@@ -152,4 +152,11 @@
     */
     Direction KON_GetDirectionFromVector(Vector2d vect);
 
+    /*
+        SUMMARY : Rotate a vector by an angle (Rad) counterclockwise.
+        INPUT   : Vector2d* vect : The vector to rotate.
+        INPUT   : double angle   : The angle to rotate the vector by.
+    */
+    void KON_RotateVector(Vector2d* vect, double angle);
+
 #endif
