@@ -29,8 +29,6 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
 
     TileMap* tileMapLayer = (TileMap*)layer->layerData;
 
-    Vector2d cameraVector = {0, -1}; /* FIXME: Move into the camera object */
-
     rayStep.x = (rayDirection->x < 0) ? -1 : 1;
     rayStep.y = (rayDirection->y < 0) ? -1 : 1;
     
@@ -71,12 +69,12 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
                 
                 /*
                     We want |ray| * cos(alpha)
-                    Or : cameraVector . ray = |cameraVector| * |ray| * cos(alpha)
-                    So : cameraVector . ray / |cameraVector| = |ray| * cos(alpha)
-                    And since : |cameraVector| = 1
-                    Then : |ray| * cos(alpha) = cameraVector . ray
+                    Or : cameraDirection . ray = |cameraDirection| * |ray| * cos(alpha)
+                    So : cameraDirection . ray / |cameraDirection| = |ray| * cos(alpha)
+                    And since : |cameraDirection| = 1
+                    Then : |ray| * cos(alpha) = cameraDirection . ray
                 */
-                return (cameraVector.x * ray.x + cameraVector.y * rayInterpol.y);
+                return (Koneko.dDevice.camera.direction.x * ray.x + Koneko.dDevice.camera.direction.y * rayInterpol.y);
             }
             ray.x += rayStep.x;
         } else {
@@ -89,7 +87,7 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
                 rayCheck.y--;
 
             if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, NULL)) {
-                return (cameraVector.x * rayInterpol.x + cameraVector.y * ray.y);
+                return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * ray.y);
             }
             ray.y += rayStep.y;
         }
@@ -122,17 +120,12 @@ void KON_DrawRaycast(MapLayer* layer) {
     int screenX;
     double rayLength;
 
-    /* TEMP: To be part of a new camera object */
-    Vector2d cameraDirection = {0, -1};
-    Vector2d cameraPlane = {1, 0}; /* FOV: 90° */
-
     Vector2d rayDirection;
     Vector2d mapPosition;
 
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {
-
-        rayDirection.x = cameraDirection.x + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1) * cameraPlane.x;
-        rayDirection.y = cameraDirection.y + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.y) - 1) * cameraPlane.y;
+        rayDirection.x = Koneko.dDevice.camera.direction.x + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1) * Koneko.dDevice.camera.plane.x;
+        rayDirection.y = Koneko.dDevice.camera.direction.y + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.y) - 1) * Koneko.dDevice.camera.plane.y;
         
         mapPosition.x = Koneko.dDevice.camera.position.x / ((TileMap*)layer->layerData)->TileSize;
         mapPosition.y = Koneko.dDevice.camera.position.y / ((TileMap*)layer->layerData)->TileSize;

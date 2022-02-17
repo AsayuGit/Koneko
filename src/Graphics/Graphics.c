@@ -99,24 +99,3 @@ bool RectOnScreen(const KON_Rect* Rect){
     BaseRect.h = Koneko.dDevice.InternalResolution.y;
     return RectOnRect(Rect, &BaseRect);
 }
-
-void CenterCameraOnCoordinates(double X, double Y){
-    Koneko.dDevice.camera.position.x = X - (Koneko.dDevice.InternalResolution.x >> 1);
-    Koneko.dDevice.camera.position.y = Y - (Koneko.dDevice.InternalResolution.y >> 1);
-}
-
-void BoundCameraToRegion(KON_Rect Region){
-    if (Koneko.dDevice.camera.position.x + Koneko.dDevice.InternalResolution.x > Region.x + Region.w){
-        Koneko.dDevice.camera.position.x = Region.x + Region.w - Koneko.dDevice.InternalResolution.x;
-    }
-    if (Koneko.dDevice.camera.position.x < Region.x){
-        Koneko.dDevice.camera.position.x = Region.x;
-    }
-
-    if (Koneko.dDevice.camera.position.y + Koneko.dDevice.InternalResolution.y > Region.y + Region.h){
-        Koneko.dDevice.camera.position.y = Region.y + Region.h - Koneko.dDevice.InternalResolution.y;
-    }
-    if (Koneko.dDevice.camera.position.y < Region.y){
-        Koneko.dDevice.camera.position.y = Region.y;
-    }
-}

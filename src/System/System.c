@@ -25,53 +25,6 @@
 #include "KeyMap.h"
 #include "Graphics.h"
 
-void KON_UpdateRenderRect(){
-    int ScreenWidth, ScreenHeight; /* Signed because SDL said so :c */
-
-    SDL_GetWindowSize(Koneko.dDevice.Screen, &ScreenWidth, &ScreenHeight);
-
-    if (Koneko.dDevice.integerScalling && (ScreenWidth > Koneko.dDevice.InternalResolution.x) && (ScreenHeight > Koneko.dDevice.InternalResolution.y))
-        Koneko.dDevice.IRScalar = MIN(ScreenWidth / Koneko.dDevice.InternalResolution.x, ScreenHeight / Koneko.dDevice.InternalResolution.y);
-    else
-        Koneko.dDevice.IRScalar = MIN((double)ScreenWidth / (double)Koneko.dDevice.InternalResolution.x, (double)ScreenHeight / (double)Koneko.dDevice.InternalResolution.y);
-
-    Koneko.dDevice.ScreenResolution.x = ScreenWidth;
-    Koneko.dDevice.ScreenResolution.y = ScreenHeight;
-
-    Koneko.dDevice.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
-    Koneko.dDevice.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
-
-    Koneko.dDevice.RenderRect.x = (int)(Koneko.dDevice.ScreenResolution.x - Koneko.dDevice.RenderRect.w) >> 1;
-    Koneko.dDevice.RenderRect.y = (int)(Koneko.dDevice.ScreenResolution.y - Koneko.dDevice.RenderRect.h) >> 1;
-
-    Koneko.dDevice.OffScreenRender = false;
-
-    KON_InitRect(Koneko.dDevice.Frame[0], 0, 0, Koneko.dDevice.RenderRect.x, ScreenHeight);                                                                                                            /* Left Frame */
-    KON_InitRect(Koneko.dDevice.Frame[1], Koneko.dDevice.RenderRect.x + Koneko.dDevice.RenderRect.w, 0, Koneko.dDevice.RenderRect.x, ScreenHeight);                                                /* Right Frame */
-    KON_InitRect(Koneko.dDevice.Frame[2], Koneko.dDevice.RenderRect.x, 0, Koneko.dDevice.RenderRect.w, Koneko.dDevice.RenderRect.y);                                                               /* Top Frame */
-    KON_InitRect(Koneko.dDevice.Frame[3], Koneko.dDevice.RenderRect.x, Koneko.dDevice.RenderRect.y + Koneko.dDevice.RenderRect.h, Koneko.dDevice.RenderRect.w, Koneko.dDevice.RenderRect.y);   /* Bottom Frame */
-}
-
-static void KON_FreeDisplayDevice() {
-    SDL_DestroyRenderer(Koneko.dDevice.Renderer);
-    SDL_DestroyWindow(Koneko.dDevice.Screen);
-}
-
-void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
-    Koneko.dDevice.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    Koneko.dDevice.Renderer = SDL_CreateRenderer(Koneko.dDevice.Screen , -1, 0);
-    if (Koneko.dDevice.Renderer == NULL){
-        KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
-    }
-    SDL_GL_SetSwapInterval(true); /* VSync */
-
-    /* FIXME : TEMPORARY: Makes the start resulution de default internal resolution */
-    Koneko.dDevice.InternalResolution.x = resX;
-    Koneko.dDevice.InternalResolution.y = resY;
-
-    KON_UpdateRenderRect();
-}
-
 static void KON_FreeSoundDevice() {
     Mix_CloseAudio();
 }

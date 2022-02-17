@@ -23,9 +23,7 @@
 #define _SYSTEM_H
 
     #include "Log.h"
-    
-    #include "API.h" /* FIXME: Temporary */
-    #include "Rect.h"
+    #include "KON_DisplayDevice.h"
 
     #include <Bool.h>
 
@@ -36,31 +34,6 @@
 
         KON_INIT_EVERYTHING = 0x70u
     };
-
-    typedef struct {
-        Vector2d position;
-        Vector2d direction;
-    } KON_Camera;
-
-    typedef struct {
-        SDL_Window *Screen;
-        SDL_Renderer *Renderer;
-
-        KON_Rect Frame[4];              /* Screen Border Frame */
-
-        KON_Rect RenderRect;            /* Where the game is drawn on screen */
-        Vector2i InternalResolution;    /* Internal render resolution of the game */
-        Vector2i ScreenResolution;      /* The external resolution of the game */
-        double IRScalar;                /* The scaling nessary match the external resolution */
-        bool integerScalling;           /* If set to true then the output will be pixel perfect (provided the winow is big enough) */
-        KON_Camera camera;              /* The in game camera */
-
-        bool OffScreenRender;
-
-        /* Timing control */
-        uint32_t lastFrame;
-        uint32_t frametime;
-    } DisplayDevice;
 
     typedef struct{
         /* Events */
