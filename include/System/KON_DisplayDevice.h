@@ -36,10 +36,21 @@
     void KON_UpdateRenderRect();
 
     /*
+        SUMMARY : Set the camera fov (in radians)
+        INPUT   : double fov : The new camera fov.
+    */
+    void KON_SetCameraFOVRAD(double fov);
+
+    /*
         SUMMARY : Set the camera fov (in degrees)
         INPUT   : double fov : The new camera fov.
     */
     void KON_SetCameraFOV(double fov);
+
+    /*
+        SUMMARY : Sets the camera fov to its optimal value for the current resolution.
+    */
+    void KON_ResetCameraFOV();
     void KON_CenterCameraOnCoordinates(double X, double Y);
     void KON_BoundCameraToRegion(KON_Rect Region);
     void KON_RotateCamera(double angle);
