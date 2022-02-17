@@ -194,3 +194,7 @@ void KON_SetNegative(void* valuePointer, size_t dataSize) {
 void KON_SetPositive(void* valuePointer, size_t dataSize) {
     *((Uint64*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
 }
+
+double KON_DegToRad(double angle) {
+    return (angle * M_PI) / 180.0;
+}

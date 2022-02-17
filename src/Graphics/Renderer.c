@@ -74,7 +74,7 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
                     And since : |cameraDirection| = 1
                     Then : |ray| * cos(alpha) = cameraDirection . ray
                 */
-                return (Koneko.dDevice.camera.direction.x * ray.x + Koneko.dDevice.camera.direction.y * rayInterpol.y);
+                return (Koneko.dDevice.camera.direction.x * ray.x + Koneko.dDevice.camera.direction.y * rayInterpol.y); /* / KON_GetVectNorm(Koneko.dDevice.camera.direction);*/
             }
             ray.x += rayStep.x;
         } else {
@@ -87,7 +87,7 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
                 rayCheck.y--;
 
             if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, NULL)) {
-                return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * ray.y);
+                return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * ray.y); /* / KON_GetVectNorm(Koneko.dDevice.camera.direction);*/
             }
             ray.y += rayStep.y;
         }

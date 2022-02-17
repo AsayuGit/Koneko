@@ -45,7 +45,9 @@
     unsigned char KON_BoundVect2dToRect(Vector2d* vect, KON_Rect* rect);
     
     /* Bitwise Operations */
-    void      KON_SetNegative(void* valuePointer, size_t dataSize);
-    void      KON_SetPositive(void* valuePointer, size_t dataSize);
+    void     KON_SetNegative(void* valuePointer, size_t dataSize);
+    void     KON_SetPositive(void* valuePointer, size_t dataSize);
+
+    double   KON_DegToRad(double angle);
 
 #endif

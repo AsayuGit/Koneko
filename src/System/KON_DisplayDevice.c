@@ -2,6 +2,15 @@
 #include "Koneko.h"
 #include "CommunFunctions.h"
 
+#define KON_DEFAULT_FOV 60
+
+void KON_SetCameraFOV(double fov) {
+    Koneko.dDevice.camera.plane = KON_GetVectScalarProduct(
+        KON_GetVectScalarDivision(Koneko.dDevice.camera.plane, KON_GetVectNorm(Koneko.dDevice.camera.plane)),
+        tan(KON_DegToRad(fov / 2))
+    );
+}
+
 void KON_CenterCameraOnCoordinates(double X, double Y){
     Koneko.dDevice.camera.position.x = X - (Koneko.dDevice.InternalResolution.x >> 1);
     Koneko.dDevice.camera.position.y = Y - (Koneko.dDevice.InternalResolution.y >> 1);
@@ -69,6 +78,8 @@ void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
 
     Koneko.dDevice.camera.direction = KON_InitVector2d(0, -1);
     Koneko.dDevice.camera.plane = KON_InitVector2d(1, 0);
+
+    KON_SetCameraFOV(KON_DEFAULT_FOV);
 
     KON_UpdateRenderRect();
 }
