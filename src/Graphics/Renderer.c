@@ -119,13 +119,15 @@ void KON_DrawWallLine(MapLayer* layer, unsigned int screenX, double length) {
 void KON_DrawRaycast(MapLayer* layer) {
     int screenX;
     double rayLength;
+    double progress;
 
     Vector2d rayDirection;
     Vector2d mapPosition;
 
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {
-        rayDirection.x = Koneko.dDevice.camera.direction.x + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1) * Koneko.dDevice.camera.plane.x;
-        rayDirection.y = Koneko.dDevice.camera.direction.y + (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.y) - 1) * Koneko.dDevice.camera.plane.y;
+        progress = (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1);
+        rayDirection.x = Koneko.dDevice.camera.direction.x + progress * Koneko.dDevice.camera.plane.x;
+        rayDirection.y = Koneko.dDevice.camera.direction.y + progress * Koneko.dDevice.camera.plane.y;
         
         mapPosition.x = Koneko.dDevice.camera.position.x / ((TileMap*)layer->layerData)->TileSize;
         mapPosition.y = Koneko.dDevice.camera.position.y / ((TileMap*)layer->layerData)->TileSize;
