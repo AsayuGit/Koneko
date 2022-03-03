@@ -97,22 +97,28 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
 }
 
 void KON_DrawWallLine(MapLayer* layer, unsigned int screenX, double length) {
-    unsigned int startY, endY, halfHeight;
+    int startY, endY, halfHeight;
 
-    /*printf("Wall is at %u\n", length);*/
-
-    halfHeight = (unsigned int)Koneko.dDevice.InternalResolution.y >> 1;
+    halfHeight = (int)Koneko.dDevice.InternalResolution.y >> 1;
     
     if (length <= 0.0)
         length = 1.0;
     
     length =  halfHeight / length;
-    
     startY = halfHeight - length;
-    endY = halfHeight + length;
+    endY = 2 * length;
 
     SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_RenderDrawLine(Koneko.dDevice.Renderer, screenX, startY, screenX, endY);
+    {
+        SDL_Rect line;
+        
+        line.x = screenX * Koneko.dDevice.IRScalar + Koneko.dDevice.RenderRect.x;
+        line.y = startY * Koneko.dDevice.IRScalar + Koneko.dDevice.RenderRect.y;
+        line.w = Koneko.dDevice.IRScalar;
+        line.h = endY * Koneko.dDevice.IRScalar;
+        /* SDL_RenderDrawLine(Koneko.dDevice.Renderer, screenX, startY, screenX, endY); */
+        SDL_RenderFillRect(Koneko.dDevice.Renderer, &line);
+    }
     SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }
 
