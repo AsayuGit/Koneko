@@ -147,8 +147,8 @@ void KON_DrawRaycast(MapLayer* layer) {
         rayDirection.x = Koneko.dDevice.camera.direction.x + progress * Koneko.dDevice.camera.plane.x;
         rayDirection.y = Koneko.dDevice.camera.direction.y + progress * Koneko.dDevice.camera.plane.y;
         
-        mapPosition.x = Koneko.dDevice.camera.position.x / ((TileMap*)layer->layerData)->TileSize;
-        mapPosition.y = Koneko.dDevice.camera.position.y / ((TileMap*)layer->layerData)->TileSize;
+        mapPosition.x = Koneko.dDevice.camera.position.x;
+        mapPosition.y = Koneko.dDevice.camera.position.y;
 
         rayLength = KON_CastRayOnTileMap(layer, &mapPosition, &rayDirection, &currentTile, &wallScanline);
         KON_DrawWallLine(layer, screenX, rayLength, currentTile, wallScanline);
