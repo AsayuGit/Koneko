@@ -89,37 +89,36 @@ TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
     return loadedTilemap;
 }
 
-static void KON_DrawTile(MapLayer* Layer, TileMap* map, unsigned int TileID, unsigned int X, unsigned int Y) {
-    /* Declaration */
+
+void KON_GetTileSrcRectInTileMap(TileMap* tileMap, unsigned int TileID, KON_Rect* tileRect) {
+    tileRect->x = TileID % tileMap->tMSizeX * tileMap->TileSize;
+    tileRect->y = TileID / tileMap->tMSizeX * tileMap->TileSize;
+    tileRect->w = tileRect->h = tileMap->TileSize;
+}
+
+void KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position) {
     KON_Rect SrcTile, DstTile;
-    unsigned int tileSize;
 
-    tileSize = map->TileSize;
+    KON_GetTileSrcRectInTileMap(tileMap, TileID, &SrcTile);
+    DstTile.x = position.x;
+    DstTile.y = position.y;
+    DstTile.w = DstTile.h = SrcTile.w;
 
-    /* Init */
-    SrcTile.x = (TileID % map->tMSizeX) * tileSize;
-    SrcTile.y = (TileID / map->tMSizeX) * tileSize;
-    DstTile.x = X * tileSize + (int)(Layer->pos.x - Koneko.dDevice.camera.position.x);
-    DstTile.y = Y * tileSize + (int)(Layer->pos.y - Koneko.dDevice.camera.position.y);
-
-    SrcTile.w = SrcTile.h = DstTile.w = DstTile.h = tileSize;
-    /* Logic */
-
-    KON_DrawScaledSurfaceRect(map->tileSet, &SrcTile, &DstTile);
+    KON_DrawScaledSurfaceRect(tileMap->tileSet, &SrcTile, &DstTile);
 }
 
 void KON_DrawTileMap(MapLayer* Layer) {
     /* Declaration */
-    unsigned int i, j;
+    Vector2d tilePos;
     TileMap* map;
 
     map = (TileMap*)Layer->layerData;
 
     /* Logic */
     if (Layer->shown && (Layer->layerRenderer == RENDER_2D_TILEMAP)){
-        for (i = 0; i < map->MapSizeY; i++){
-            for (j = 0; j < map->MapSizeX; j++){
-                KON_DrawTile(Layer, map, map->MapData[i][j], j, i);
+        for (tilePos.y = 0; tilePos.y < map->MapSizeY; tilePos.y++){
+            for (tilePos.x = 0; tilePos.x < map->MapSizeX; tilePos.x++){
+                KON_DrawTile(map, map->MapData[(unsigned int)tilePos.x][(unsigned int)tilePos.y], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
             }
         }
     }

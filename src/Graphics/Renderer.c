@@ -10,7 +10,7 @@
 #include "API.h"
 
 /* FIXME: Implement DDA algorithm */
-double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDirection) {
+double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDirection, unsigned int* tile, unsigned int* tileScanline) {
     unsigned int DDADepth;
     Vector2d ray; /* The end of ray being casted AKA the ray from the position to itself.
                      X: The ray displacement in the X direction
@@ -28,6 +28,7 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
     Vector2d rayCheck;
 
     TileMap* tileMapLayer = (TileMap*)layer->layerData;
+    double integral;
 
     rayStep.x = (rayDirection->x < 0) ? -1 : 1;
     rayStep.y = (rayDirection->y < 0) ? -1 : 1;
@@ -64,7 +65,12 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
             if (rayStep.x < 0)
                 rayCheck.x--;
 
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, NULL)) {
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, tile)) {
+                if (tileScanline) {
+                    *tileScanline = modf(rayCheck.y + position->y, &integral) * tileMapLayer->TileSize;
+                    if (rayStep.x < 0)
+                        *tileScanline = tileMapLayer->TileSize - *tileScanline - 1;
+                }
                 /* Fish-eye correction : Return the perpendicular distance to the camera instead of the euclidian one */
                 
                 /*
@@ -86,7 +92,12 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
             if (rayStep.y < 0)
                 rayCheck.y--;
 
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, NULL)) {
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, tile)) {
+                if (tileScanline) {
+                    *tileScanline = modf(rayCheck.x + position->x, &integral) * tileMapLayer->TileSize;
+                    if (rayStep.y > 0)
+                        *tileScanline = tileMapLayer->TileSize - *tileScanline - 1;
+                }
                 return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * ray.y); /* / KON_GetVectNorm(Koneko.dDevice.camera.direction);*/
             }
             ray.y += rayStep.y;
@@ -96,33 +107,34 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
     return 0;
 }
 
-void KON_DrawWallLine(MapLayer* layer, unsigned int screenX, double length) {
-    int startY, endY, halfHeight;
+void KON_DrawWallLine(MapLayer* layer, unsigned int screenX, double length, unsigned int tile, unsigned int scanline) {
+    int halfHeight;
+    KON_Rect tileRect, wall;
+    TileMap* tileMap;
 
+    /* FIXME: We should check if its a tilemap first */
+    tileMap = (TileMap*)layer->layerData;
     halfHeight = (int)Koneko.dDevice.InternalResolution.y >> 1;
     
     if (length <= 0.0)
         length = 1.0;
     
     length =  halfHeight / length;
-    startY = halfHeight - length;
-    endY = 2 * length;
 
-    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    {
-        SDL_Rect line;
-        
-        line.x = screenX * Koneko.dDevice.IRScalar + Koneko.dDevice.RenderRect.x;
-        line.y = startY * Koneko.dDevice.IRScalar + Koneko.dDevice.RenderRect.y;
-        line.w = Koneko.dDevice.IRScalar;
-        line.h = endY * Koneko.dDevice.IRScalar;
-        /* SDL_RenderDrawLine(Koneko.dDevice.Renderer, screenX, startY, screenX, endY); */
-        SDL_RenderFillRect(Koneko.dDevice.Renderer, &line);
-    }
-    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    wall.x = screenX;
+    wall.y = halfHeight - length;
+    wall.w = 1;
+    wall.h = 2 * length;
+
+    KON_GetTileSrcRectInTileMap(tileMap, tile, &tileRect);
+    tileRect.x += scanline;
+    tileRect.w = 1;
+
+    KON_DrawScaledSurfaceRect(tileMap->tileSet, &tileRect, &wall);
 }
 
 void KON_DrawRaycast(MapLayer* layer) {
+    unsigned int currentTile, wallScanline;
     int screenX;
     double rayLength;
     double progress;
@@ -138,8 +150,8 @@ void KON_DrawRaycast(MapLayer* layer) {
         mapPosition.x = Koneko.dDevice.camera.position.x / ((TileMap*)layer->layerData)->TileSize;
         mapPosition.y = Koneko.dDevice.camera.position.y / ((TileMap*)layer->layerData)->TileSize;
 
-        rayLength = KON_CastRayOnTileMap(layer, &mapPosition, &rayDirection);
-        KON_DrawWallLine(layer, screenX, rayLength);
+        rayLength = KON_CastRayOnTileMap(layer, &mapPosition, &rayDirection, &currentTile, &wallScanline);
+        KON_DrawWallLine(layer, screenX, rayLength, currentTile, wallScanline);
     }
 }
 

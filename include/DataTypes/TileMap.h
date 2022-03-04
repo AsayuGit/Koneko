@@ -38,15 +38,31 @@
     } TileMap;
 
     /* Load a tilemap from a map file */
-    TileMap*     KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory);
+    TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory);
 
-    void         KON_DrawTileMap(MapLayer* Layer);
+    /*
+        SUMMARY : Fetch the source rect of a tile in a tilemap.
+        INPUT   : TileMap* tileMap    : The tilemap from which the source rect should be fetched.
+        INPUT   : unsigned int TileID : The tile of whom we wanna know the source rect from.
+        INPUT   : KON_Rect* tileRect  : The feched source rect.
+    */
+    void     KON_GetTileSrcRectInTileMap(TileMap* tileMap, unsigned int TileID, KON_Rect* tileRect);
 
-    bool         KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
-    bool         KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile);
-    bool         KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
-    bool         KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile);
-    bool         KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
+    /*
+        SUMMARY : Draw a tile on screen from a tilemap.
+        INPUT   : TileMap* tileMap    : The tilemap from which the tile should be drawn.
+        INPUT   : unsigned int TileID : The tile which should be drawn.
+        INPUT   : Vector2d position   : Where to draw the tile on screen (screen space).
+    */
+    void     KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position);
+
+    void     KON_DrawTileMap(MapLayer* Layer);
+
+    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
+    bool     KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile);
+    bool     KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
+    bool     KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile);
+    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
 
     /*
         SUMMARY : Loads a bitmap from map file.
