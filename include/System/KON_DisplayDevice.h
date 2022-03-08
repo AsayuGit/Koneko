@@ -8,6 +8,7 @@
         Vector2d position;
         Vector2d direction;
         Vector2d plane;
+        double cameraHeight;
     } KON_Camera;
 
     typedef struct {

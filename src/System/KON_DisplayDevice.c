@@ -84,6 +84,7 @@ void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
 
     Koneko.dDevice.camera.direction = KON_InitVector2d(0, -1);
     Koneko.dDevice.camera.plane = KON_InitVector2d(1, 0);
+    Koneko.dDevice.camera.cameraHeight = 0.5;
 
     KON_ResetCameraFOV();
 

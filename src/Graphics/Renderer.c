@@ -109,22 +109,23 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
 
 void KON_DrawWallLine(MapLayer* layer, unsigned int screenX, double length, unsigned int tile, unsigned int scanline) {
     int halfHeight;
+    unsigned int wallSize;
     KON_Rect tileRect, wall;
     TileMap* tileMap;
 
     /* FIXME: We should check if its a tilemap first */
     tileMap = (TileMap*)layer->layerData;
-    halfHeight = (int)Koneko.dDevice.InternalResolution.y >> 1;
+    halfHeight = Koneko.dDevice.InternalResolution.y >> 1;
     
     if (length <= 0.0)
         length = 1.0;
     
-    length =  halfHeight / length;
+    wallSize = (halfHeight / length) * 2;
 
     wall.x = screenX;
-    wall.y = halfHeight - length;
+    wall.y = halfHeight - wallSize * Koneko.dDevice.camera.cameraHeight;
     wall.w = 1;
-    wall.h = 2 * length;
+    wall.h = wallSize;
 
     KON_GetTileSrcRectInTileMap(tileMap, tile, &tileRect);
     tileRect.x += scanline;
