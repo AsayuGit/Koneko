@@ -29,6 +29,7 @@
 			"linkedlist.h": "c",
 			"SFX.C": "cpp",
 			"tilemap.h": "c"
+			"kon_pathtranslator.h": "c"
 		}
 	}
 }

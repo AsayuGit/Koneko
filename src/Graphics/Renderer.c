@@ -12,7 +12,7 @@
 /* FIXME: Implement DDA algorithm */
 double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDirection, unsigned int* tile, unsigned int* tileScanline) {
     unsigned int DDADepth;
-    Vector2d ray; /* The end of ray being casted AKA the ray from the position to itself.
+    Vector2i ray; /* The end of ray being casted AKA the ray from the 0,0 to itself.
                      X: The ray displacement in the X direction
                      Y: The ray displacement in the Y direction
                      We need to interpolate in the other direction to get the resulting vector */
@@ -28,46 +28,47 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
     Vector2d rayCheck;
 
     TileMap* tileMapLayer = (TileMap*)layer->layerData;
-    double integral;
 
-    rayStep.x = (rayDirection->x < 0) ? -1 : 1;
-    rayStep.y = (rayDirection->y < 0) ? -1 : 1;
-    
-    /* First set up the ray to the boundaries of the X and Y wall*/
-    ray.x = floor(position->x) - position->x;
-    ray.y = floor(position->y) - position->y;
+    if (rayDirection->x > 0) {
+        ray.x = (int)position->x + 1;
+        rayStep.x = 1;
+    } else {
+        ray.x = (int)position->x;
+        rayStep.x = -1;
+    }
 
-    if (rayDirection->x > 0)
-        ray.x++;
+    if (rayDirection->y > 0) {
+        ray.y = (int)position->y + 1;
+        rayStep.y = 1;
+    } else {
+        ray.y = (int)position->y;
+        rayStep.y = -1;
+    }
 
-    if (rayDirection->y > 0)
-        ray.y++;
-
-    rayMarch.x = fabs(rayDirection->x / rayDirection->y);
-    rayMarch.y = fabs(rayDirection->y / rayDirection->x);
+    rayMarch.x = fabs(rayDirection->x / rayDirection->y); /* y * thix = x */
+    rayMarch.y = fabs(rayDirection->y / rayDirection->x); /* x * this = y */
 
     /* DDA Loop */
     for (DDADepth = 0; DDADepth < 100; DDADepth++) {
 
-        rayInterpol.x = rayStep.x * fabs(ray.y) * rayMarch.x;
-        rayInterpol.y = rayStep.y * fabs(ray.x) * rayMarch.y;
+        rayInterpol.x = rayStep.x * fabs((double)ray.y - position->y) * rayMarch.x;
+        rayInterpol.y = rayStep.y * fabs((double)ray.x - position->x) * rayMarch.y;
 
         /* 0. Compute the length of each rays */
-        rayLength.x = sqrt(pow(ray.x, 2) + pow(rayInterpol.y, 2));
-        rayLength.y = sqrt(pow(ray.y, 2) + pow(rayInterpol.x, 2));
+        rayLength.x = sqrt(pow(ray.x - position->x, 2) + pow(rayInterpol.y, 2));
+        rayLength.y = sqrt(pow(ray.y - position->y, 2) + pow(rayInterpol.x, 2));
 
         if (rayLength.x < rayLength.y) {
             /* Iterate on the X direction */
 
             rayCheck.x = ray.x;
-            rayCheck.y = rayInterpol.y;
+            rayCheck.y = rayInterpol.y + position->y;
 
             if (rayStep.x < 0)
                 rayCheck.x--;
-
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, tile)) {
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, tile)) {
                 if (tileScanline) {
-                    *tileScanline = modf(rayCheck.y + position->y, &integral) * tileMapLayer->TileSize;
+                    *tileScanline = fabs(floor(rayCheck.y) - (rayCheck.y)) * tileMapLayer->TileSize;
                     if (rayStep.x < 0)
                         *tileScanline = tileMapLayer->TileSize - *tileScanline - 1;
                 }
@@ -80,25 +81,24 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
                     And since : |cameraDirection| = 1
                     Then : |ray| * cos(alpha) = cameraDirection . ray
                 */
-                return (Koneko.dDevice.camera.direction.x * ray.x + Koneko.dDevice.camera.direction.y * rayInterpol.y); /* / KON_GetVectNorm(Koneko.dDevice.camera.direction);*/
+                return (Koneko.dDevice.camera.direction.x * (ray.x - position->x) + Koneko.dDevice.camera.direction.y * rayInterpol.y);
             }
             ray.x += rayStep.x;
         } else {
             /* Iterate on the Y direction */
 
-            rayCheck.x = rayInterpol.x;
+            rayCheck.x = rayInterpol.x + position->x;
             rayCheck.y = ray.y;
 
             if (rayStep.y < 0)
                 rayCheck.y--;
-
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x + position->x, rayCheck.y + position->y, tile)) {
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, tile)) {
                 if (tileScanline) {
-                    *tileScanline = modf(rayCheck.x + position->x, &integral) * tileMapLayer->TileSize;
+                    *tileScanline = fabs(floor(rayCheck.x) - (rayCheck.x)) * tileMapLayer->TileSize;
                     if (rayStep.y > 0)
                         *tileScanline = tileMapLayer->TileSize - *tileScanline - 1;
                 }
-                return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * ray.y); /* / KON_GetVectNorm(Koneko.dDevice.camera.direction);*/
+                return (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * (ray.y - position->y));
             }
             ray.y += rayStep.y;
         }
