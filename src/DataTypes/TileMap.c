@@ -57,36 +57,33 @@ KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
 }
 
 TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
-    TileMap* loadedTilemap = NULL;
-    unsigned int nbOfSolidTiles;
-    unsigned int i, j;
+    TileMap* loadedTileMap = NULL;
+    unsigned int nbOfSolidTiles, i, j;
 
-    loadedTilemap = (TileMap*)malloc(sizeof(TileMap));
+    loadedTileMap = (TileMap*)malloc(sizeof(TileMap));
 
     /* Loading */
-    loadedTilemap->tileSet = KON_LoadBitMap(tileMapFile, rootDirectory);
+    loadedTileMap->tileSet = KON_LoadBitMap(tileMapFile, rootDirectory);
 
     /* Properties */
-    fscanf(tileMapFile, "%u %u %u %u %u\n", &loadedTilemap->MapSizeX, &loadedTilemap->MapSizeY, &loadedTilemap->tMSizeX, &loadedTilemap->tMSizeY, &loadedTilemap->TileSize);
+    fscanf(tileMapFile, "%u %u %u %u %u %u\n", &loadedTileMap->MapSizeX, &loadedTileMap->MapSizeY, &loadedTileMap->MapSizeZ, &loadedTileMap->tMSizeX, &loadedTileMap->tMSizeY, &loadedTileMap->TileSize);
 
     /* LayerData */
-    loadedTilemap->MapData = (unsigned int**)malloc(sizeof(unsigned int*)*loadedTilemap->MapSizeY);
-    for (i = 0; i < loadedTilemap->MapSizeY; i++){
-        loadedTilemap->MapData[i] = (unsigned int*)malloc(sizeof(unsigned int)*loadedTilemap->MapSizeX);
-        for (j = 0; j < loadedTilemap->MapSizeX; j++){
-            fscanf(tileMapFile, "%u", &loadedTilemap->MapData[i][j]);
-        }
+    loadedTileMap->MapDataSize = loadedTileMap->MapSizeX * loadedTileMap->MapSizeY * loadedTileMap->MapSizeZ;
+    loadedTileMap->MapData = (unsigned int*)malloc(sizeof(unsigned int) * loadedTileMap->MapDataSize);
+    for (i = 0; i < loadedTileMap->MapDataSize; i++) {
+        fscanf(tileMapFile, "%u", &loadedTileMap->MapData[i]);
     }
 
     /* Solid tiles */
     fscanf(tileMapFile, "%u", &nbOfSolidTiles);
-    loadedTilemap->solidTiles = NULL;
+    loadedTileMap->solidTiles = NULL;
     for (i = 0; i < nbOfSolidTiles; i++){
         fscanf(tileMapFile, "%u", &j);
-        KON_AppendToLinkedList(&loadedTilemap->solidTiles, &j, sizeof(unsigned int));
+        KON_AppendToLinkedList(&loadedTileMap->solidTiles, &j, sizeof(unsigned int));
     }
 
-    return loadedTilemap;
+    return loadedTileMap;
 }
 
 
@@ -109,16 +106,21 @@ void KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position) {
 
 void KON_DrawTileMap(MapLayer* Layer) {
     /* Declaration */
+    unsigned int mapIndex;
     Vector2d tilePos;
     TileMap* map;
 
     map = (TileMap*)Layer->layerData;
 
     /* Logic */
-    if (Layer->shown && (Layer->layerRenderer == RENDER_2D_TILEMAP)){
-        for (tilePos.y = 0; tilePos.y < map->MapSizeY; tilePos.y++){
-            for (tilePos.x = 0; tilePos.x < map->MapSizeX; tilePos.x++){
-                KON_DrawTile(map, map->MapData[(unsigned int)tilePos.x][(unsigned int)tilePos.y], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
+    if (!Layer->shown || (Layer->layerRenderer != RENDER_2D_TILEMAP))
+        return;
+
+    while (mapIndex < map->MapDataSize) {
+        for (tilePos.y = 0; tilePos.y < map->MapSizeY; tilePos.y++) {
+            for (tilePos.x = 0; tilePos.x < map->MapSizeX; tilePos.x++) {
+                KON_DrawTile(map, map->MapData[mapIndex], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
+                mapIndex++;
             }
         }
     }
@@ -133,21 +135,21 @@ void KON_DrawBitMap(MapLayer* Layer) {
     KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
 }
 
-bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile) {
-    if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY)
+bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile) {
+    if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY || Z >= tileMap->MapSizeZ)
         return false;
-    *tile = tileMap->MapData[Y][X];
+    *tile = tileMap->MapData[(Z * tileMap->MapSizeX * tileMap->MapSizeY) + (Y * tileMap->MapSizeY) + X];
     return true;
 }
 
-bool KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile) {
+bool KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile) {
     unsigned int tileSize;
 
     tileSize = tileMap->TileSize;
     X /= tileSize;
     Y /= tileSize;
 
-    return KON_GetTile(tileMap, (unsigned int)X, (unsigned int)Y, tile);
+    return KON_GetTile(tileMap, (unsigned int)X, (unsigned int)Y, Z, tile);
 }
 
 bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
@@ -163,10 +165,10 @@ bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile) {
     return false;
 }
 
-bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile) {
+bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile) {
     unsigned int fetchedTile;
 
-    if (!KON_GetTile(tileMap, X, Y, &fetchedTile))
+    if (!KON_GetTile(tileMap, X, Y, Z, &fetchedTile))
         return true;
 
     if (tile)
@@ -176,10 +178,10 @@ bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, un
 }
 
 /* Returns true if the Map Tile is solid */
-bool KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile) {
+bool KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile) {
     unsigned int fetchedTile;
 
-    if (!KON_GetTileAtCoordinates(tileMap, X, Y, &fetchedTile))
+    if (!KON_GetTileAtCoordinates(tileMap, X, Y, Z, &fetchedTile))
         return true;
 
     if (tile)

@@ -1,3 +1,24 @@
+/*
+    Koneko is a 2D/Raycast3D game engine written from scratch in ANSI C
+    using SDL and libxml2. This engine is meant to allow game developpement
+    for Linux, Windows and the og Xbox.
+
+    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; version 2 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #define _GNU_SOURCE
 
 #include "Koneko.h"
@@ -10,7 +31,7 @@
 #include "API.h"
 
 /* FIXME: Implement DDA algorithm */
-double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDirection, unsigned int* tile, unsigned int* tileScanline) {
+double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, unsigned int Z, Vector2d* rayDirection, unsigned int* tile, unsigned int* tileScanline) {
     unsigned int DDADepth;
     Vector2i ray; /* The end of ray being casted AKA the ray from the 0,0 to itself.
                      X: The ray displacement in the X direction
@@ -66,7 +87,8 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
 
             if (rayStep.x < 0)
                 rayCheck.x--;
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, tile)) {
+            /* FIXME: Check all layers ? */
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, 0, tile)) {
                 if (tileScanline) {
                     *tileScanline = fabs(floor(rayCheck.y) - (rayCheck.y)) * tileMapLayer->TileSize;
                     if (rayStep.x < 0)
@@ -92,7 +114,8 @@ double KON_CastRayOnTileMap(MapLayer* layer, Vector2d* position, Vector2d* rayDi
 
             if (rayStep.y < 0)
                 rayCheck.y--;
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, tile)) {
+            /* FIXME: Check all layers ? */
+            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, Z, tile)) {
                 if (tileScanline) {
                     *tileScanline = fabs(floor(rayCheck.x) - (rayCheck.x)) * tileMapLayer->TileSize;
                     if (rayStep.y > 0)
@@ -143,6 +166,8 @@ void KON_DrawRaycast(MapLayer* layer) {
     Vector2d rayDirection;
     Vector2d mapPosition;
 
+    double camHeight = Koneko.dDevice.camera.cameraHeight;
+
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {
         progress = (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1);
         rayDirection.x = Koneko.dDevice.camera.direction.x + progress * Koneko.dDevice.camera.plane.x;
@@ -151,9 +176,15 @@ void KON_DrawRaycast(MapLayer* layer) {
         mapPosition.x = Koneko.dDevice.camera.position.x;
         mapPosition.y = Koneko.dDevice.camera.position.y;
 
-        rayLength = KON_CastRayOnTileMap(layer, &mapPosition, &rayDirection, &currentTile, &wallScanline);
+        Koneko.dDevice.camera.cameraHeight = camHeight;
+        rayLength = KON_CastRayOnTileMap(layer, &mapPosition, 0, &rayDirection, &currentTile, &wallScanline);
+        KON_DrawWallLine(layer, screenX, rayLength, currentTile, wallScanline);
+        Koneko.dDevice.camera.cameraHeight++;
+        rayLength = KON_CastRayOnTileMap(layer, &mapPosition, 1, &rayDirection, &currentTile, &wallScanline);
         KON_DrawWallLine(layer, screenX, rayLength, currentTile, wallScanline);
     }
+
+    Koneko.dDevice.camera.cameraHeight = camHeight;
 }
 
 void KON_RenderLayer(MapLayer* layer) {

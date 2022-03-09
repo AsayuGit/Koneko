@@ -33,7 +33,9 @@
         unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
         unsigned int MapSizeX;          /* Nb of tiles in the X direction */
         unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
-        unsigned int** MapData;         /* Map Data */
+        unsigned int MapSizeZ;          /* Nb of tiles in the Z direction */
+        size_t       MapDataSize;       /* Size of the allocated map array */
+        unsigned int* MapData;          /* Map Data */
         LinkedList* solidTiles;               /* List Of tile to colide with */
     } TileMap;
 
@@ -58,11 +60,11 @@
 
     void     KON_DrawTileMap(MapLayer* Layer);
 
-    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
-    bool     KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int* tile);
+    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
+    bool     KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile);
     bool     KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
-    bool     KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int* tile);
-    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int* tile);
+    bool     KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile);
+    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
 
     /*
         SUMMARY : Loads a bitmap from map file.
