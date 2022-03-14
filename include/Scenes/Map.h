@@ -33,11 +33,23 @@
 
     struct MapLayer {
         KON_Renderers layerRenderer;
+        union {
+            KON_Surface* gpuSide;
+            struct {
+                uint32_t* pixelData;
+                unsigned int width;
+                unsigned int height;
+            } cpuSide;
+        } texture;
         void* layerData;
         Vector2d pos;
         KON_Rect boundingBox;
         LinkedList* entityInstanceList;
         DisplayList* displayList;
+
+        size_t effectBufferPitch;
+        uint32_t* effectBuffer;
+        SDL_Texture* effectTexture;
         bool shown;
     };
 

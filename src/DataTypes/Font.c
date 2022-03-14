@@ -45,7 +45,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
         return NULL;
     }
     
-    KON_GetCPUSurfaceSize(LoadingSurface, &FontTexSize);
+    /*KON_GetCPUSurfaceSize(LoadingSurface, &FontTexSize);*/
 
     /* Fill-in rects for each letter */
     KON_LockCPUSurface(LoadingSurface); /* Ensure that the pixel data is available for hw surfaces */ /* VERRRY SLOW AND INEFICIENT */

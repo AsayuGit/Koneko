@@ -33,6 +33,7 @@
 	#include <linux/limits.h>
 #endif
 
+/* Its an helper function but is probably redundant with KON_LoadSurface() */
 KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     KON_Surface* loadedSurface;
     uint32_t colorKey;
@@ -56,14 +57,34 @@ KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
     return loadedSurface;
 }
 
+KON_CPUSurface* KON_LoadCPUBitMap(FILE* tileMapFile, char* rootDirectory) {
+    KON_CPUSurface* loadedSurface;
+    uint32_t colorKey;
+    char buffer[PATH_MAX];
+    char path[PATH_MAX] = {0};
+    
+    fscanf(tileMapFile, "%x\n", &colorKey);
+
+    fgets(buffer, PATH_MAX, tileMapFile);
+    buffer[strcspn(buffer, "\n")] = '\0'; /* Remove trailing \n */
+
+    strcat(path, rootDirectory);
+	#ifndef _XBOX
+		strcat(path, "/");
+	#endif
+    strcat(path, buffer);
+
+    if (!(loadedSurface = KON_LoadCpuSurface(path, colorKey, SURFACE_KEYED)))
+        return NULL;
+
+    return loadedSurface;
+}
+
 TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
     TileMap* loadedTileMap = NULL;
     unsigned int nbOfSolidTiles, i, j;
 
     loadedTileMap = (TileMap*)malloc(sizeof(TileMap));
-
-    /* Loading */
-    loadedTileMap->tileSet = KON_LoadBitMap(tileMapFile, rootDirectory);
 
     /* Properties */
     fscanf(tileMapFile, "%u %u %u %u %u %u\n", &loadedTileMap->MapSizeX, &loadedTileMap->MapSizeY, &loadedTileMap->MapSizeZ, &loadedTileMap->tMSizeX, &loadedTileMap->tMSizeY, &loadedTileMap->TileSize);
@@ -93,7 +114,7 @@ void KON_GetTileSrcRectInTileMap(TileMap* tileMap, unsigned int TileID, KON_Rect
     tileRect->w = tileRect->h = tileMap->TileSize;
 }
 
-void KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position) {
+void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID, Vector2d position) {
     KON_Rect SrcTile, DstTile;
 
     KON_GetTileSrcRectInTileMap(tileMap, TileID, &SrcTile);
@@ -101,7 +122,7 @@ void KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position) {
     DstTile.y = position.y;
     DstTile.w = DstTile.h = SrcTile.w;
 
-    KON_DrawScaledSurfaceRect(tileMap->tileSet, &SrcTile, &DstTile);
+    KON_DrawScaledSurfaceRect(tileSheet, &SrcTile, &DstTile);
 }
 
 void KON_DrawTileMap(MapLayer* Layer) {
@@ -116,10 +137,11 @@ void KON_DrawTileMap(MapLayer* Layer) {
     if (!Layer->shown || (Layer->layerRenderer != RENDER_2D_TILEMAP))
         return;
 
+    mapIndex = 0;
     while (mapIndex < map->MapDataSize) {
         for (tilePos.y = 0; tilePos.y < map->MapSizeY; tilePos.y++) {
             for (tilePos.x = 0; tilePos.x < map->MapSizeX; tilePos.x++) {
-                KON_DrawTile(map, map->MapData[mapIndex], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
+                KON_DrawTile(Layer->texture.gpuSide, map, map->MapData[mapIndex], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
                 mapIndex++;
             }
         }
@@ -132,7 +154,7 @@ void KON_DrawBitMap(MapLayer* Layer) {
     pos.x = (int)(Layer->pos.x - Koneko.dDevice.camera.position.x);
     pos.y = (int)(Layer->pos.y - Koneko.dDevice.camera.position.y);
 
-    KON_DrawSurface((KON_Surface*)Layer->layerData, &pos);
+    KON_DrawSurface(Layer->texture.gpuSide, &pos);
 }
 
 bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile) {

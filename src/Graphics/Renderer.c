@@ -29,109 +29,117 @@
 #include "math.h"
 
 #include "API.h"
+
 /*
 #define KON_RAYCAST_NO_FLOORS
-#define KON_RAYCAST_NO_CEILING*/
+#define KON_RAYCAST_NO_CEILING
+*/
 
-void KON_DrawWallStripe(unsigned int screenX, unsigned int midScreen, double wallDistance, double sceneRelativeCameraHeight, TileMap* tileMapLayer, unsigned int currentTile, unsigned int wallScanline) {
-    KON_Rect tileRect, wall;
-
-    unsigned int wallSize;
+void KON_DrawWallStripe(unsigned int screenX, unsigned int midScreen, double wallDistance, double sceneRelativeCameraHeight, MapLayer* layer, unsigned int currentTile, unsigned int wallScanline) {
+    KON_Rect tileRect;
+    int wallStart, wallEnd, wallSize, wallTextureLine;
+    unsigned int i;
 
     #ifndef KON_RAYCAST_NO_WALLS
-        wallSize = (midScreen / wallDistance) * 2;
+        wallSize = ((double)midScreen / wallDistance) * 2.0;
+        wallStart = midScreen - wallSize * (1.0 - sceneRelativeCameraHeight);
 
-        wall.x = screenX;
-        wall.y = midScreen - wallSize * (1.0 - sceneRelativeCameraHeight);
-        wall.w = 1;
-        wall.h = wallSize;
+        wallEnd = wallStart + wallSize;
 
-        KON_GetTileSrcRectInTileMap(tileMapLayer, currentTile, &tileRect);
-        tileRect.x += wallScanline;
-        tileRect.w = 1;
+        KON_GetTileSrcRectInTileMap(layer->layerData, currentTile, &tileRect);
+        wallScanline += tileRect.x;
 
-        KON_DrawScaledSurfaceRect(tileMapLayer->tileSet, &tileRect, &wall);
+        for (i = 0; i < wallSize; i++) {
+            wallTextureLine = ((TileMap*)layer->layerData)->TileSize * (i / (double)wallSize) + tileRect.y;
+            
+            if ((wallStart >= 0) && (wallStart < Koneko.dDevice.InternalResolution.y))
+                layer->effectBuffer[wallStart * Koneko.dDevice.InternalResolution.x + screenX] = layer->texture.cpuSide.pixelData[wallTextureLine * layer->texture.cpuSide.width + wallScanline];
+            wallStart++;
+        }
     #endif
 }
 
-void KON_DrawFloorStripe(double wallDistance, int screenX, unsigned int midScreen, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight, Vector2d* rayDirection, TileMap* tileMapLayer) {
+void KON_DrawFloorStripe(double wallDistance, int screenX, unsigned int midScreen, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight, Vector2d* rayDirection, MapLayer* layer) {
     Vector2d floorCoord;
     unsigned int screenY;
     double floorDistance;
     
     #ifndef KON_RAYCAST_NO_FLOORS
-        screenY = ((2.0 * midScreen * sceneRelativeCameraHeight) / wallDistance) + midScreen;
+        screenY = ((2 * midScreen * sceneRelativeCameraHeight) / wallDistance) + midScreen;
         for (; screenY < Koneko.dDevice.InternalResolution.y; screenY++) {
-            floorDistance = (2.0 * (double)midScreen * sceneRelativeCameraHeight) / ((double)screenY - (double)midScreen);
+
+            floorDistance = (2 * midScreen * sceneRelativeCameraHeight) / (screenY - midScreen);
 
             floorCoord.x = Koneko.dDevice.camera.position.x + rayDirection->x * floorDistance;
             floorCoord.y = Koneko.dDevice.camera.position.y + rayDirection->y * floorDistance;
 
-            if (!KON_IsTileMapTileSolid(tileMapLayer, floorCoord.x, floorCoord.y, layerRelativeCameraHeight, NULL) && KON_IsTileMapTileSolid(tileMapLayer, floorCoord.x, floorCoord.y, layerRelativeCameraHeight - 1, NULL)) {
-                if (((int)floorCoord.x + (int)floorCoord.y) % 2)
-                    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 255, 255);
-                else
-                    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 255, 0, 255);
-
-                SDL_RenderDrawPoint(Koneko.dDevice.Renderer, screenX, screenY);
+            if (!KON_IsTileMapTileSolid(layer->layerData, floorCoord.x, floorCoord.y, layerRelativeCameraHeight, NULL) && KON_IsTileMapTileSolid(layer->layerData, floorCoord.x, floorCoord.y, layerRelativeCameraHeight - 1, NULL)) {
+                if (((int)floorCoord.x + (int)floorCoord.y) % 2) {
+                    layer->effectBuffer[screenY * Koneko.dDevice.InternalResolution.x + screenX] = 0xff0000ff;
+                } else {
+                    layer->effectBuffer[screenY * Koneko.dDevice.InternalResolution.x + screenX] = 0xff00ff00;
+                }
             }
         }
-        SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 0, 255);
     #endif
 }
 
-void KON_DrawCeilStripe(double wallDistance, int screenX, unsigned int midScreen, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight, Vector2d* rayDirection, TileMap* tileMapLayer) {
+void KON_DrawCeilStripe(double wallDistance, int screenX, unsigned int midScreen, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight, Vector2d* rayDirection, MapLayer* layer) {
     Vector2d ceilCoord;
     int screenY;
     double ceilDistance;
     
     #ifndef KON_RAYCAST_NO_CEILING
-        screenY = midScreen - ((2.0 * midScreen * (1.0 - sceneRelativeCameraHeight)) / wallDistance);
+        screenY = midScreen - ((2 * midScreen * (1 - sceneRelativeCameraHeight)) / wallDistance);
         for (; screenY >= 0; screenY--) {
-            /*ceilDistance = (2.0 * (double)midScreen * sceneRelativeCameraHeight) / ((double)screenY - (double)midScreen);*/
-            ceilDistance = (2.0 * (double)midScreen * (1.0 - sceneRelativeCameraHeight)) / ((double)midScreen - (double)screenY);
+
+            ceilDistance = (2 * midScreen * (1 - sceneRelativeCameraHeight)) / (midScreen - screenY);
 
             ceilCoord.x = Koneko.dDevice.camera.position.x + rayDirection->x * ceilDistance;
             ceilCoord.y = Koneko.dDevice.camera.position.y + rayDirection->y * ceilDistance;
 
-            if (!KON_IsTileMapTileSolid(tileMapLayer, ceilCoord.x, ceilCoord.y, layerRelativeCameraHeight, NULL) && KON_IsTileMapTileSolid(tileMapLayer, ceilCoord.x, ceilCoord.y, layerRelativeCameraHeight + 1, NULL)) {
-                if (((int)ceilCoord.x + (int)ceilCoord.y) % 2)
-                    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 255, 255);
-                else
-                    SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 255, 0, 255);
-
-                SDL_RenderDrawPoint(Koneko.dDevice.Renderer, screenX, screenY);
+            if (!KON_IsTileMapTileSolid(layer->layerData, ceilCoord.x, ceilCoord.y, layerRelativeCameraHeight, NULL) && KON_IsTileMapTileSolid(layer->layerData, ceilCoord.x, ceilCoord.y, layerRelativeCameraHeight + 1, NULL)) {
+                if (((int)ceilCoord.x + (int)ceilCoord.y) % 2) {
+                    layer->effectBuffer[screenY * Koneko.dDevice.InternalResolution.x + screenX] = 0xff0000ff;
+                } else {
+                    layer->effectBuffer[screenY * Koneko.dDevice.InternalResolution.x + screenX] = 0xff00ff00;
+                }
             }
         }
-        SDL_SetRenderDrawColor(Koneko.dDevice.Renderer, 0, 0, 0, 255);
     #endif
 }
 
-double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, unsigned int* wallScanline, Vector2d* rayDirection, Vector2i* ray, Vector2i* rayStep, Vector2d* rayMarch, Vector2d* mapPosition, TileMap* tileMapLayer, unsigned int* currentTile, unsigned int layerRelativeCameraHeight) {
+double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, unsigned int* wallScanline, Vector2d* rayDirection, Vector2i* ray, Vector2i* rayStep, Vector2d* rayMarch, Vector2d* mapPosition, MapLayer* layer, unsigned int* currentTile, unsigned int layerRelativeCameraHeight) {
     Vector2d rayLength;
     Vector2d rayInterpol;
     Vector2d rayCheck;
+    Vector2d rayRelativeMapPos;
     
     unsigned int DDADepth;
     double wallDistance;
     bool inWall = true;
+
+    /* Ensure the data going out are initialised */
+    *wallScanline = 0;
+    *currentTile = 0;
+
     /* Compute */
     for (DDADepth = 0; DDADepth < 100; DDADepth++) {
-        rayInterpol.x = rayStep->x * fabs((double)ray->y - mapPosition->y) * rayMarch->x;
-        rayInterpol.y = rayStep->y * fabs((double)ray->x - mapPosition->x) * rayMarch->y;
+        rayRelativeMapPos.x = ray->x - mapPosition->x;
+        rayRelativeMapPos.y = ray->y - mapPosition->y;
+
+        rayInterpol.x = rayStep->x * fabs(rayRelativeMapPos.y) * rayMarch->x;
+        rayInterpol.y = rayStep->y * fabs(rayRelativeMapPos.x) * rayMarch->y;
 
         /* 0. Compute the length of each rays */
-        rayLength.x = sqrt(pow(ray->x - mapPosition->x, 2) + pow(rayInterpol.y, 2));
-        rayLength.y = sqrt(pow(ray->y - mapPosition->y, 2) + pow(rayInterpol.x, 2));
+        rayLength.x = sqrt(pow(rayRelativeMapPos.x, 2) + pow(rayInterpol.y, 2));
+        rayLength.y = sqrt(pow(rayRelativeMapPos.y, 2) + pow(rayInterpol.x, 2));
 
         if (rayLength.x < rayLength.y) {
             /* Iterate on the X direction */
 
-            rayCheck.x = ray->x;
+            rayCheck.x = ray->x - ((*(unsigned int*)&rayStep->x) >> 31);
             rayCheck.y = rayInterpol.y + mapPosition->y;
-
-            if (rayStep->x < 0)
-                rayCheck.x--;
 
             /*
                 We want |ray| * cos(alpha)
@@ -141,14 +149,14 @@ double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, uns
                 Then : |ray| * cos(alpha) = cameraDirection . ray
             */
             /* Fish-eye correction : Return the perpendicular distance to the camera instead of the euclidian one */
-            wallDistance = (Koneko.dDevice.camera.direction.x * (ray->x - mapPosition->x) + Koneko.dDevice.camera.direction.y * rayInterpol.y);
+            wallDistance = (Koneko.dDevice.camera.direction.x * rayRelativeMapPos.x + Koneko.dDevice.camera.direction.y * rayInterpol.y);
             ray->x += rayStep->x;
 
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, layerRelativeCameraHeight, currentTile)) {
+            if (KON_IsTileMapTileSolid(layer->layerData, rayCheck.x, rayCheck.y, layerRelativeCameraHeight, currentTile)) {
                 if (!inWall) {
-                    *wallScanline = fabs(floor(rayCheck.y) - (rayCheck.y)) * tileMapLayer->TileSize;
+                    *wallScanline = fabs(floor(rayCheck.y) - (rayCheck.y)) * ((TileMap*)layer->layerData)->TileSize;
                     if (rayStep->x < 0)
-                        *wallScanline = tileMapLayer->TileSize - *wallScanline - 1;
+                        *wallScanline = ((TileMap*)layer->layerData)->TileSize - *wallScanline - 1;
                     break;
                 }
             } else {
@@ -158,18 +166,15 @@ double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, uns
             /* Iterate on the Y direction */
 
             rayCheck.x = rayInterpol.x + mapPosition->x;
-            rayCheck.y = ray->y;
+            rayCheck.y = ray->y - ((*(unsigned int*)&rayStep->y) >> 31);
 
-            if (rayStep->y < 0)
-                rayCheck.y--;
-
-            wallDistance = (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * (ray->y - mapPosition->y));
+            wallDistance = (Koneko.dDevice.camera.direction.x * rayInterpol.x + Koneko.dDevice.camera.direction.y * rayRelativeMapPos.y);
             ray->y += rayStep->y;
-            if (KON_IsTileMapTileSolid(tileMapLayer, rayCheck.x, rayCheck.y, layerRelativeCameraHeight, currentTile)) {
+            if (KON_IsTileMapTileSolid(((TileMap*)layer->layerData), rayCheck.x, rayCheck.y, layerRelativeCameraHeight, currentTile)) {
                 if (!inWall) {
-                    *wallScanline = fabs(floor(rayCheck.x) - (rayCheck.x)) * tileMapLayer->TileSize;
+                    *wallScanline = fabs(floor(rayCheck.x) - (rayCheck.x)) * ((TileMap*)layer->layerData)->TileSize;
                     if (rayStep->y > 0)
-                        *wallScanline = tileMapLayer->TileSize - *wallScanline - 1;
+                        *wallScanline = ((TileMap*)layer->layerData)->TileSize - *wallScanline - 1;
                     break;
                 }
             } else {
@@ -182,42 +187,23 @@ double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, uns
 }
 
 void KON_DDASetup(Vector2d* rayDirection, Vector2d* mapPosition, Vector2i* ray, Vector2i* rayStep, Vector2d* rayMarch) {
+    rayStep->x = (rayDirection->x > 0) ? 1 : -1;
+    rayStep->y = (rayDirection->y > 0) ? 1 : -1;
 
-    if (rayDirection->x > 0) {
-        ray->x = (int)mapPosition->x + 1;
-        rayStep->x = 1;
-    } else {
-        ray->x = (int)mapPosition->x;
-        rayStep->x = -1;
-    }
-
-    if (rayDirection->y > 0) {
-        ray->y = (int)mapPosition->y + 1;
-        rayStep->y = 1;
-    } else {
-        ray->y = (int)mapPosition->y;
-        rayStep->y = -1;
-    }
-
+    ray->x = mapPosition->x + !((*(unsigned long*)&rayDirection->x) >> 63);
+    ray->y = mapPosition->y + !((*(unsigned long*)&rayDirection->y) >> 63);
+    
     rayMarch->x = fabs(rayDirection->x / rayDirection->y); /* y * thix = x */
     rayMarch->y = fabs(rayDirection->y / rayDirection->x); /* x * this = y */
 }
 
-/* TEMP */
-void KON_ResetRay(Vector2d* rayDirection, Vector2d* mapPosition, Vector2i* ray) {
-    if (rayDirection->x > 0)
-        ray->x = (int)mapPosition->x + 1;
-    else
-        ray->x = (int)mapPosition->x;
-
-    if (rayDirection->y > 0)
-        ray->y = (int)mapPosition->y + 1;
-    else
-        ray->y = (int)mapPosition->y;
-}
+#define KON_ResetRay(rayDirection, mapPosition, ray) do {                \
+    ray.x = mapPosition.x + !((*(unsigned long*)&rayDirection.x) >> 63); \
+    ray.y = mapPosition.y + !((*(unsigned long*)&rayDirection.y) >> 63); \
+} while (0)                                                              \
 
 /* TODO double recusion (among the layer and all layers) */
-double KON_CastRecursiveRay(double wallDistance, double minRayLength, int screenX, unsigned int midScreen, Vector2d* rayDirection, Vector2d* mapPosition, Vector2i* ray, Vector2i* rayStep, Vector2d* rayMarch, TileMap* tileMapLayer, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight) {
+double KON_CastRecursiveRay(double wallDistance, double minRayLength, int screenX, unsigned int midScreen, Vector2d* rayDirection, Vector2d* mapPosition, Vector2i* ray, Vector2i* rayStep, Vector2d* rayMarch, MapLayer* layer, unsigned int layerRelativeCameraHeight, double sceneRelativeCameraHeight) {
     unsigned int wallScanline, currentTile;
     double maxWallDistance;
     
@@ -225,28 +211,28 @@ double KON_CastRecursiveRay(double wallDistance, double minRayLength, int screen
         /* HERE ! */
         if (Koneko.dDevice.camera.cameraHeight > layerRelativeCameraHeight) {/* Bottom Layer */
             if (layerRelativeCameraHeight > 0) {
-                KON_ResetRay(rayDirection, mapPosition, ray);
-                KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, tileMapLayer, layerRelativeCameraHeight - 1, sceneRelativeCameraHeight + 1);
+                /*printf("L = %u\n", layerRelativeCameraHeight);*/
+                KON_ResetRay((*rayDirection), (*mapPosition), (*ray));
+                KON_CastRecursiveRay( -1, wallDistance, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, layer, layerRelativeCameraHeight - 1, sceneRelativeCameraHeight + 1);
             }
-            KON_DrawFloorStripe(wallDistance, screenX, midScreen, layerRelativeCameraHeight, sceneRelativeCameraHeight, rayDirection, tileMapLayer);
+            KON_DrawFloorStripe(wallDistance, screenX, midScreen, layerRelativeCameraHeight, sceneRelativeCameraHeight, rayDirection, layer);
         } else if (Koneko.dDevice.camera.cameraHeight < layerRelativeCameraHeight) {/* Top layer */
-            if (layerRelativeCameraHeight < tileMapLayer->MapSizeZ) {
-                KON_ResetRay(rayDirection, mapPosition, ray);
-                KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, tileMapLayer, layerRelativeCameraHeight + 1, sceneRelativeCameraHeight - 1);
+            if (layerRelativeCameraHeight < ((TileMap*)layer->layerData)->MapSizeZ) {
+                KON_ResetRay((*rayDirection), (*mapPosition), (*ray));
+                KON_CastRecursiveRay( -1, wallDistance, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, layer, layerRelativeCameraHeight + 1, sceneRelativeCameraHeight - 1);
             }
-            KON_DrawCeilStripe(wallDistance, screenX, midScreen, layerRelativeCameraHeight, sceneRelativeCameraHeight, rayDirection, tileMapLayer);
+            KON_DrawCeilStripe(wallDistance, screenX, midScreen, layerRelativeCameraHeight, sceneRelativeCameraHeight, rayDirection, layer);
         }
         return wallDistance;
     }
-    wallDistance = KON_DDAStep(minRayLength, screenX, midScreen, &wallScanline, rayDirection, ray, rayStep, rayMarch, mapPosition, tileMapLayer, &currentTile, layerRelativeCameraHeight);
-    maxWallDistance = KON_CastRecursiveRay(wallDistance, minRayLength, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, tileMapLayer, layerRelativeCameraHeight, sceneRelativeCameraHeight);
-    KON_DrawWallStripe(screenX, midScreen, wallDistance, sceneRelativeCameraHeight, tileMapLayer, currentTile, wallScanline);
+    wallDistance = KON_DDAStep(minRayLength, screenX, midScreen, &wallScanline, rayDirection, ray, rayStep, rayMarch, mapPosition, layer, &currentTile, layerRelativeCameraHeight);
+    maxWallDistance = KON_CastRecursiveRay( wallDistance, minRayLength, screenX, midScreen, rayDirection, mapPosition, ray, rayStep, rayMarch, layer, layerRelativeCameraHeight, sceneRelativeCameraHeight);
+    KON_DrawWallStripe(screenX, midScreen, wallDistance, sceneRelativeCameraHeight, layer, currentTile, wallScanline);
 
     return maxWallDistance;
 }
 
 void KON_DrawRaycast(MapLayer* layer) {
-    TileMap* tileMapLayer = (TileMap*)layer->layerData;
 
     Vector2i ray; /* The end of ray being casted AKA the ray from the 0,0 to itself.
                     X: The ray displacement in the X direction
@@ -262,13 +248,14 @@ void KON_DrawRaycast(MapLayer* layer) {
     Vector2d rayDirection;
     Vector2d mapPosition;
 
-    unsigned int wallScanline, midScreen, currentTile, layerRelativeCameraHeight;
+    unsigned int wallScanline, midScreen, currentTile;
     double progress, wallDistance, sceneRelativeCameraHeight;
     int screenX;
 
+    /*memset(layer->effectBuffer, 0x00, Koneko.dDevice.InternalResolution.x * Koneko.dDevice.InternalResolution.y * sizeof(uint32_t));*/
+
     midScreen = Koneko.dDevice.InternalResolution.y >> 1;
 
-    /*printf("Camera pos %f %f\n", Koneko.dDevice.camera.position.x, Koneko.dDevice.camera.position.y);*/
     /* DDA Loop */
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {
         progress = (((double)screenX * 2 / (double)Koneko.dDevice.InternalResolution.x) - 1);
@@ -281,32 +268,30 @@ void KON_DrawRaycast(MapLayer* layer) {
 
         /* Initial run for the layer we're in */
         KON_DDASetup(&rayDirection, &mapPosition, &ray, &rayStep, &rayMarch);
-        wallDistance = KON_DDAStep(0, screenX, midScreen, &wallScanline, &rayDirection, &ray, &rayStep, &rayMarch, &mapPosition, tileMapLayer, &currentTile, (int)Koneko.dDevice.camera.cameraHeight);
+        wallDistance = KON_DDAStep(0, screenX, midScreen, &wallScanline, &rayDirection, &ray, &rayStep, &rayMarch, &mapPosition, layer, &currentTile, Koneko.dDevice.camera.cameraHeight);
+        
+        sceneRelativeCameraHeight = Koneko.dDevice.camera.cameraHeight - (int)Koneko.dDevice.camera.cameraHeight;
 
         /* Draw every layer below */
-        {
-            layerRelativeCameraHeight = (int)Koneko.dDevice.camera.cameraHeight - 1;
-            sceneRelativeCameraHeight = Koneko.dDevice.camera.cameraHeight - (int)Koneko.dDevice.camera.cameraHeight + 1;
-
-            KON_DDASetup(&rayDirection, &mapPosition, &ray, &rayStep, &rayMarch);
-            KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, &rayDirection, &mapPosition, &ray, &rayStep, &rayMarch, tileMapLayer, layerRelativeCameraHeight, sceneRelativeCameraHeight);
+        if ((int)Koneko.dDevice.camera.cameraHeight) {
+            KON_ResetRay(rayDirection, mapPosition, ray);
+            KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, &rayDirection, &mapPosition, &ray, &rayStep, &rayMarch, layer, Koneko.dDevice.camera.cameraHeight - 1, sceneRelativeCameraHeight + 1);
         }
 
         /* Draw every layer above */
-        {
-            layerRelativeCameraHeight = (int)Koneko.dDevice.camera.cameraHeight + 1;
-            sceneRelativeCameraHeight = Koneko.dDevice.camera.cameraHeight - (int)Koneko.dDevice.camera.cameraHeight - 1;
-
-            KON_DDASetup(&rayDirection, &mapPosition, &ray, &rayStep, &rayMarch);
-            KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, &rayDirection, &mapPosition, &ray, &rayStep, &rayMarch, tileMapLayer, layerRelativeCameraHeight, sceneRelativeCameraHeight);
+        if ((int)Koneko.dDevice.camera.cameraHeight != ((TileMap*)layer->layerData)->MapSizeZ) {
+            KON_ResetRay(rayDirection, mapPosition, ray);
+            KON_CastRecursiveRay(-1, wallDistance, screenX, midScreen, &rayDirection, &mapPosition, &ray, &rayStep, &rayMarch, layer, Koneko.dDevice.camera.cameraHeight + 1, sceneRelativeCameraHeight - 1);
         }
 
-        sceneRelativeCameraHeight = Koneko.dDevice.camera.cameraHeight - (int)Koneko.dDevice.camera.cameraHeight;
-        KON_DrawWallStripe(screenX, midScreen, wallDistance, sceneRelativeCameraHeight, tileMapLayer, currentTile, wallScanline);
-        
-        KON_DrawCeilStripe(wallDistance, screenX, midScreen, Koneko.dDevice.camera.cameraHeight, sceneRelativeCameraHeight, &rayDirection, tileMapLayer);
-        KON_DrawFloorStripe(wallDistance, screenX, midScreen, Koneko.dDevice.camera.cameraHeight, sceneRelativeCameraHeight, &rayDirection, tileMapLayer);
+        /* Draw Main lauer*/
+        KON_DrawWallStripe(screenX, midScreen, wallDistance, sceneRelativeCameraHeight, layer, currentTile, wallScanline);
+        KON_DrawCeilStripe(wallDistance, screenX, midScreen, Koneko.dDevice.camera.cameraHeight, sceneRelativeCameraHeight, &rayDirection, layer);
+        KON_DrawFloorStripe(wallDistance, screenX, midScreen, Koneko.dDevice.camera.cameraHeight, sceneRelativeCameraHeight, &rayDirection, layer);
     }
+
+    SDL_UpdateTexture(layer->effectTexture, NULL, layer->effectBuffer, layer->effectBufferPitch);
+    SDL_RenderCopy(Koneko.dDevice.Renderer, layer->effectTexture, NULL, (SDL_Rect*)&Koneko.dDevice.RenderRect);
 }
 
 void KON_RenderLayer(MapLayer* layer) {

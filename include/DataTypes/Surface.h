@@ -63,7 +63,7 @@
     /*
         TODO: Doc
     */
-    void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, Vector2i* size);
+    void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, size_t* pitch, unsigned int* w, unsigned int* h);
 
     /*
         TODO: Doc

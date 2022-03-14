@@ -27,7 +27,6 @@
     #include "LinkedList.h"
 
     typedef struct{
-        KON_Surface* tileSet;
         unsigned int TileSize;          /* Size (in pixel) of a tile */
         unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
         unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
@@ -52,11 +51,12 @@
 
     /*
         SUMMARY : Draw a tile on screen from a tilemap.
-        INPUT   : TileMap* tileMap    : The tilemap from which the tile should be drawn.
-        INPUT   : unsigned int TileID : The tile which should be drawn.
-        INPUT   : Vector2d position   : Where to draw the tile on screen (screen space).
+        INPUT   : KON_Surface* tileSheet : The surface containing the tiles
+        INPUT   : TileMap* tileMap       : The tilemap from which the tile should be drawn.
+        INPUT   : unsigned int TileID    : The tile which should be drawn.
+        INPUT   : Vector2d position      : Where to draw the tile on screen (screen space).
     */
-    void     KON_DrawTile(TileMap* tileMap, unsigned int TileID, Vector2d position);
+    void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID, Vector2d position);
 
     void     KON_DrawTileMap(MapLayer* Layer);
 
@@ -73,6 +73,7 @@
         OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
     */
     KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory); /* TODO: convert to sprite */
+    KON_CPUSurface* KON_LoadCPUBitMap(FILE* tileMapFile, char* rootDirectory);
 
     /*
         SUMMARY : Draws a bitmap layer on screen.

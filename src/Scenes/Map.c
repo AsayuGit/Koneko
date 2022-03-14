@@ -63,14 +63,40 @@ Map* KON_LoadMap(char* mapFilePath) {
         currentLayer = LoadedMap->MapLayer + i;
         switch (layerRenderer){
             case RENDER_2D_BITMAP:
-                currentLayer->layerData = (void*)KON_LoadBitMap(MapFile, MapRoot);
+                currentLayer->texture.gpuSide = (void*)KON_LoadBitMap(MapFile, MapRoot);
 
                 KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
                 KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
                 break;
             
-            case RENDER_2D_TILEMAP:
             case RENDER_3D_RAYCAST:
+                currentLayer->effectBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(uint32_t);
+                currentLayer->effectBuffer = (uint32_t*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->effectBufferPitch);
+                currentLayer->effectTexture = SDL_CreateTexture(
+                    Koneko.dDevice.Renderer, SDL_PIXELFORMAT_RGB888,
+                    SDL_TEXTUREACCESS_STREAMING,
+                    Koneko.dDevice.InternalResolution.x,
+                    Koneko.dDevice.InternalResolution.y
+                );
+
+                {
+                    KON_CPUSurface* surface = KON_LoadCPUBitMap(MapFile, MapRoot);
+                    size_t surfaceSize;
+                    
+                    KON_GetCPUSurfaceSize(surface, &surfaceSize, &currentLayer->texture.cpuSide.width, &currentLayer->texture.cpuSide.height);
+                    surfaceSize *= currentLayer->texture.cpuSide.height;
+
+                    currentLayer->texture.cpuSide.pixelData = (uint32_t*)malloc(surfaceSize);
+                    memcpy(currentLayer->texture.cpuSide.pixelData, KON_GetCPUSurfacePixelData(surface), surfaceSize);
+                    KON_FreeCPUSurface(surface);
+                }
+
+                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
+                KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
+                break;
+
+            case RENDER_2D_TILEMAP:
+                currentLayer->texture.gpuSide = KON_LoadBitMap(MapFile, MapRoot);
                 loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
                 KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
                 break;

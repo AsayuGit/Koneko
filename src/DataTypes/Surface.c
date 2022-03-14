@@ -157,9 +157,10 @@ KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t fl
     return KON_LoadRawCPUSurface(filePath, colorKey, flags);
 }
 
-void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, Vector2i* size) {
-    size->x = surface->surface->w;
-    size->y = surface->surface->h;
+void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, size_t* pitch, unsigned int* w, unsigned int* h) {
+    *pitch = surface->surface->pitch;
+    *w = surface->surface->w;
+    *h = surface->surface->h;
 }
 
 void* KON_GetCPUSurfacePixelData(KON_CPUSurface* surface) {
