@@ -117,7 +117,7 @@ double KON_DDAStep(double minRayLength, int screenX, unsigned int midScreen, uns
     
     unsigned int DDADepth;
     double wallDistance;
-    bool inWall = true;
+    bool inWall = KON_IsTileMapTileSolid(layer->layerData, mapPosition->x, mapPosition->y, layerRelativeCameraHeight, currentTile);
 
     /* Ensure the data going out are initialised */
     *wallScanline = 0;
