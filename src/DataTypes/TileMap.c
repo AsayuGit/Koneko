@@ -160,7 +160,7 @@ void KON_DrawBitMap(MapLayer* Layer) {
 bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile) {
     if (X >= tileMap->MapSizeX || Y >= tileMap->MapSizeY || Z >= tileMap->MapSizeZ)
         return false;
-    *tile = tileMap->MapData[(Z * tileMap->MapSizeX * tileMap->MapSizeY) + (Y * tileMap->MapSizeY) + X];
+    *tile = tileMap->MapData[(Z * tileMap->MapSizeX * tileMap->MapSizeY) + (Y * tileMap->MapSizeX) + X];
     return true;
 }
 
