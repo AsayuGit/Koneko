@@ -58,6 +58,12 @@
     void KON_UpdateRenderRect();
 
     /*
+        SUMMARY : Turns on or off VSync.
+        INPUT   : bool value : true = on, false = off.
+    */
+    void KON_SetVSync(bool value);
+
+    /*
         SUMMARY : Set the camera fov (in radians)
         INPUT   : double fov : The new camera fov.
     */

@@ -91,13 +91,17 @@ void KON_UpdateRenderRect() {
     KON_InitRect(Koneko.dDevice.Frame[3], Koneko.dDevice.RenderRect.x, Koneko.dDevice.RenderRect.y + Koneko.dDevice.RenderRect.h, Koneko.dDevice.RenderRect.w, Koneko.dDevice.RenderRect.y);   /* Bottom Frame */
 }
 
+void KON_SetVSync(bool value) {
+    SDL_GL_SetSwapInterval(value);
+}
+
 void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
     Koneko.dDevice.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Koneko.dDevice.Renderer = SDL_CreateRenderer(Koneko.dDevice.Screen , -1, 0);
     if (Koneko.dDevice.Renderer == NULL){
         KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
-    SDL_GL_SetSwapInterval(true); /* VSync */
+    KON_SetVSync(true);
 
     /* FIXME : TEMPORARY: Makes the start resulution de default internal resolution */
     Koneko.dDevice.InternalResolution.x = resX;
