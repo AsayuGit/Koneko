@@ -24,6 +24,22 @@
 #include "CommunFunctions.h"
 #include "KeyMap.h"
 #include "Graphics.h"
+#include "KON_TextRendering.h"
+
+static bool drawFPS;
+BitmapFont* systemFont;
+
+void KON_SetDrawFPS(bool value) {
+    drawFPS = value;
+}
+
+void KON_DrawFPS() {
+    char fpsText[100];
+    double fps = 1000.0 / Koneko.dDevice.frametime;
+
+    sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
+    gprintf(systemFont, fpsText, 1, NULL);
+}
 
 static void KON_FreeSoundDevice() {
     Mix_CloseAudio();
@@ -69,6 +85,8 @@ void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle){
         KON_CreateSoundDevice();
     if (flags & KON_INIT_INPUT)
         KON_InitInputs();
+
+    systemFont = KON_LoadBitmapFont("Assets/Fonts/SystemFont.bmp", 0xff00ff);
 }
 
 static void DrawFrame(){
@@ -81,6 +99,10 @@ static void DrawFrame(){
 void KON_FinishFrame(){
     Uint32 ticks;
     DrawFrame();
+
+    if (drawFPS)
+        KON_DrawFPS();
+
     SDL_RenderPresent(Koneko.dDevice.Renderer);
     ticks = SDL_GetTicks();
     Koneko.dDevice.frametime = ticks - Koneko.dDevice.lastFrame;

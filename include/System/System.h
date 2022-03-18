@@ -76,4 +76,10 @@
     */
     void KON_SystemEvents();
 
+    /*
+        SUMMARY : Set if the engine should draw the performance header or not.
+        INPUT   : bool value : true = on, false = off.
+    */
+    void KON_SetDrawFPS(bool value);
+
 #endif
