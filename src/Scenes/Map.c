@@ -155,6 +155,4 @@ void KON_DrawMap(Map* map) {
         KON_RenderLayer(currentLayer);
         KON_DrawDisplayList(currentLayer->displayList);
     }
-
-    KON_FinishFrame(); /* Update the main window */
 }

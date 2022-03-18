@@ -29,10 +29,6 @@
     #define MAX(x, y) (((x) > (y)) ? (x) : (y))
     #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-    int      gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
-    Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
-    Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
-
     #define map(DstA, DstB, SrcA, SrcB, Value) {                                   \
         int mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA); \
         return (mappedValue < DstB) ? mappedValue : DstB;                          \

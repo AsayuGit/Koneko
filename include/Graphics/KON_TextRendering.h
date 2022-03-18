@@ -19,39 +19,14 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _SCENE_H
-#define _SCENE_H
+#ifndef _KON_TextRendering_H
+#define _KON_TextRendering_H
 
-    #include "LinkedList.h"
-    #include "Map.h"
-    typedef struct SceneHandle SceneHandle;
-    #include "Entity.h"
+#include "Font.h"
 
-    struct SceneHandle {
-        Map* WorldMap;
-        void* sceneInstanceContext;
-    };
+int      gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
+Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
+Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
 
-    typedef void (*functPtrScene)(SceneHandle* scene);
-
-    /* Scene desctiptor data type */
-    typedef struct {
-        /* Data */
-        char* WorldMapPath;
-
-        /* Logic */
-        functPtrScene OnSetup;
-        functPtrScene OnExit;
-        functPtrScene OnEvent;
-        functPtrScene OnFrame;
-        functPtrScene OnDisplay;
-    } SceneDescriptor;
-
-    /*
-        SUMMARY : Starts up a Scene from a scene descroptor
-        INPUT   : SceneDescriptor* scenePointer : The scene to start up.
-        OUTPUT  : int                           : Success.
-    */
-    int KON_StartScene(SceneDescriptor* scenePointer);
 
 #endif
