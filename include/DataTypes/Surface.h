@@ -25,6 +25,7 @@
 
     #include "Rect.h"
     #include "System.h"
+    #include "KON_Bitmap.h"
 
     enum {
         SURFACE_OPAQUE = 0,
@@ -59,6 +60,12 @@
         OUTPUT  : KON_CPUSurface*      : The newly loaded surface (or NULL if error).
     */
     KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+
+    /*
+        SUMMARY : Loads a CPU-Side Surface from memory.
+        OUTPUT  : KON_CPUSurface* : The newly loaded surface (or NULL if error).
+    */
+    KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uint8_t flags);
 
     /*
         TODO: Doc

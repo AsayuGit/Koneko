@@ -26,8 +26,13 @@
 #include "Graphics.h"
 #include "KON_TextRendering.h"
 
+extern struct BITMAP_SystemFont { int width; int height; int depth; int pitch; uint8_t pixels[113772];} SystemFont;
+
 static bool drawFPS;
-BitmapFont* systemFont;
+static BitmapFont* font;
+
+SDL_Surface* testSurface;
+SDL_Texture* testTexture;
 
 void KON_SetDrawFPS(bool value) {
     drawFPS = value;
@@ -38,7 +43,7 @@ void KON_DrawFPS() {
     double fps = 1000.0 / Koneko.dDevice.frametime;
 
     sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
-    gprintf(systemFont, fpsText, 1, NULL);
+    gprintf(font, fpsText, 1, NULL);
 }
 
 static void KON_FreeSoundDevice() {
@@ -74,6 +79,10 @@ void KON_Exit(){
 }
 
 void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle){
+    BITMAP SystemFontBitmap;
+
+    initBitmap(SystemFontBitmap, SystemFont);
+
     /* SDL Init */
     if (SDL_Init(flags) != 0){
         KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
@@ -86,10 +95,10 @@ void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle){
     if (flags & KON_INIT_INPUT)
         KON_InitInputs();
 
-    systemFont = KON_LoadBitmapFont("Assets/Fonts/SystemFont.bmp", 0xff00ff);
+    font = KON_LoadBitmapFontFromMem(&SystemFontBitmap, 0xff00ff);
 }
 
-static void DrawFrame(){
+static void DrawFrame() {
     SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[0]);
     SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[1]);
     SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[2]);

@@ -56,7 +56,10 @@ struct KON_CPUSurface {
     INPUT   : KON_CPUSurface* SurfaceToKey : Pointer to the Surface to key
     INPUT   : uint8_t ColorKey          : The ColorKey to apply to the Surface
 */
-#define KON_KeyCpuSurface(SurfaceToKey, ColorKey) SDL_SetColorKey(SurfaceToKey->surface, true, ColorKey)
+void KON_KeyCpuSurface(KON_CPUSurface* SurfaceToKey, uint32_t ColorKey) {
+    if (SDL_SetColorKey(SurfaceToKey->surface, true, ColorKey) < 0)
+        KON_SystemMsg("() couldn't set color key : ", MESSAGE_WARNING, 1, SDL_GetError());
+}
 
 /*
     SUMMARY : Loads a CPU-Side Surface from disk (Unmanaged)
@@ -83,6 +86,34 @@ static KON_CPUSurface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, 
         KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
 
     KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface : ", MESSAGE_LOG, 1, FilePath);
+
+    return loadingCPUSurface;
+}
+
+/*
+    SUMMARY : Loads a CPU-Side Surface from memory (Unmanaged)
+    INPUT   : char* FilePath        : Path to the surface to load
+    INPUT   : uint32_t ColorKey     : The surface's color to key out
+    INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
+    OUTPUT  : KON_CPUSurface*          : Pointer to the loaded surface (UnMannaged)
+*/
+KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uint8_t flags) {
+    KON_CPUSurface* loadingCPUSurface = NULL;
+
+    if (!(loadingCPUSurface = (KON_CPUSurface*)malloc(sizeof(KON_CPUSurface)))) {
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    if (!(loadingCPUSurface->surface = SDL_CreateRGBSurfaceWithFormatFrom(bitmap->pixels, bitmap->width, bitmap->height, bitmap->depth, bitmap->pitch, SDL_PIXELFORMAT_RGB24))) {
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load memory surface : ", MESSAGE_WARNING, 1, SDL_GetError());
+        return NULL;
+    }
+
+    if (SURFACE_KEYED & flags)
+        KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
+
+    KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface from memory", MESSAGE_LOG, 0);
 
     return loadingCPUSurface;
 }

@@ -24,6 +24,7 @@
 
     #include "Koneko.h"
     #include "Surface.h"
+    #include "KON_Bitmap.h"
 
     typedef struct{
         KON_Surface* FontSurface;
@@ -37,6 +38,12 @@
         OUTPUT  : BitmapFont*            : Pointer to the newly loaded font, or NULL on error.
     */
     BitmapFont* KON_LoadBitmapFont(char* FilePath, uint32_t FontColorKey);
+
+    /*
+        SUMMARY : Load a bitmap font from memory
+        OUTPUT  : BitmapFont*            : Pointer to the newly loaded font, or NULL on error.
+    */
+    BitmapFont* KON_LoadBitmapFontFromMem(BITMAP* bitmap, uint32_t FontColorKey);
 
     /*
         SUMMARY : Free a previously loaded font
