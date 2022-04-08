@@ -26,16 +26,23 @@
     #include "Surface.h"
     #include "LinkedList.h"
 
-    typedef struct{
-        unsigned int TileSize;          /* Size (in pixel) of a tile */
-        unsigned int tMSizeX;           /* Nb of colums in the tilemap surface */
-        unsigned int tMSizeY;           /* Nb of rows in the tilemap surface */
-        unsigned int MapSizeX;          /* Nb of tiles in the X direction */
-        unsigned int MapSizeY;          /* Nb of tiles in the Y direction */
-        unsigned int MapSizeZ;          /* Nb of tiles in the Z direction */
-        size_t       MapDataSize;       /* Size of the allocated map array */
-        unsigned int* MapData;          /* Map Data */
-        LinkedList* solidTiles;               /* List Of tile to colide with */
+    /* List of tile properties */
+    typedef struct {
+        bool isSolid;
+    } Tile;
+
+    typedef struct {
+        unsigned int  TileSize;          /* Size (in pixel) of a tile */
+        unsigned int  tMSizeX;           /* Nb of colums in the tilemap surface */
+        unsigned int  tMSizeY;           /* Nb of rows in the tilemap surface */
+        unsigned int  MapSizeX;          /* Nb of tiles in the X direction */
+        unsigned int  MapSizeY;          /* Nb of tiles in the Y direction */
+        unsigned int  MapSizeZ;          /* Nb of tiles in the Z direction */
+        size_t        MapDataLayerPitch; /* Nb of tiles to go from one layer to the other */
+        size_t        MapDataSize;       /* Size of the allocated map array */
+        unsigned int* MapData;           /* Map Data */
+        size_t        TileIndexSize;     /* Number of existing tiles */
+        Tile*         TileIndex;         /* Array of all existing tiles */
     } TileMap;
 
     /* Load a tilemap from a map file */
@@ -47,7 +54,11 @@
         INPUT   : unsigned int TileID : The tile of whom we wanna know the source rect from.
         INPUT   : KON_Rect* tileRect  : The feched source rect.
     */
-    void     KON_GetTileSrcRectInTileMap(TileMap* tileMap, unsigned int TileID, KON_Rect* tileRect);
+    #define KON_GetTileSrcRectInTileMap(tileMap, tileID, tileRect) do { \
+        tileRect.x = tileID % tileMap.tMSizeX * tileMap.TileSize;       \
+        tileRect.y = tileID / tileMap.tMSizeX * tileMap.TileSize;       \
+        tileRect.w = tileRect.h = tileMap.TileSize;                     \
+    } while(0);                                                         \
 
     /*
         SUMMARY : Draw a tile on screen from a tilemap.
@@ -59,12 +70,6 @@
     void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID, Vector2d position);
 
     void     KON_DrawTileMap(MapLayer* Layer);
-
-    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
-    bool     KON_GetTileAtCoordinates(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile);
-    bool     KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
-    bool     KON_IsTileMapTileAtCoordinatesSolid(TileMap* tileMap, double X, double Y, unsigned int Z, unsigned int* tile);
-    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
 
     /*
         SUMMARY : Loads a bitmap from map file.
@@ -81,5 +86,9 @@
     */
     void         KON_DrawBitMap(MapLayer* Layer);
 
+
+    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
+    bool     KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
+    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
 
 #endif
