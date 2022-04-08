@@ -332,7 +332,7 @@ void KON_DrawRaycast(MapLayer* layer) {
     int screenX;
 
     /* Clear the effect buffer */
-    memset(layer->effectBuffer, 0x0F, Koneko.dDevice.InternalResolution.x * Koneko.dDevice.InternalResolution.y * sizeof(uint32_t));
+    /*memset(layer->effectBuffer, 0x0F, Koneko.dDevice.InternalResolution.x * Koneko.dDevice.InternalResolution.y * sizeof(uint32_t));*/
 
     /* Render each vertical stripe of the screen */
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {

@@ -153,6 +153,5 @@ void KON_DrawMap(Map* map) {
         KON_UpdateLayerEntityPosition(currentLayer);
 
         KON_RenderLayer(currentLayer);
-        KON_DrawDisplayList(currentLayer->displayList);
     }
 }

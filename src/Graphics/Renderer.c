@@ -31,10 +31,12 @@ void KON_RenderLayer(MapLayer* layer) {
     {
     case RENDER_2D_TILEMAP:
         KON_DrawTileMap(layer);
+        KON_DrawDisplayList(layer->displayList);
         break;
 
     case RENDER_2D_BITMAP:
         KON_DrawBitMap(layer);
+        KON_DrawDisplayList(layer->displayList);
         break;
 
     case RENDER_3D_RAYCAST:
