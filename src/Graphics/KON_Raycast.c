@@ -15,8 +15,7 @@ void DrawTilePixel(MapLayer* layer, unsigned int* layerZMapData, unsigned int* t
 
     TileMap* tileMap = layer->layerData;
     
-    register unsigned int tileID;
-    register unsigned int offset;
+    register unsigned int tileID, offset, index;
 
     tileCoord.x = Koneko.dDevice.camera.position.x + rayDirection->x * pointDistance;
     tileCoord.y = Koneko.dDevice.camera.position.y + rayDirection->y * pointDistance;
@@ -33,7 +32,10 @@ void DrawTilePixel(MapLayer* layer, unsigned int* layerZMapData, unsigned int* t
             textCoord.y = tileRect.y + ((tileCoord.y - (int)tileCoord.y) * ((TileMap*)layer->layerData)->TileSize);
         
             /* Draw the tile pixel on screen */
-            layer->effectBuffer[screenY * Koneko.dDevice.InternalResolution.x + screenX] = layer->texture.cpuSide.pixelData[textCoord.y * layer->texture.cpuSide.width + textCoord.x];
+            index = screenY * Koneko.dDevice.InternalResolution.x + screenX;
+
+            layer->effectBuffer[index] = layer->texture.cpuSide.pixelData[textCoord.y * layer->texture.cpuSide.width + textCoord.x];
+            layer->zBuffer[index] = pointDistance;
         }
     }
 }
@@ -100,6 +102,8 @@ void DrawWallStripe(MapLayer* layer, int screenX, unsigned int wallStripe, doubl
     int wallStart, wallSize, wallTextureLine;
     unsigned int i, midScreen = Koneko.dDevice.InternalResolution.y >> 1;
 
+    register unsigned int index;
+
     wallSize = ((double)midScreen / wallDistance) * 2.0;
     wallStart = midScreen - wallSize * (1.0 - cameraHeight);
 
@@ -110,7 +114,10 @@ void DrawWallStripe(MapLayer* layer, int screenX, unsigned int wallStripe, doubl
         wallTextureLine = ((TileMap*)layer->layerData)->TileSize * (i / (double)wallSize) + tileRect.y;
 
         if ((wallStart >= 0) && (wallStart < Koneko.dDevice.InternalResolution.y)) {
-            layer->effectBuffer[wallStart * Koneko.dDevice.InternalResolution.x + screenX] = layer->texture.cpuSide.pixelData[wallTextureLine * layer->texture.cpuSide.width + wallStripe];
+            index = wallStart * Koneko.dDevice.InternalResolution.x + screenX;
+
+            layer->effectBuffer[index] = layer->texture.cpuSide.pixelData[wallTextureLine * layer->texture.cpuSide.width + wallStripe];
+            layer->zBuffer[index] = wallDistance;
         }
         wallStart++;
     }

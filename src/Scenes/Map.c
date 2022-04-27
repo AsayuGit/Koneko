@@ -71,7 +71,9 @@ Map* KON_LoadMap(char* mapFilePath) {
             
             case RENDER_3D_RAYCAST:
                 currentLayer->effectBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(uint32_t);
+                currentLayer->zBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(double);
                 currentLayer->effectBuffer = (uint32_t*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->effectBufferPitch);
+                currentLayer->zBuffer = (double*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->zBufferPitch);
                 currentLayer->effectTexture = SDL_CreateTexture(
                     Koneko.dDevice.Renderer, SDL_PIXELFORMAT_RGB888,
                     SDL_TEXTUREACCESS_STREAMING,

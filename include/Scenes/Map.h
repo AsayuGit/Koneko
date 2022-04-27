@@ -48,7 +48,9 @@
         DisplayList* displayList;
 
         size_t effectBufferPitch;
-        uint32_t* effectBuffer;
+        uint32_t* effectBuffer; /* Used to rendrer CPU driven effects to the screen. Most notably the raycasting output */
+        size_t zBufferPitch;
+        double* zBuffer;      /* Used to store depth values through a scene */
         SDL_Texture* effectTexture;
         bool shown;
     };
