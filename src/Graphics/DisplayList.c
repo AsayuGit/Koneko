@@ -20,27 +20,14 @@
 */
 
 #include "DisplayList.h"
-#include "LinkedList.h"
 
 typedef struct {
-    uint8_t flags;          /* How the layer should be processed */
     unsigned int priority;  /* The priority level of the layer */
-    LinkedList* spriteList; /* Linked list of Sprite* */
-} DisplayListLayer;
-
-struct DisplayList {
-    LinkedList* layers; /* LinkedList of DisplayListLayer */
-};
-
-static void KON_FreeDisplayListLayer(DisplayListLayer* layer) {
-    KON_FreeLinkedList(&layer->spriteList);
-    free(layer);
-}
+    Sprite* sprite; /* Linked list of Sprite* */
+} DisplayListItem;
 
 DisplayList* KON_InitDisplayList() {
-    DisplayList* newDisplayList = (DisplayList*)calloc(1, sizeof(DisplayList));
-
-    return newDisplayList;
+    return NULL;
 }
 
 void KON_FreeDisplayList(DisplayList* listToFree) {
@@ -48,72 +35,46 @@ void KON_FreeDisplayList(DisplayList* listToFree) {
     free(listToFree);
 }
 
-void KON_AddToDisplayList(DisplayList* list, Sprite* sprite, unsigned int priority) {
-    LinkedList** layerList = &list->layers;
-    DisplayListLayer* spriteLayer;
+void KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int priority) {
+    register LinkedList** listPointer = list;
+    register DisplayListItem* item;
 
-    while (*layerList) { /* Search for the right priority layer */
-        if (((DisplayListLayer*)(*layerList)->data)->priority >= priority)
+    while (*listPointer) { /* Search for the right priority */
+        if (((DisplayListItem*)((*listPointer)->data))->priority >= priority)
             break;
-        layerList = &(*layerList)->next;
+        listPointer = &(*listPointer)->next;
     }
 
-    if (!(*layerList)) { /* Allocate a new layer if necessary */
-        spriteLayer = (DisplayListLayer*)calloc(1, sizeof(DisplayListLayer));
-        spriteLayer->priority = priority;
-        KON_InsertRefIntoLinkedList(layerList, spriteLayer);
-    }
-
-    /* Insert the sprite at the end of its layer */
-    spriteLayer = (DisplayListLayer*)(*layerList)->data;
-    KON_AppendRefToLinkedList(&spriteLayer->spriteList, sprite);
+    item = (DisplayListItem*)calloc(1, sizeof(DisplayListItem));
+    item->priority = priority;
+    item->sprite = sprite;
+    KON_InsertRefIntoLinkedList(listPointer, item);
 }
 
-void KON_RemoveFromDisplayList(DisplayList* list, Sprite* sprite) {
-    LinkedList* layerList = list->layers;
+void KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite) {
+    LinkedList** listPointer = list;
     
-    while (layerList) {
-        DisplayListLayer* layer = (DisplayListLayer*)layerList->data;
-        LinkedList** spriteList = &layer->spriteList;
-        
-        while (*spriteList) {
-            if ((Sprite*)(*spriteList)->data == sprite) {
-                KON_DeleteLinkedListNode(spriteList);
-                return;
-            }
-            spriteList = &(*spriteList)->next;
+    while (*listPointer) {
+        DisplayListItem* item = (DisplayListItem*)(*listPointer)->data;
+        if (item->sprite == sprite) {
+            KON_DeleteLinkedListNode(listPointer);
+            return;
         }
 
-        layerList = layerList->next;
+        listPointer = &(*listPointer)->next;
     }
 }
 
 void KON_ClearDisplayList(DisplayList* list) {
-    LinkedList* layerList = list->layers;
-
-    while (layerList) {
-        KON_FreeDisplayListLayer((DisplayListLayer*)layerList->data);
-        layerList = layerList->next;   
-    }
-
-    KON_FreeLinkedList(&list->layers);
-    free(list);
+    KON_FreeLinkedList(&list);
 }
 
 void KON_DrawDisplayList(DisplayList* list) {
-    LinkedList* layerList = list->layers;
-    
-    /* Draw each Layer */
-    while (layerList) {
-        DisplayListLayer* layer = (DisplayListLayer*)layerList->data;
-        LinkedList* spriteList = layer->spriteList;
-        
-        /* Draw each Sprite in the layer */
-        while (spriteList) {
-            KON_DrawSprite((Sprite*)spriteList->data);
-            spriteList = spriteList->next;
-        }
+    register LinkedList* listIterator = list;
 
-        layerList = layerList->next;
+    /* Draw each sprite */
+    while (listIterator) {
+        KON_DrawSprite(((DisplayListItem*)listIterator->data)->sprite);
+        listIterator = listIterator->next;
     }
 }

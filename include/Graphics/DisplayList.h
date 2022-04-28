@@ -23,8 +23,9 @@
 #define _DISPLAYLIST_H
 
     #include "Sprite.h"
+    #include "LinkedList.h"
 
-    typedef struct DisplayList DisplayList;
+    typedef struct LinkedList DisplayList;
 
     /*
         SUMMARY : Initialize a new DisplayList.
@@ -44,14 +45,14 @@
         INPUT   : Sprite* sprite        : The Sprite to add to the DisplayList.
         INPUT   : unsigned int priority : The priority level the Sprite should be drawn with (0 to inf / back to front).
     */
-    void         KON_AddToDisplayList(DisplayList* list, Sprite* sprite, unsigned int priority);
+    void         KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int priority);
 
     /*
         SUMMARY : Remove a previously added Sprite from a DisplayList.
         INPUT   : DisplayList* list : The DisplayList the Sprite should be removed from.
         INPUT   : Sprite* sprite    : The Sprite to be removed from the DisplayList.
     */
-    void         KON_RemoveFromDisplayList(DisplayList* list, Sprite* sprite);
+    void         KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite);
 
     /*
         SUMMARY : Clears a DisplayList of all its Sprites.

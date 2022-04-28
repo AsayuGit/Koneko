@@ -332,6 +332,10 @@ void DrawRaycastStripe(MapLayer* layer, int screenX) {
     }
 }
 
+void DrawRaycastSprite(MapLayer* layer) {
+    /*layer->displayList;*/
+}
+
 /*
     SUMMARY: Draws a raycasted frame of the current layer
 */
@@ -345,6 +349,8 @@ void KON_DrawRaycast(MapLayer* layer) {
     for (screenX = 0; screenX < Koneko.dDevice.InternalResolution.x; screenX++) {
         DrawRaycastStripe(layer, screenX);
     }
+
+    DrawRaycastSprite(layer);
 
     /* Update the screen with the content of the effect buffer */
     SDL_UpdateTexture(layer->effectTexture, NULL, layer->effectBuffer, layer->effectBufferPitch);

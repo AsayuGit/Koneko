@@ -182,7 +182,7 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     nodePointer = KON_AppendRefToLinkedList(&mapLayer->entityInstanceList, newInstance);
 
     /* Add the entity's sprite to its mapLayer's DisplayList */
-    KON_AddToDisplayList(mapLayer->displayList, &newInstance->entitySprite, priority);
+    KON_AddToDisplayList(&mapLayer->displayList, &newInstance->entitySprite, priority);
 
     return ((EntityInstance*)nodePointer->data);
 }

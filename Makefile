@@ -31,7 +31,7 @@ WINCC = x86_64-w64-mingw32-gcc
 ARC = ar
 
 # Compile / Link Flags
-CFLAGS += -c -Wall -std=c89 -pedantic-errors -O2
+CFLAGS += -c -Wall -std=c89 -pedantic-errors -g
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
 # Main target and filename of the executable

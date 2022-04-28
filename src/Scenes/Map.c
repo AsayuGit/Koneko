@@ -136,7 +136,7 @@ void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsign
         return;
     }
 
-    KON_AddToDisplayList(map->MapLayer[layerID].displayList, sprite, priority);
+    KON_AddToDisplayList(&map->MapLayer[layerID].displayList, sprite, priority);
 }
 
 void KON_DrawMap(Map* map) {
