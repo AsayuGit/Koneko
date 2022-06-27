@@ -29,6 +29,8 @@
 
 #include "CommunFunctions.h"
 
+#include <stdlib.h>
+
 #define KON_EntityOnX(scene, function) {                                                   \
     MapLayer* currentLayer;                                                                \
     LinkedList* entityInstanceList;                                                        \
@@ -71,7 +73,7 @@ int KON_StartScene(SceneDescriptor* scenePointer){
     while (true){
 
         /* Events Loop */
-        while(SDL_PollEvent(&Koneko.iDevice.event)){
+        while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
             if (scenePointer->OnEvent)
                 scenePointer->OnEvent(scene);

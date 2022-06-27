@@ -23,7 +23,6 @@
 #define _MAP_H
 
     #include "LinkedList.h"
-    #include "Surface.h"
     #include "Rect.h"
     #include "DisplayList.h"
 
@@ -51,7 +50,6 @@
         uint32_t* effectBuffer; /* Used to rendrer CPU driven effects to the screen. Most notably the raycasting output */
         size_t zBufferPitch;
         double* zBuffer;      /* Used to store depth values through a scene */
-        SDL_Texture* effectTexture;
         bool shown;
     };
 

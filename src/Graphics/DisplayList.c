@@ -21,6 +21,8 @@
 
 #include "DisplayList.h"
 
+#include <stdlib.h>
+
 typedef struct {
     unsigned int priority;  /* The priority level of the layer */
     Sprite* sprite; /* Linked list of Sprite* */

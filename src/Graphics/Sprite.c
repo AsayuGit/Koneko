@@ -21,9 +21,11 @@
 
 #include "Koneko.h"
 #include "Sprite.h"
-#include "Surface.h" /* Load textures from disk */
-#include "System.h" /* Draw texture on screen */
+#include "System.h"
 #include "XML.h"
+
+#include <stdio.h>
+#include <string.h>
 
 /* defines an empty sprite */
 static const Sprite emptySprite;
@@ -58,9 +60,10 @@ void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON
 }
 
 void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
+    #ifndef GEKKO
     xmlDoc* spriteXml;
     xmlNode *spriteNode, *property;
-    Uint32 colorKey;
+    uint32_t colorKey;
     char* spritePath, *Buffer;
     bool sourceDestDefined = false;
 
@@ -100,6 +103,7 @@ void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
         KON_PlaySpriteAnimation(sprite, 0, true, true);
 
     xmlFreeDoc(spriteXml);
+    #endif
 }
 
 void KON_FreeSprite(Sprite* sprite) {
@@ -127,7 +131,7 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
     spriteAnimation = sprite->animationArray + sprite->playingAnimation;
 
     /* Early return if we shouldn't update the sprite frame yet */
-    if (SDL_GetTicks() < (sprite->lastFrame + spriteAnimation->Framerate))
+    if (KON_GetMs() < (sprite->lastFrame + spriteAnimation->Framerate))
         return;
 
     sprite->currentFrame++;
@@ -147,7 +151,7 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
     if (sprite->flipY)
         sprite->destination.y = -(sprite->destination.y + spriteAnimation->DstRect.h);
     
-    sprite->lastFrame = SDL_GetTicks();
+    sprite->lastFrame = KON_GetMs();
 }
 
 void KON_DrawSprite(Sprite* sprite) {

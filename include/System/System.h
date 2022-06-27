@@ -24,29 +24,9 @@
 
     #include "Log.h"
     #include "KON_DisplayDevice.h"
+    #include "KON_InputDevice.h"
 
     #include <Bool.h>
-
-    enum {
-        KON_INIT_AUDIO = SDL_INIT_AUDIO,
-        KON_INIT_VIDEO = SDL_INIT_VIDEO,
-        KON_INIT_INPUT = 0x40u,
-
-        KON_INIT_EVERYTHING = 0x70u
-    };
-
-    typedef struct{
-        /* Events */
-        SDL_Event event;
-        bool EventEnabled;
-
-        /* Key Presses */
-        const uint8_t* KeyStates; /* Pointer to the keypresses */
-        
-        /* Joystick */
-        SDL_Joystick* Joy1; /* Pointers to the Joypad */
-        bool JoyEnabled;
-    } InputDevice;
 
     typedef struct {
         DisplayDevice dDevice;
@@ -64,7 +44,7 @@
         INPUT   : int resX, resY  : The screen resolution.
         INPUT   : char* gameTitle : The game's title.
     */
-    void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle);
+    void KON_Init(int resX, int resY, char* gameTitle);
 
     /*
         SUMMARY : Finalise the current frame and displays it in the game's window.
@@ -81,5 +61,11 @@
         INPUT   : bool value : true = on, false = off.
     */
     void KON_SetDrawFPS(bool value);
+
+    /*
+        SUMMARY : Return the number of ms since the start of the game.
+        OUTPUT  : uint32_t : nb of ms since the start of the game.
+    */
+    uint32_t KON_GetMs();
 
 #endif

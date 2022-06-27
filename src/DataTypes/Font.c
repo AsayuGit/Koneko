@@ -24,6 +24,8 @@
 #include "RessourceManager.h"
 #include "Log.h"
 
+#include <stdlib.h>
+
 /*
     SUMMARY : Loads an unmanagedBitmap font from disk.
     INPUT   : char* filePath         : The path of the font to load.
@@ -42,7 +44,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
     LoadingSurface = KON_LoadCpuSurface(filePath, fontColorKey, SURFACE_KEYED);
     if (!LoadingSurface) {
-        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 2, filePath, SDL_GetError());
+        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 1, filePath);
         return NULL;
     }
     
@@ -98,7 +100,7 @@ BitmapFont* KON_LoadBitmapFontFromMem(BITMAP* bitmap, uint32_t fontColorKey) {
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
     LoadingSurface = KON_LoadCPUSurfaceFromMem(bitmap, fontColorKey, SURFACE_KEYED);
     if (!LoadingSurface) {
-        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font from memory", MESSAGE_ERROR, 1, SDL_GetError());
+        KON_SystemMsg("(KON_LoadBitmapFont) Can't load font from memory", MESSAGE_ERROR, 0);
         return NULL;
     }
 

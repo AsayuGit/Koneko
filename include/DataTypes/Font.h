@@ -23,7 +23,6 @@
 #define _FONT_H
 
     #include "Koneko.h"
-    #include "Surface.h"
     #include "KON_Bitmap.h"
 
     typedef struct{

@@ -21,40 +21,46 @@
 
 #include "Animation.h"
 #include "XML.h"
+
+#include <stdlib.h>
 #include <string.h>
 
-Animation* KON_ParseAnimation(xmlNode* array){
-    Animation* LoadingAnimation;
-    xmlNode *entry;
-    unsigned int ArrayID;
+Animation* KON_ParseAnimation(xmlNode* array) {
+    #ifdef GEKKO
+        return NULL;
+    #else
+        Animation* LoadingAnimation;
+        xmlNode *entry;
+        unsigned int ArrayID;
 
-    LoadingAnimation = (Animation*)malloc(xmlChildElementCount(array)*sizeof(Animation));
-    array = array->children;
+        LoadingAnimation = (Animation*)malloc(xmlChildElementCount(array)*sizeof(Animation));
+        array = array->children;
 
-    ArrayID = 0;
-    while (array){
-        if (strcmp((char*)array->name, "anim") == 0) {
+        ArrayID = 0;
+        while (array){
+            if (strcmp((char*)array->name, "anim") == 0) {
 
-            LoadingAnimation[ArrayID].NbOfFrames = atoi((char*)xmlGetProp(array, (xmlChar*)"nbOfFrames"));
-            LoadingAnimation[ArrayID].Framerate = atoi((char*)xmlGetProp(array, (xmlChar*)"framerate"));
+                LoadingAnimation[ArrayID].NbOfFrames = atoi((char*)xmlGetProp(array, (xmlChar*)"nbOfFrames"));
+                LoadingAnimation[ArrayID].Framerate = atoi((char*)xmlGetProp(array, (xmlChar*)"framerate"));
 
-            entry = array->children;
-            while (entry){
-                if (strcmp((char*)entry->name, "src") == 0){                    
-                    KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].SrcRect);
-                } else if (strcmp((char*)entry->name, "dst") == 0){
-                    KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].DstRect);
+                entry = array->children;
+                while (entry){
+                    if (strcmp((char*)entry->name, "src") == 0){                    
+                        KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].SrcRect);
+                    } else if (strcmp((char*)entry->name, "dst") == 0){
+                        KON_LoadRectFromXmlNode(entry, &LoadingAnimation[ArrayID].DstRect);
+                    }
+                    entry = entry->next;
                 }
-                entry = entry->next;
+                ArrayID++;
             }
-            ArrayID++;
+            array = array->next;
         }
-        array = array->next;
-    }
 
-    return LoadingAnimation;
+        return LoadingAnimation;
+    #endif
 }
 
-void KON_FreeAnimation(Animation* anim){
+void KON_FreeAnimation(Animation* anim) {
     free(anim);
 }

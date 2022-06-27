@@ -28,6 +28,8 @@
 #include "Log.h"
 #include "DisplayList.h"
 
+#include <stdlib.h>
+
 /* Loads an Entity in memory */
 EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
     EntityInstance* newEntityInstance = NULL;

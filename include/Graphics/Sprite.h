@@ -23,7 +23,6 @@
 #define _SPRITE_H
 
     #include "Animation.h"
-    #include "Surface.h"
     #include "Rect.h"
     
     #include "System.h"

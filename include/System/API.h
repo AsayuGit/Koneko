@@ -23,18 +23,17 @@
 #define _API_H
 
     #if defined(_XBOX)
-        #define SDLMAIN <SDL.h>
+        #include <SDL.h>
         /*#define SDLIMAGE <SDL2/SDL_image.h>*/
-        #define SDLMIXER <SDL_mixer.h>
-    #else
-        #define SDLMAIN <SDL2/SDL.h>
-        #define SDLIMAGE <SDL2/SDL_image.h>
-        #define SDLMIXER <SDL2/SDL_mixer.h>
-    #endif
+        #include <SDL_mixer.h>
 
-    #include SDLMAIN
-    /*#include SDLIMAGE*/
-    #include SDLMIXER
+    #elif defined(GEKKO)
+
+    #else
+        #include <SDL2/SDL.h>
+        /*#define SDLIMAGE <SDL2/SDL_image.h>*/
+        #include <SDL2/SDL_mixer.h>
+    #endif
 
     #if defined(_XBOX)
         #define PADKEY jbutton.button

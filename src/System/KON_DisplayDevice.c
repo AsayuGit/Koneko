@@ -23,6 +23,109 @@
 #include "Koneko.h"
 #include "CommunFunctions.h"
 
+#include "API.h"
+
+#include "Koneko.h"
+#include "RessourceManager.h"
+
+#include "Log.h"
+#include "Graphics.h" /* RectOnScreen() */
+
+#include "KON_TextRendering.h"
+
+#ifdef _XBOX
+	#define _POSIX_
+	#include <limits.h>
+#elif defined(GEKKO)
+    #include <limits.h>
+#else
+	#include <linux/limits.h>
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_Window *Screen;
+        SDL_Renderer *Renderer;
+    #endif
+    KON_Rect Frame[4];              /* Screen Border Frame */
+    KON_Rect RenderRect;            /* Where the game is drawn on screen */
+    Vector2i ScreenResolution;      /* The external resolution of the game */
+    bool OffScreenRender;
+} KON_VideoInterface;
+
+
+/* Abstract Koneko's surfaces from their implementations */
+struct KON_Surface {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_Texture* surface;
+    #endif
+    Vector2d size;
+};
+
+struct KON_CPUSurface {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_Surface* surface;
+    #endif
+};
+
+static KON_VideoInterface vi;
+
+extern struct BITMAP_SystemFont { int width; int height; int depth; int pitch; uint8_t pixels[113772];} SystemFont;
+
+static bool drawFPS;
+static BitmapFont* font;
+
+void KON_SetDrawFPS(bool value) {
+    drawFPS = value;
+}
+
+void KON_DrawFPS() {
+    char fpsText[100];
+    double fps = 1000.0 / Koneko.dDevice.frametime;
+
+    sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
+    gprintf(font, fpsText, 1, NULL);
+}
+
+static void DrawBordingFrame() {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_RenderFillRect(vi.Renderer, (SDL_Rect*)&vi.Frame[0]);
+        SDL_RenderFillRect(vi.Renderer, (SDL_Rect*)&vi.Frame[1]);
+        SDL_RenderFillRect(vi.Renderer, (SDL_Rect*)&vi.Frame[2]);
+        SDL_RenderFillRect(vi.Renderer, (SDL_Rect*)&vi.Frame[3]);
+    #endif
+}
+
+void KON_FinishFrame(){
+    uint32_t ticks;
+    DrawBordingFrame();
+
+    if (drawFPS)
+        KON_DrawFPS();
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_RenderPresent(vi.Renderer);
+    #endif
+
+    ticks = KON_GetMs();
+    Koneko.dDevice.frametime = ticks - Koneko.dDevice.lastFrame;
+    Koneko.dDevice.lastFrame = ticks;
+}
+
 void KON_SetCameraFOVRAD(double fov) {
     Koneko.dDevice.camera.plane = KON_GetVectScalarProduct(
         KON_GetVectScalarDivision(Koneko.dDevice.camera.plane, KON_GetVectNorm(Koneko.dDevice.camera.plane)),
@@ -67,40 +170,64 @@ void KON_RotateCamera(double angle) {
 void KON_UpdateRenderRect() {
     int ScreenWidth, ScreenHeight; /* Signed because SDL said so :c */
 
-    SDL_GetWindowSize(Koneko.dDevice.Screen, &ScreenWidth, &ScreenHeight);
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_GetWindowSize(vi.Screen, &ScreenWidth, &ScreenHeight);
+    #endif
 
     if (Koneko.dDevice.integerScalling && (ScreenWidth > Koneko.dDevice.InternalResolution.x) && (ScreenHeight > Koneko.dDevice.InternalResolution.y))
         Koneko.dDevice.IRScalar = MIN(ScreenWidth / Koneko.dDevice.InternalResolution.x, ScreenHeight / Koneko.dDevice.InternalResolution.y);
     else
         Koneko.dDevice.IRScalar = MIN((double)ScreenWidth / (double)Koneko.dDevice.InternalResolution.x, (double)ScreenHeight / (double)Koneko.dDevice.InternalResolution.y);
 
-    Koneko.dDevice.ScreenResolution.x = ScreenWidth;
-    Koneko.dDevice.ScreenResolution.y = ScreenHeight;
+    vi.ScreenResolution.x = ScreenWidth;
+    vi.ScreenResolution.y = ScreenHeight;
 
-    Koneko.dDevice.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
-    Koneko.dDevice.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
+    vi.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
+    vi.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
 
-    Koneko.dDevice.RenderRect.x = (int)(Koneko.dDevice.ScreenResolution.x - Koneko.dDevice.RenderRect.w) >> 1;
-    Koneko.dDevice.RenderRect.y = (int)(Koneko.dDevice.ScreenResolution.y - Koneko.dDevice.RenderRect.h) >> 1;
+    vi.RenderRect.x = (int)(vi.ScreenResolution.x - vi.RenderRect.w) >> 1;
+    vi.RenderRect.y = (int)(vi.ScreenResolution.y - vi.RenderRect.h) >> 1;
 
-    Koneko.dDevice.OffScreenRender = false;
+    vi.OffScreenRender = false;
 
-    KON_InitRect(Koneko.dDevice.Frame[0], 0, 0, Koneko.dDevice.RenderRect.x, ScreenHeight);                                                                                                            /* Left Frame */
-    KON_InitRect(Koneko.dDevice.Frame[1], Koneko.dDevice.RenderRect.x + Koneko.dDevice.RenderRect.w, 0, Koneko.dDevice.RenderRect.x, ScreenHeight);                                                /* Right Frame */
-    KON_InitRect(Koneko.dDevice.Frame[2], Koneko.dDevice.RenderRect.x, 0, Koneko.dDevice.RenderRect.w, Koneko.dDevice.RenderRect.y);                                                               /* Top Frame */
-    KON_InitRect(Koneko.dDevice.Frame[3], Koneko.dDevice.RenderRect.x, Koneko.dDevice.RenderRect.y + Koneko.dDevice.RenderRect.h, Koneko.dDevice.RenderRect.w, Koneko.dDevice.RenderRect.y);   /* Bottom Frame */
+    KON_InitRect(vi.Frame[0], 0, 0, vi.RenderRect.x, ScreenHeight);                                                    /* Left Frame */
+    KON_InitRect(vi.Frame[1], vi.RenderRect.x + vi.RenderRect.w, 0, vi.RenderRect.x, ScreenHeight);                    /* Right Frame */
+    KON_InitRect(vi.Frame[2], vi.RenderRect.x, 0, vi.RenderRect.w, vi.RenderRect.y);                                   /* Top Frame */
+    KON_InitRect(vi.Frame[3], vi.RenderRect.x, vi.RenderRect.y + vi.RenderRect.h, vi.RenderRect.w, vi.RenderRect.y);   /* Bottom Frame */
+}
+
+void KON_ClearScreen() {
+    #ifdef GEKKO
+
+    #else
+        SDL_RenderClear(vi.Renderer);
+    #endif
 }
 
 void KON_SetVSync(bool value) {
-    SDL_GL_SetSwapInterval(value);
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_GL_SetSwapInterval(value);
+    #endif
 }
 
-void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
-    Koneko.dDevice.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    Koneko.dDevice.Renderer = SDL_CreateRenderer(Koneko.dDevice.Screen , -1, 0);
-    if (Koneko.dDevice.Renderer == NULL){
-        KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
-    }
+void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
+    BITMAP SystemFontBitmap;
+
+    initBitmap(SystemFontBitmap, SystemFont);
+
+    #ifdef GEKKO
+        /* TODO: libogc init */
+    #else
+        vi.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        vi.Renderer = SDL_CreateRenderer(vi.Screen , -1, 0);
+        if (vi.Renderer == NULL)
+            KON_SystemMsg("(KON_CreateDisplayDevice) Can't create main renderer : ", MESSAGE_ERROR, 1, SDL_GetError());
+    #endif
+
     KON_SetVSync(true);
 
     /* FIXME : TEMPORARY: Makes the start resulution de default internal resolution */
@@ -110,13 +237,350 @@ void KON_CreateDisplayDevice(int resX, int resY, char* gameTitle) {
     Koneko.dDevice.camera.direction = KON_InitVector2d(0, -1);
     Koneko.dDevice.camera.plane = KON_InitVector2d(1, 0);
     Koneko.dDevice.camera.cameraHeight = 0.5;
-
     KON_ResetCameraFOV();
 
     KON_UpdateRenderRect();
+
+    font = KON_LoadBitmapFontFromMem(&SystemFontBitmap, 0xff00ff);
 }
 
 void KON_FreeDisplayDevice() {
-    SDL_DestroyRenderer(Koneko.dDevice.Renderer);
-    SDL_DestroyWindow(Koneko.dDevice.Screen);
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_DestroyRenderer(vi.Renderer);
+        SDL_DestroyWindow(vi.Screen);
+    #endif
+}
+
+/*
+    SUMMARY : Free a GPU-Side surface
+    INPUT   : SDL_Texture* surface : Surface to be freed
+*/
+void KON_FreeRawSurface(KON_Surface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_DestroyTexture(surface->surface);
+    #endif
+}
+
+/*
+    SUMMARY : Applies a ColorKey to a CPU-Side Surface
+    INPUT   : KON_CPUSurface* SurfaceToKey : Pointer to the Surface to key
+    INPUT   : uint8_t ColorKey          : The ColorKey to apply to the Surface
+*/
+void KON_KeyCpuSurface(KON_CPUSurface* SurfaceToKey, uint32_t ColorKey) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        if (SDL_SetColorKey(SurfaceToKey->surface, true, ColorKey) < 0)
+            KON_SystemMsg("() couldn't set color key : ", MESSAGE_WARNING, 1, SDL_GetError());
+    #endif
+}
+
+/*
+    SUMMARY : Loads a CPU-Side Surface from disk (Unmanaged)
+    INPUT   : char* FilePath        : Path to the surface to load
+    INPUT   : uint32_t ColorKey     : The surface's color to key out
+    INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
+    OUTPUT  : KON_CPUSurface*          : Pointer to the loaded surface (UnMannaged)
+*/
+static KON_CPUSurface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+    KON_CPUSurface* loadingCPUSurface = NULL;
+
+    if (!FilePath)
+        return NULL;
+    if (!(loadingCPUSurface = (KON_CPUSurface*)malloc(sizeof(KON_CPUSurface)))) {
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        if (!(loadingCPUSurface->surface = SDL_LoadBMP(FilePath))) {
+            KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
+            return NULL;
+        }
+    #endif
+
+    if (SURFACE_KEYED & flags)
+        KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
+
+    KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface : ", MESSAGE_LOG, 1, FilePath);
+
+    return loadingCPUSurface;
+}
+
+/*
+    SUMMARY : Loads a CPU-Side Surface from memory (Unmanaged)
+    INPUT   : char* FilePath        : Path to the surface to load
+    INPUT   : uint32_t ColorKey     : The surface's color to key out
+    INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
+    OUTPUT  : KON_CPUSurface*          : Pointer to the loaded surface (UnMannaged)
+*/
+KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uint8_t flags) {
+    KON_CPUSurface* loadingCPUSurface = NULL;
+
+    if (!(loadingCPUSurface = (KON_CPUSurface*)malloc(sizeof(KON_CPUSurface)))) {
+        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        if (!(loadingCPUSurface->surface = SDL_CreateRGBSurfaceWithFormatFrom(bitmap->pixels, bitmap->width, bitmap->height, bitmap->depth, bitmap->pitch, SDL_PIXELFORMAT_RGB24))) {
+            KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load memory surface : ", MESSAGE_WARNING, 1, SDL_GetError());
+            return NULL;
+        }
+    #endif
+
+    if (SURFACE_KEYED & flags)
+        KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
+
+    KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface from memory", MESSAGE_LOG, 0);
+
+    return loadingCPUSurface;
+}
+
+/*
+    SUMMARY : Loads a GPU-Side Surface from disk (Unmanaged)
+    INPUT   : char* FilePath        : Path to the surface to load
+    INPUT   : uint32_t ColorKey     : The surface's color to key out
+    INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
+    OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged)
+*/
+static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+    KON_CPUSurface* loadedCPUSurface = NULL;
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_Texture* loadedGPUSurface;
+    #endif
+    KON_Surface* loadedSurface;
+    Vector2i surfaceSize;
+    
+    if (!FilePath) {
+        KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
+        return NULL;
+    }
+    if (!(loadedCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags)))
+        return NULL;
+
+    if (SURFACE_KEYED & flags)
+        KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(vi.Renderer, loadedCPUSurface->surface))) {
+            KON_SystemMsg("(KON_LoadRawSurface) Couldn't upload surface to GPU : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
+            return NULL;
+        }
+    #endif
+    KON_FreeCPUSurface(loadedCPUSurface);
+
+
+    if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
+        KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_WARNING, 0);
+        return NULL;
+    }
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_QueryTexture(loadedGPUSurface, NULL, NULL, &surfaceSize.x, &surfaceSize.y);
+        loadedSurface->surface = loadedGPUSurface;
+    #endif
+
+    KON_VectToVect(loadedSurface->size, surfaceSize);
+
+    return loadedSurface;
+}
+
+KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
+    KON_Surface* loadedSurface;
+
+    if (!filePath) {
+        KON_SystemMsg("(KON_LoadSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
+        return NULL;
+    }
+
+    if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(filePath, RESSOURCE_GPU_SURFACE))) {
+        loadedSurface = KON_LoadRawSurface(filePath, colorKey, flags);
+        KON_AddManagedRessource(filePath, RESSOURCE_GPU_SURFACE, loadedSurface);
+        KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, filePath);
+        return loadedSurface;
+    }
+
+    KON_SystemMsg("(KON_LoadSurface) Referenced GPU Surface : ", MESSAGE_LOG, 1, filePath);
+    return loadedSurface;
+}
+
+/* Unmanaged */
+KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
+    if (!filePath)
+        return NULL;
+
+    return KON_LoadRawCPUSurface(filePath, colorKey, flags);
+}
+
+void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, size_t* pitch, unsigned int* w, unsigned int* h) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        *pitch = surface->surface->pitch;
+        *w = surface->surface->w;
+        *h = surface->surface->h;
+    #endif
+}
+
+void* KON_GetCPUSurfacePixelData(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return NULL;
+    #else
+        return surface->surface->pixels;
+    #endif
+}
+
+void KON_LockCPUSurface(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_LockSurface(surface->surface);
+    #endif
+}
+
+void KON_UnlockCPUSurface(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_UnlockSurface(surface->surface);
+    #endif
+}
+
+void KON_FreeSurface(KON_Surface* surface) {
+    KON_FreeRawSurface(KON_FreeManagedRessourceByRef(surface));
+}
+
+void KON_FreeCPUSurface(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        SDL_FreeSurface(surface->surface);
+    #endif
+
+    free(surface);
+}
+
+unsigned int KON_GetCPUSurfaceBPP(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return 8;
+    #else
+        return surface->surface->format->BytesPerPixel;
+    #endif
+}
+
+unsigned int KON_GetCPUSurfacePitch(KON_CPUSurface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return 0;
+    #else
+        return surface->surface->pitch;
+    #endif
+}
+
+/* Unmanaged */
+KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
+    int w, h;
+    KON_Surface* newSurface = (KON_Surface*)malloc(sizeof(KON_Surface));
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        if (!(newSurface->surface = SDL_CreateTextureFromSurface(vi.Renderer, cpuSurface->surface)))
+            return NULL;
+
+        SDL_QueryTexture(newSurface->surface, NULL, NULL, &w, &h);
+        newSurface->size = KON_InitVector2d(w, h);
+    #endif
+
+    return newSurface;
+}
+
+void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
+    if (surface && size)
+        *size = surface->size;
+}
+
+int KON_SetRenderTarget(KON_Surface* surface) {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return 0;
+    #else
+        vi.OffScreenRender = (bool)surface->surface;
+        return SDL_SetRenderTarget(vi.Renderer, surface->surface);
+    #endif
+}
+
+/* API level draw */
+static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
+
+    /* TODO: Flags decoding */
+    flags = 0;
+
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return 0;
+    #else
+        return SDL_RenderCopyEx(vi.Renderer, surface->surface, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
+    #endif
+}
+
+#define KON_Draw(dDevice, texture, srcrect, dstrect) KON_DrawEx(dDevice, texture, srcrect, dstrect, DRAW_DEFAULT)
+
+void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
+    KON_Rect ScaledDstRect;
+
+    KON_InitRect(ScaledDstRect, 0, 0, Koneko.dDevice.InternalResolution.x, Koneko.dDevice.InternalResolution.y);
+    
+    if (!surface)
+        return;
+
+    if (dest){
+        if (!RectOnScreen(dest))
+            return;
+        KON_InitRect(ScaledDstRect,
+            (dest->x * Koneko.dDevice.IRScalar) + vi.RenderRect.x,
+            (dest->y * Koneko.dDevice.IRScalar) + vi.RenderRect.y,
+            dest->w * Koneko.dDevice.IRScalar,
+            dest->h * Koneko.dDevice.IRScalar
+        );
+    } else {
+        ScaledDstRect = vi.RenderRect;
+    }
+
+    KON_DrawEx(surface, rect, &ScaledDstRect, flags);
+}
+
+void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
+    KON_Rect dest;
+
+    KON_CatVectToRect(dest, (*pos), surface->size);
+    KON_DrawScaledSurfaceRectEx(surface, rect, &dest, flags);
+}
+
+void KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags) {
+    KON_DrawScaledSurfaceRectEx(surface, NULL, dest, flags);
+}
+
+void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
+    KON_Rect dest;
+    
+    KON_CatVectToRect(dest, (*pos), surface->size);
+    KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
 }

@@ -21,14 +21,18 @@
 
 #include "TileMap.h"
 #include "Map.h"
-#include "Surface.h"
 #include "Log.h"
 #include "CommunFunctions.h"
 #include "DisplayList.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef _XBOX
 	#define _POSIX_
 	#include <limits.h>
+#elif defined(GEKKO)
+    #include <limits.h>
 #else
 	#include <linux/limits.h>
 #endif
@@ -123,8 +127,8 @@ void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID,
 
 void KON_DrawTileMap(MapLayer* Layer) {
     /* Declaration */
-    unsigned int mapIndex;
-    Vector2d tilePos;
+    unsigned int mapIndex, i, j;
+    Vector2d tilePos = {0, 0};
     TileMap* map;
 
     map = (TileMap*)Layer->layerData;
@@ -135,8 +139,10 @@ void KON_DrawTileMap(MapLayer* Layer) {
 
     mapIndex = 0;
     while (mapIndex < map->MapDataSize) {
-        for (tilePos.y = 0; tilePos.y < map->MapSizeY; tilePos.y++) {
-            for (tilePos.x = 0; tilePos.x < map->MapSizeX; tilePos.x++) {
+        for (i = 0; i < map->MapSizeY; i++) {
+            for (j = 0; j < map->MapSizeX; j++) {
+                tilePos.y = i * map->TileSize;
+                tilePos.x = j * map->TileSize;
                 KON_DrawTile(Layer->texture.gpuSide, map, map->MapData[mapIndex], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
                 mapIndex++;
             }

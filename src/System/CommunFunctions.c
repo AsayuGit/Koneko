@@ -20,8 +20,10 @@
 */
 
 #include "CommunFunctions.h"
-#include "Surface.h"
 #include "Log.h"
+
+#include <stdlib.h>
+#include <string.h>
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -89,11 +91,11 @@ unsigned char KON_BoundVect2dToRect(Vector2d* vect, KON_Rect* rect){
 }
 
 void KON_SetNegative(void* valuePointer, size_t dataSize) {
-    *((Uint64*)valuePointer) |= (1ul << ((dataSize * 8) - 1));
+    *((uint64_t*)valuePointer) |= (1ul << ((dataSize * 8) - 1));
 }
 
 void KON_SetPositive(void* valuePointer, size_t dataSize) {
-    *((Uint64*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
+    *((uint64_t*)valuePointer) &= ~(1ul << ((dataSize * 8) - 1));
 }
 
 double KON_DegToRad(double angle) {

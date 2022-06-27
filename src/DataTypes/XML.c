@@ -21,21 +21,29 @@
 
 #include "XML.h"
 
-xmlDoc* KON_LoadXml(char* filePath){
-    xmlKeepBlanksDefault(0); /* Ignore white space */
+#include <stdlib.h>
 
-    #ifdef _XBOX
-        return xmlParseFile(filePath); /* Load File into memory */
+xmlDoc* KON_LoadXml(char* filePath){
+    #ifdef GEKKO
+        return NULL;
     #else
-        return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+        xmlKeepBlanksDefault(0); /* Ignore white space */
+
+        #ifdef _XBOX
+            return xmlParseFile(filePath); /* Load File into memory */
+        #else
+            return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+        #endif
     #endif
 }
 
 void KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect) {
-    KON_InitRect((*rect),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
-        atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
-    );
+    #ifndef GEKKO
+        KON_InitRect((*rect),
+            atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
+            atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
+            atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
+            atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
+        );
+    #endif
 }

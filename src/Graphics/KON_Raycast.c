@@ -148,8 +148,11 @@ void CastRay(MapLayer* layer, unsigned int layerZ, bool inWall, Vector2d* rayDir
     rayStep.x = (rayDirection->x > 0) ? 1 : -1;
     rayStep.y = (rayDirection->y > 0) ? 1 : -1;
 
-    ray.x = start->x + !((*(unsigned long*)&rayDirection->x) >> 63);
-    ray.y = start->y + !((*(unsigned long*)&rayDirection->y) >> 63);
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+    ray.x = start->x + !((*(unsigned long*)&rayDirection->x) >> ((sizeof(unsigned long) - 1) * 8));
+    ray.y = start->y + !((*(unsigned long*)&rayDirection->y) >> ((sizeof(unsigned long) - 1) * 8));
+    #pragma GCC diagnostic pop
 
     rayMarch.x = fabs(rayDirection->x / rayDirection->y); /* y * thix = x */
     rayMarch.y = fabs(rayDirection->y / rayDirection->x); /* x * this = y */
@@ -353,6 +356,8 @@ void KON_DrawRaycast(MapLayer* layer) {
     DrawRaycastSprite(layer);
 
     /* Update the screen with the content of the effect buffer */
+    /*  FIXME: Global cpu rendering buffer
     SDL_UpdateTexture(layer->effectTexture, NULL, layer->effectBuffer, layer->effectBufferPitch);
     SDL_RenderCopy(Koneko.dDevice.Renderer, layer->effectTexture, NULL, (SDL_Rect*)&Koneko.dDevice.RenderRect);
+    */
 }

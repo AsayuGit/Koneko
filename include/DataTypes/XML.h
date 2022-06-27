@@ -26,6 +26,11 @@
 
     #ifdef _XBOX
         #include <libxml/parser.h>
+    #elif defined(GEKKO)
+        /* Temporary until we port libxml2 over to the gamecube */
+        typedef void xmlDoc;
+        typedef void xmlNode;
+        typedef void xmlChar;
     #else
         #include <libxml2/libxml/parser.h>
     #endif

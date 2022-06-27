@@ -23,8 +23,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <Bool.h>
+#include "Bool.h"
 #include <stdarg.h>
+#include "System.h"
 
 #include "API.h"
 
@@ -53,7 +54,7 @@ void KON_SystemMsg(const char* message, MessageGravity gravity, unsigned int nbE
             break;
     }
 
-    printf("{%u} %s %s", SDL_GetTicks(), messageLeader[gravity], message);
+    printf("{%u} %s %s", KON_GetMs(), messageLeader[gravity], message);
 
     va_start(args, nbExt);
     for (i = 0; i < nbExt; i++) {

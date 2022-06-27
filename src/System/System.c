@@ -26,49 +26,25 @@
 #include "Graphics.h"
 #include "KON_TextRendering.h"
 
-extern struct BITMAP_SystemFont { int width; int height; int depth; int pitch; uint8_t pixels[113772];} SystemFont;
-
-static bool drawFPS;
-static BitmapFont* font;
-
-SDL_Surface* testSurface;
-SDL_Texture* testTexture;
-
-void KON_SetDrawFPS(bool value) {
-    drawFPS = value;
-}
-
-void KON_DrawFPS() {
-    char fpsText[100];
-    double fps = 1000.0 / Koneko.dDevice.frametime;
-
-    sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
-    gprintf(font, fpsText, 1, NULL);
-}
+#include "API.h"
+#include <stdlib.h>
 
 static void KON_FreeSoundDevice() {
-    Mix_CloseAudio();
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+    #else
+        Mix_CloseAudio();
+    #endif
 }
 
 static void KON_CreateSoundDevice() {
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-        KON_SystemMsg("(KON_CreateSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
-    }
-}
+    #ifdef GEKKO
 
-static void KON_FreeInputDevice() {
-    if (Koneko.iDevice.Joy1)
-        SDL_JoystickClose(Koneko.iDevice.Joy1);
-}
-
-void KON_InitInputs(){
-    Koneko.iDevice.Joy1 = NULL;
-    if (SDL_NumJoysticks())
-        Koneko.iDevice.Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
-    
-    Koneko.iDevice.KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-    Koneko.iDevice.JoyEnabled = (bool)(Koneko.iDevice.Joy1);
-    Koneko.iDevice.EventEnabled = true;
+    #else
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
+            KON_SystemMsg("(KON_CreateSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
+        }
+    #endif
 }
 
 /* FIXME : Implement memoru cleanup */
@@ -78,96 +54,42 @@ void KON_Exit(){
     KON_FreeDisplayDevice();
 }
 
-void KON_Init(uint32_t flags, int resX, int resY, char* gameTitle){
-    BITMAP SystemFontBitmap;
+void KON_Init(int resX, int resY, char* gameTitle){
 
-    initBitmap(SystemFontBitmap, SystemFont);
+    #ifdef GEKKO
 
-    /* SDL Init */
-    if (SDL_Init(flags) != 0){
-        KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
-    }
+    #else
+        /* SDL Init */
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+            KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
+        }
+    #endif
 
-    if (flags & KON_INIT_VIDEO)
-        KON_CreateDisplayDevice(resX, resY, gameTitle);
-    if (flags & KON_INIT_AUDIO)
-        KON_CreateSoundDevice();
-    if (flags & KON_INIT_INPUT)
-        KON_InitInputs();
-
-    font = KON_LoadBitmapFontFromMem(&SystemFontBitmap, 0xff00ff);
-}
-
-static void DrawFrame() {
-    SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[0]);
-    SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[1]);
-    SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[2]);
-    SDL_RenderFillRect(Koneko.dDevice.Renderer, (SDL_Rect*)&Koneko.dDevice.Frame[3]);
-}
-
-void KON_FinishFrame(){
-    Uint32 ticks;
-    DrawFrame();
-
-    if (drawFPS)
-        KON_DrawFPS();
-
-    SDL_RenderPresent(Koneko.dDevice.Renderer);
-    ticks = SDL_GetTicks();
-    Koneko.dDevice.frametime = ticks - Koneko.dDevice.lastFrame;
-    Koneko.dDevice.lastFrame = ticks;
+    KON_InitDisplayDevice(resX, resY, gameTitle);
+    KON_CreateSoundDevice();
+    KON_InitInputs();
 }
 
 void KON_SystemEvents(){
-    SDL_Event assertedEvent;
 
     switch (Koneko.iDevice.event.type){
-        #ifndef _SDL
-        case SDL_WINDOWEVENT:
-            switch (Koneko.iDevice.event.window.event)
-            {
-            case SDL_WINDOWEVENT_RESIZED:
-                KON_UpdateRenderRect();
-                break;
-
-            case SDL_WINDOWEVENT_CLOSE:
-                exit(0);
-                break;
-            
-            default:
-                break;
-            }
+        case KON_GAME_EXIT:
+            /* TODO: make it nicer */
+            exit(0);
             break;
 
-        case SDL_JOYHATMOTION:
-            assertedEvent.type = PAD_KEYDOWN;
-            switch (Koneko.iDevice.event.jhat.value){
-                case SDL_HAT_LEFT:
-                    assertedEvent.PADKEY = PAD_LEFT;
-                    SDL_PushEvent(&assertedEvent);
-                    break;
-                case SDL_HAT_RIGHT:
-                    assertedEvent.PADKEY = PAD_RIGHT;
-                    SDL_PushEvent(&assertedEvent);
-                    break;
-                case SDL_HAT_UP:
-                    assertedEvent.PADKEY = PAD_UP;
-                    SDL_PushEvent(&assertedEvent);
-                    break;
-                case SDL_HAT_DOWN:
-                    assertedEvent.PADKEY = PAD_DOWN;
-                    SDL_PushEvent(&assertedEvent);
-                    break;
-                default:
-                    break;
-            }
+        case KON_RESOLUTION_CHANGED:
+            KON_UpdateRenderRect();
             break;
 
-        case SDL_KEYDOWN:
+        case KON_KEY_DOWN:
+
+            /*
+
             switch (Koneko.iDevice.event.PADKEY)
             {
             case PAD_QUIT:
-                exit(0); /* FIXME: We need a cleaner way of exiting out of the game */
+                exit(0); 
                 break;
             
             case PAD_FULLSCREEN:
@@ -189,10 +111,19 @@ void KON_SystemEvents(){
             }
             break;
 
-        #endif
+            */
 
         default:
             break;
     }
 
+}
+
+uint32_t KON_GetMs() {
+    #ifdef GEKKO
+        /* TODO: implement libogc */
+        return 0;
+    #else
+        return SDL_GetTicks();
+    #endif
 }

@@ -24,13 +24,37 @@
 #include "Log.h"
 #include "RessourceManager.h"
 
+#include <stdlib.h>
+
+#ifdef GEKKO
+    typedef void KON_RawSfx;
+#else
+    typedef Mix_Chunk KON_RawSfx;
+#endif
+
 struct KON_Sfx {
-    Mix_Chunk* sfx;
+    KON_RawSfx* sfx;
 };
 
-#define KON_LoadRawSoundEffect(FilePath) Mix_LoadWAV(FilePath)
-#define KON_FreeRawSoundEffect(soundEffect) Mix_FreeChunk(soundEffect)
-#define KON_PlayRawSoundEffect(soundEffect, loops) Mix_PlayChannel(-1, soundEffect, loops)
+KON_RawSfx* KON_LoadRawSoundEffect(char* FilePath) {
+    #ifdef GEKKO
+        return NULL;
+    #else
+        return Mix_LoadWAV(FilePath);
+    #endif
+}
+
+void KON_FreeRawSoundEffect(KON_RawSfx* soundEffect) {
+    #ifndef GEKKO
+        Mix_FreeChunk(soundEffect);
+    #endif
+}
+
+void KON_PlayRawSoundEffect(KON_RawSfx* soundEffect, int loops) {
+    #ifndef GEKKO
+        Mix_PlayChannel(-1, soundEffect, loops);
+    #endif
+}
 
 KON_Sfx* KON_LoadSoundEffect(char* filePath) {
     KON_Sfx* loadingSoundEffect;
@@ -47,7 +71,11 @@ KON_Sfx* KON_LoadSoundEffect(char* filePath) {
     }
 
     if (!(loadingSoundEffect->sfx = KON_LoadRawSoundEffect(filePath))) {
-        KON_SystemMsg("(KON_LoadSoundEffect) Can't load sound effect file : ", MESSAGE_ERROR, 2, filePath, Mix_GetError());
+        #ifdef GEKKO
+            /* TODO: implement libogc */
+        #else
+            KON_SystemMsg("(KON_LoadSoundEffect) Can't load sound effect file : ", MESSAGE_ERROR, 2, filePath, Mix_GetError());
+        #endif
         return NULL;
     }
 
@@ -60,7 +88,7 @@ void KON_FreeSoundEffect(KON_Sfx* soundEffect) {
     if (!soundEffect)
         return;
 
-    KON_FreeRawSoundEffect((Mix_Chunk*)KON_FreeManagedRessourceByRef(soundEffect->sfx));
+    KON_FreeRawSoundEffect((KON_RawSfx*)KON_FreeManagedRessourceByRef(soundEffect->sfx));
 }
 
 void KON_PlaySoundEffect(KON_Sfx* sfx, int loops) {
@@ -68,5 +96,7 @@ void KON_PlaySoundEffect(KON_Sfx* sfx, int loops) {
 }
 
 void KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume) {
-    Mix_VolumeChunk(sfx->sfx, volume);
+    #ifndef GEKKO
+        Mix_VolumeChunk(sfx->sfx, volume);
+    #endif
 }

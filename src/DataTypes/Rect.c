@@ -20,12 +20,37 @@
 */
 
 #include "Rect.h"
-#include "API.h"
 
 #include <stdio.h>
 
 bool KON_GetRectRectIntersection(KON_Rect* rectA, KON_Rect* rectB, KON_Rect* resultRect) {
-    return SDL_IntersectRect((SDL_Rect*)rectA, (SDL_Rect*)rectB, (SDL_Rect*)resultRect);
+    KON_Rect intersectRect = {0};
+    register int difference;
+
+    if ((difference = rectA->x - rectB->x) > 0) {
+        intersectRect.x = rectA->x;
+        intersectRect.w = (rectA->w < (difference = rectB->w - difference)) ? rectA->w : difference;
+    } else {
+        intersectRect.x = rectB->x;
+        intersectRect.w = (rectB->w < (difference = rectA->w + difference)) ? rectB->w : difference;
+    }
+
+    if (intersectRect.w <= 0)
+        return false;
+
+    if ((difference = rectA->y - rectB->y) > 0) {
+        intersectRect.y = rectA->y;
+        intersectRect.h = (rectA->h < (difference = rectB->h - difference)) ? rectA->h : difference;
+    } else {
+        intersectRect.y = rectB->y;
+        intersectRect.h = (rectB->h < (difference = rectA->h + difference)) ? rectB->h : difference;
+    }
+
+    if (intersectRect.h <= 0)
+        return false;
+    
+    *resultRect = intersectRect;
+    return true;
 }
 
 bool KON_GetRectVectIntersect(KON_Rect* rect, Vector2d* segStart, Vector2d* segEnd, Vector2d* intersection) {

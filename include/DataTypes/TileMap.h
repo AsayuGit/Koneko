@@ -23,8 +23,9 @@
 #define _TILEMAP_H
 
     #include "Map.h"
-    #include "Surface.h"
     #include "LinkedList.h"
+
+    #include <stdio.h>
 
     /* List of tile properties */
     typedef struct {

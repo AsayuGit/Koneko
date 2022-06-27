@@ -21,6 +21,10 @@
 
 #include "KON_TextRendering.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+/* FIXME */
 int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */
     KON_Rect DstLetter, SrcLetter;
@@ -46,11 +50,12 @@ int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned
     /*printf("Font: %d %d %d %d\n", SrcLetter.x, SrcLetter.y, SrcLetter.w, SrcLetter.h);*/
 
     /* Logic */
+    /*
     if (Koneko.dDevice.OffScreenRender){
         KON_DrawScaledSurfaceRect(Font->FontSurface, &SrcLetter, &DstLetter);
     } else {
         KON_DrawScaledSurfaceRectEx(Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
-    }
+    }*/
 
     return DstLetter.w;
 }

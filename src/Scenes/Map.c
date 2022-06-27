@@ -8,10 +8,16 @@
 	#define _POSIX_
 	#include <limits.h>
 	#include <string.h>
+#elif defined GEKKO
+    #include <limits.h>
+    #include <libgen.h>
 #else
 	#include <linux/limits.h>
 	#include <libgen.h> /* dirname() */
 #endif
+
+#include <stdlib.h>
+#include <string.h>
 
 Map* KON_LoadMap(char* mapFilePath) {
     /* Declaration */
@@ -74,12 +80,13 @@ Map* KON_LoadMap(char* mapFilePath) {
                 currentLayer->zBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(double);
                 currentLayer->effectBuffer = (uint32_t*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->effectBufferPitch);
                 currentLayer->zBuffer = (double*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->zBufferPitch);
+                /*
                 currentLayer->effectTexture = SDL_CreateTexture(
                     Koneko.dDevice.Renderer, SDL_PIXELFORMAT_RGB888,
                     SDL_TEXTUREACCESS_STREAMING,
                     Koneko.dDevice.InternalResolution.x,
                     Koneko.dDevice.InternalResolution.y
-                );
+                );*/
 
                 {
                     KON_CPUSurface* surface = KON_LoadCPUBitMap(MapFile, MapRoot);
@@ -144,7 +151,7 @@ void KON_DrawMap(Map* map) {
     unsigned int i;
     
     /* Clear the screen before rendering a new frame */
-    SDL_RenderClear(Koneko.dDevice.Renderer);
+    KON_ClearScreen();
 
     /* Draw each layer */
     /*for (i = map->nbOfLayers - 1; i >= 0; i--) {*/
