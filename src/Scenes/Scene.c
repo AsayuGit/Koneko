@@ -57,9 +57,10 @@
 static void KON_MapEvents(SceneHandle* scene) { KON_EntityOnX(scene, OnEvent); }
 static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
 
-int KON_StartScene(SceneDescriptor* scenePointer){
+int KON_StartScene(SceneDescriptor* scenePointer) {
     SceneHandle* scene;
 
+#ifndef GEKKO
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
     if (!scene->WorldMap){
@@ -67,11 +68,11 @@ int KON_StartScene(SceneDescriptor* scenePointer){
     }
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(scene);
-
+#endif
 
     /* Main Loop */
-    while (true){
-
+    while (true) {
+#ifndef GEKKO
         /* Events Loop */
         while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
@@ -98,7 +99,7 @@ int KON_StartScene(SceneDescriptor* scenePointer){
 
         if (scenePointer->OnDisplay)
             scenePointer->OnDisplay(scene);
-
+#endif
         KON_FinishFrame(); /* Update the main window */
     }
 

@@ -44,7 +44,7 @@
         INPUT   : int resX, resY  : The screen resolution.
         INPUT   : char* gameTitle : The game's title.
     */
-    void KON_Init(int resX, int resY, char* gameTitle);
+    void KON_InitEngine(int resX, int resY, char* gameTitle);
 
     /*
         SUMMARY : Finalise the current frame and displays it in the game's window.

@@ -37,12 +37,12 @@ static void KON_FreeSoundDevice() {
     #endif
 }
 
-static void KON_CreateSoundDevice() {
+static void KON_InitSoundDevice() {
     #ifdef GEKKO
 
     #else
         if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-            KON_SystemMsg("(KON_CreateSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
+            KON_SystemMsg("(KON_InitSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
         }
     #endif
 }
@@ -54,25 +54,22 @@ void KON_Exit(){
     KON_FreeDisplayDevice();
 }
 
-void KON_Init(int resX, int resY, char* gameTitle){
-
-    #ifdef GEKKO
-
-    #else
+void KON_InitEngine(int resX, int resY, char* gameTitle) {
+    #ifndef GEKKO
         /* SDL Init */
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
-            KON_SystemMsg("(KON_Init) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
+            KON_SystemMsg("(KON_InitEngine) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
         }
     #endif
 
     KON_InitDisplayDevice(resX, resY, gameTitle);
-    KON_CreateSoundDevice();
+    KON_InitSoundDevice();
     KON_InitInputs();
 }
 
-void KON_SystemEvents(){
+void KON_SystemEvents() {
 
-    switch (Koneko.iDevice.event.type){
+    switch (Koneko.iDevice.event.type) {
         case KON_GAME_EXIT:
             /* TODO: make it nicer */
             exit(0);

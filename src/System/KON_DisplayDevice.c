@@ -38,6 +38,11 @@
 	#include <limits.h>
 #elif defined(GEKKO)
     #include <limits.h>
+    #include <malloc.h>
+    #include <string.h>
+
+    #include <ogcsys.h>
+    #include <gccore.h>
 #else
 	#include <linux/limits.h>
 #endif
@@ -46,9 +51,19 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#ifdef GEKKO
+    #define DEFAULT_FIFO_SIZE (256*1024)
+    typedef void* FIFO;
+    typedef void* XFB;
+#endif
+
 typedef struct {
     #ifdef GEKKO
         /* TODO: implement libogc */
+        XFB xfb[2];
+        bool currentXfb;
+        GXRModeObj* rmode;
+        FIFO fifo;
     #else
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
@@ -85,6 +100,105 @@ extern struct BITMAP_SystemFont { int width; int height; int depth; int pitch; u
 static bool drawFPS;
 static BitmapFont* font;
 
+#ifdef GEKKO
+    static void KON_GCInitOrthCamera() {
+        Mtx44 orthographicMatrix;
+
+        // 640x480 lines
+        guOrtho(orthographicMatrix, 0, 479, 0, 639, 0, 300);
+        GX_LoadProjectionMtx(orthographicMatrix, GX_ORTHOGRAPHIC);
+    }
+
+    static void KON_GCInitVAT() {
+        GX_ClearVtxDesc();
+
+        GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
+        GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+        GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+
+        GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XY, GX_F32, 0);
+        GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
+        GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGB8, 0);
+
+        GX_SetNumChans(1);
+        GX_SetNumTexGens(1);
+
+        GX_SetTevOp(GX_TEVSTAGE0, GX_REPLACE);
+        GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+        GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
+
+        GX_InvVtxCache();
+        GX_InvalidateTexAll();
+    }
+
+    static void KON_GCInitGX() {
+        GXColor white = {255, 255, 255, 0xff};
+        uint32_t xfbHeight;
+
+        GX_Init(vi.fifo, DEFAULT_FIFO_SIZE);
+        GX_SetCopyClear(white, GX_MAX_Z24);
+
+        GX_SetViewport(0, 0, vi.rmode->fbWidth, vi.rmode->efbHeight, 0, 1);
+        xfbHeight = GX_SetDispCopyYScale(GX_GetYScaleFactor(vi.rmode->efbHeight, vi.rmode->xfbHeight));
+
+        GX_SetScissor(0, 0, vi.rmode->fbWidth, vi.rmode->efbHeight);
+
+        GX_SetDispCopySrc(0, 0, vi.rmode->fbWidth, vi.rmode->efbHeight);
+        GX_SetDispCopyDst(vi.rmode->fbWidth, xfbHeight);
+
+        GX_SetCopyFilter(vi.rmode->aa, vi.rmode->sample_pattern, GX_TRUE, vi.rmode->vfilter);
+        GX_SetFieldMode(vi.rmode->field_rendering, ((vi.rmode->viHeight == 2 * vi.rmode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
+
+        if (vi.rmode->aa)
+            GX_SetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);
+        else
+            GX_SetPixelFmt(GX_PF_RGB8_Z24, GX_ZC_LINEAR);
+
+        GX_SetCullMode(GX_CULL_NONE);
+        GX_CopyDisp(vi.xfb[vi.currentXfb], GX_TRUE);
+        GX_SetDispCopyGamma(GX_GM_1_0);
+
+        KON_GCInitVAT();
+        KON_GCInitOrthCamera();
+    }
+
+    static void KON_GCInit() {
+        VIDEO_Init();
+        vi.rmode = VIDEO_GetPreferredMode(NULL);
+        vi.fifo = memalign(32, DEFAULT_FIFO_SIZE);
+        memset(vi.fifo, 0, DEFAULT_FIFO_SIZE);
+
+        vi.xfb[0] = SYS_AllocateFramebuffer(vi.rmode);
+        vi.xfb[1] = SYS_AllocateFramebuffer(vi.rmode);
+
+        VIDEO_Configure(vi.rmode);
+        VIDEO_SetNextFramebuffer(vi.xfb[vi.currentXfb]);
+        VIDEO_SetBlack(false);
+        VIDEO_Flush();
+
+        /* Wait for vi to be ready */
+        VIDEO_WaitVSync();
+        if (vi.rmode->viTVMode & VI_NON_INTERLACE)
+            VIDEO_WaitVSync();
+        vi.currentXfb ^= 1;
+
+        KON_GCInitGX();
+    }
+
+    static void KON_GCRender() {
+        GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+        GX_SetColorUpdate(GX_TRUE);
+        GX_CopyDisp(vi.xfb[vi.currentXfb], GX_TRUE);
+
+        GX_DrawDone();
+
+        VIDEO_SetNextFramebuffer(vi.xfb[vi.currentXfb]);
+        VIDEO_Flush();
+        VIDEO_WaitVSync();
+        vi.currentXfb ^= 1;
+    }
+#endif
+
 void KON_SetDrawFPS(bool value) {
     drawFPS = value;
 }
@@ -108,7 +222,7 @@ static void DrawBordingFrame() {
     #endif
 }
 
-void KON_FinishFrame(){
+void KON_FinishFrame() {
     uint32_t ticks;
     DrawBordingFrame();
 
@@ -116,7 +230,7 @@ void KON_FinishFrame(){
         KON_DrawFPS();
 
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        KON_GCRender();
     #else
         SDL_RenderPresent(vi.Renderer);
     #endif
@@ -217,10 +331,8 @@ void KON_SetVSync(bool value) {
 void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
     BITMAP SystemFontBitmap;
 
-    initBitmap(SystemFontBitmap, SystemFont);
-
     #ifdef GEKKO
-        /* TODO: libogc init */
+        KON_GCInit();
     #else
         vi.Screen = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
         vi.Renderer = SDL_CreateRenderer(vi.Screen , -1, 0);
@@ -229,6 +341,8 @@ void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
     #endif
 
     KON_SetVSync(true);
+
+    initBitmap(SystemFontBitmap, SystemFont);
 
     /* FIXME : TEMPORARY: Makes the start resulution de default internal resolution */
     Koneko.dDevice.InternalResolution.x = resX;
