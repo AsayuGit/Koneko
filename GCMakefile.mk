@@ -5,15 +5,20 @@ endif
 include $(DEVKITPPC)/gamecube_rules
 
 export CFLAGS := -g -O2 -Wall $(MACHDEP) $(INCLUDE)
-export LDFLAGS := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
-LIBS := -logc -lm
+ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
 
+.PHONY: package copy
 # Main target
-$(OUT).dol: $(OUT).elf
-$(OUT).elf: $(OBJ)
+package: $(dir $(OUT))/lib$(PROJECT).a copy
+	@echo "gamecube build ready!"
+
+$(dir $(OUT))/lib$(PROJECT).a: $(OBJ)
 
 %.tpl.o: %.tpl
 	$(bin2o)
+
+copy: $(HEADERS)
+	@cp -u $^ $(ARCHIVE) $(dir $(OUT))/$(LIB)/
 
 -include $(DEPSDIR)/*.d

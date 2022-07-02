@@ -3,17 +3,17 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include "CommunFunctions.h"
+#include "KON_FileSystem.h"
 
 #ifdef _XBOX
-	#define _POSIX_
-	#include <limits.h>
-	#include <string.h>
+    #define _POSIX_
+    #include <limits.h>
 #elif defined GEKKO
     #include <limits.h>
-    #include <libgen.h>
+    #include <libgen.h> /* dirname() */
 #else
-	#include <linux/limits.h>
-	#include <libgen.h> /* dirname() */
+    #include <linux/limits.h>
+    #include <libgen.h> /* dirname() */
 #endif
 
 #include <stdlib.h>
@@ -29,11 +29,7 @@ Map* KON_LoadMap(char* mapFilePath) {
     KON_Renderers layerRenderer;
     unsigned int nbOfLayers, i;
     char filepath[PATH_MAX];
-	#ifdef _XBOX
-		char MapRoot[PATH_MAX];
-	#else
-		char* MapRoot = NULL;
-	#endif
+    char* MapRoot = NULL;
 
     /* Init */
     MapFile = fopen(mapFilePath, "r");
@@ -46,16 +42,7 @@ Map* KON_LoadMap(char* mapFilePath) {
     astrcpy(&LoadedMap->MapFilePath, mapFilePath);
     strcpy(filepath, mapFilePath);
 
-#ifdef _XBOX
-	{
-		char MapPath[PATH_MAX];
-		
-		_splitpath(filepath, MapRoot, MapPath, NULL, NULL);
-		strcat(MapRoot, MapPath);
-	}
-#else
-    MapRoot = dirname(filepath);
-#endif
+    MapRoot = KON_DirName(filepath);
 
     fscanf(MapFile, "%u", &nbOfLayers);
     LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));

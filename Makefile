@@ -12,7 +12,8 @@ ifneq ($(BUILD),$(notdir $(CURDIR)))
 export CFLAGS = -g -O2 -Wall
 export LDFLAGS = -g
 
-export OUT := $(CURDIR)/Koneko
+export PROJECT := Koneko
+export OUT := $(CURDIR)/$(PROJECT)
 export DEPSDIR := $(CURDIR)/$(BUILD)
 
 SRC_PATH := $(call rwildcard,$(SOURCES),%.c)
@@ -40,7 +41,7 @@ $(BUILD) $(LIB):
 
 clean:
 	@echo clean ...
-	@rm -rf $(BUILD) $(LIB) $(OUT) $(OUT).dol $(OUT).elf $(OUT).a
+	@rm -rf $(BUILD) $(LIB) $(OUT) $(OUT).dol $(OUT).elf lib$(PROJECT).a
 
 rebuild: clean linux
 
