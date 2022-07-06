@@ -30,10 +30,10 @@ Map* KON_LoadMap(char* mapFilePath) {
     unsigned int nbOfLayers, i;
     char filepath[PATH_MAX];
     char* MapRoot = NULL;
-
+    
     /* Init */
     MapFile = fopen(mapFilePath, "r");
-    if (!MapFile){
+    if (!MapFile) {
         KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, mapFilePath);
         return NULL;
     }

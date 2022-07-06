@@ -186,6 +186,12 @@
     int          KON_SetRenderTarget(KON_Surface* surface);
 
     /*
+        SUMMARY : Sets the render draw color (background)
+        INPUT   : uint8_t r, g, b, a : red, green, blue, alpha color values
+    */
+    void KON_SetRenderColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+
+    /*
         SUMMARY : Draws parts of a surface scaled to a new size and destination.
         INPUT   : KON_Surface* surface : The surface to draw.
         INPUT   : KON_Rect* rect       : The part to take out of the source surface.
@@ -249,4 +255,8 @@
     */
     void         KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags);
 
+    /*
+        SUMMARY : Present a screen of text for debug purpuses.
+    */
+    void KON_ShowDebugScreen();
 #endif

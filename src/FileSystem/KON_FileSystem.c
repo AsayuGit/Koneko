@@ -6,6 +6,7 @@
     #define PATH_SEPARATOR '\\'
 #elif defined(GEKKO)
     #include <limits.h>
+    #include <fat.h>
     #define PATH_SEPARATOR '/'
 #else
 	#include <linux/limits.h>
@@ -14,6 +15,12 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+void KON_InitFileSystem() {
+    #ifdef GEKKO
+        fatInitDefault();
+    #endif
+}
 
 char* KON_DirName(char *path) {
     #ifdef _XBOX

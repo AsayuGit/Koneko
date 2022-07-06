@@ -59,20 +59,23 @@ static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
 
 int KON_StartScene(SceneDescriptor* scenePointer) {
     SceneHandle* scene;
+    int i = 0;
 
-#ifndef GEKKO
+    KON_ShowDebugScreen();
+
+    #ifdef NOPE
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
+    
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
-    if (!scene->WorldMap){
+    if (!scene->WorldMap)
         KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
-    }
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(scene);
-#endif
 
+    #endif
     /* Main Loop */
     while (true) {
-#ifndef GEKKO
+        #ifdef NOPE
         /* Events Loop */
         while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
@@ -96,10 +99,10 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
 
         /* Draws the loaded map and its content on scren */
         KON_DrawMap(scene->WorldMap);
-
         if (scenePointer->OnDisplay)
             scenePointer->OnDisplay(scene);
-#endif
+
+        #endif
         KON_FinishFrame(); /* Update the main window */
     }
 

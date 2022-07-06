@@ -25,6 +25,7 @@
 #include "KeyMap.h"
 #include "Graphics.h"
 #include "KON_TextRendering.h"
+#include "KON_FileSystem.h"
 
 #include "API.h"
 #include <stdlib.h>
@@ -65,6 +66,7 @@ void KON_InitEngine(int resX, int resY, char* gameTitle) {
     KON_InitDisplayDevice(resX, resY, gameTitle);
     KON_InitSoundDevice();
     KON_InitInputs();
+    KON_InitFileSystem();
 }
 
 void KON_SystemEvents() {

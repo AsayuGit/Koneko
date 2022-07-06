@@ -64,6 +64,7 @@ typedef struct {
         bool currentXfb;
         GXRModeObj* rmode;
         FIFO fifo;
+        bool pageflip;
     #else
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
@@ -78,7 +79,8 @@ typedef struct {
 /* Abstract Koneko's surfaces from their implementations */
 struct KON_Surface {
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        TPLFile surfaceFile;
+        GXTexObj surface;
     #else
         SDL_Texture* surface;
     #endif
@@ -168,8 +170,10 @@ static BitmapFont* font;
         vi.fifo = memalign(32, DEFAULT_FIFO_SIZE);
         memset(vi.fifo, 0, DEFAULT_FIFO_SIZE);
 
-        vi.xfb[0] = SYS_AllocateFramebuffer(vi.rmode);
-        vi.xfb[1] = SYS_AllocateFramebuffer(vi.rmode);
+        vi.xfb[0] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(vi.rmode));
+        vi.xfb[1] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(vi.rmode));
+        CON_Init(vi.xfb[0], 20, 20, vi.rmode->fbWidth, vi.rmode->xfbHeight, vi.rmode->fbWidth * VI_DISPLAY_PIX_SZ);
+        vi.pageflip = true;
 
         VIDEO_Configure(vi.rmode);
         VIDEO_SetNextFramebuffer(vi.xfb[vi.currentXfb]);
@@ -183,19 +187,26 @@ static BitmapFont* font;
         vi.currentXfb ^= 1;
 
         KON_GCInitGX();
+        printf("\x1b[10;0H");
     }
 
     static void KON_GCRender() {
-        GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-        GX_SetColorUpdate(GX_TRUE);
-        GX_CopyDisp(vi.xfb[vi.currentXfb], GX_TRUE);
+        if (vi.pageflip) {
+            GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+            GX_SetColorUpdate(GX_TRUE);
+            GX_CopyDisp(vi.xfb[vi.currentXfb], GX_TRUE);
 
-        GX_DrawDone();
+            GX_DrawDone();
 
-        VIDEO_SetNextFramebuffer(vi.xfb[vi.currentXfb]);
-        VIDEO_Flush();
-        VIDEO_WaitVSync();
-        vi.currentXfb ^= 1;
+            VIDEO_SetNextFramebuffer(vi.xfb[vi.currentXfb]);
+            VIDEO_Flush();
+            VIDEO_WaitVSync();
+            vi.currentXfb ^= 1;
+        } else {
+            VIDEO_SetNextFramebuffer(vi.xfb[0]);
+            VIDEO_Flush();
+            VIDEO_WaitVSync();
+        }
     }
 #endif
 
@@ -314,7 +325,7 @@ void KON_UpdateRenderRect() {
 
 void KON_ClearScreen() {
     #ifdef GEKKO
-
+        /* TODO: Implement libogc */
     #else
         SDL_RenderClear(vi.Renderer);
     #endif
@@ -467,35 +478,35 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged)
 */
 static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
-    KON_CPUSurface* loadedCPUSurface = NULL;
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        uint16_t surfaceWidth, surfaceHeight;
     #else
+        KON_CPUSurface* loadedCPUSurface = NULL;
         SDL_Texture* loadedGPUSurface;
+        int surfaceWidth, surfaceHeight;
     #endif
+
     KON_Surface* loadedSurface;
-    Vector2i surfaceSize;
     
     if (!FilePath) {
         KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
         return NULL;
     }
-    if (!(loadedCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags)))
-        return NULL;
 
-    if (SURFACE_KEYED & flags)
-        KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
+    #ifndef GEKKO
+        if (!(loadedCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags)))
+            return NULL;
 
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
+        if (SURFACE_KEYED & flags)
+            KON_KeyCpuSurface(loadedCPUSurface, ColorKey);
+
         if (!(loadedGPUSurface = SDL_CreateTextureFromSurface(vi.Renderer, loadedCPUSurface->surface))) {
             KON_SystemMsg("(KON_LoadRawSurface) Couldn't upload surface to GPU : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
             return NULL;
         }
-    #endif
-    KON_FreeCPUSurface(loadedCPUSurface);
 
+        KON_FreeCPUSurface(loadedCPUSurface);
+    #endif
 
     if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
         KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_WARNING, 0);
@@ -503,13 +514,16 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     }
 
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        TPL_OpenTPLFromFile(&loadedSurface->surfaceFile, FilePath);
+        TPL_GetTexture(&loadedSurface->surfaceFile, 0, &loadedSurface->surface);
+        TPL_GetTextureInfo(&loadedSurface->surfaceFile, 0, NULL, &surfaceWidth, &surfaceHeight);
     #else
-        SDL_QueryTexture(loadedGPUSurface, NULL, NULL, &surfaceSize.x, &surfaceSize.y);
+        SDL_QueryTexture(loadedGPUSurface, NULL, NULL, &surfaceWidth, &surfaceHeight);
         loadedSurface->surface = loadedGPUSurface;
     #endif
 
-    KON_VectToVect(loadedSurface->size, surfaceSize);
+    loadedSurface->size.x = surfaceWidth;
+    loadedSurface->size.y = surfaceHeight;
 
     return loadedSurface;
 }
@@ -641,6 +655,16 @@ int KON_SetRenderTarget(KON_Surface* surface) {
     #endif
 }
 
+void KON_SetRenderColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    #ifdef GEKKO
+        GXColor renderColor = {r, g, b, a};
+
+        GX_SetCopyClear(renderColor, GX_MAX_Z24);
+    #else
+        /* TODO: Implement SDL */
+    #endif
+}
+
 /* API level draw */
 static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
 
@@ -648,7 +672,35 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
     flags = 0;
 
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        GX_LoadTexObj(&surface->surface, GX_TEXMAP0);
+        
+        GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
+        {
+            /* TODO: Implement sourcerect for gx */
+
+            // Top Left
+            GX_Position2f32(dstrect->x, dstrect->y);
+            GX_Color3f32(1.0f,1.0f,1.0f);
+            GX_TexCoord2f32(0, 0);
+
+            // Top Right
+            GX_Position2f32(dstrect->x + 100, dstrect->y);
+            GX_Color3f32(1.0f,1.0f,1.0f);
+            GX_TexCoord2f32(1, 0);
+
+            // Bottom Right
+            GX_Position2f32(dstrect->x + 100, dstrect->y + 100);
+            GX_Color3f32(1.0f,1.0f,1.0f);
+            GX_TexCoord2f32(1, 1);
+
+            // Bottom Left
+            GX_Position2f32(dstrect->x, dstrect->y + 100);
+            GX_Color3f32(1.0f,1.0f,1.0f);
+            GX_TexCoord2f32(0, 1);
+        }
+        GX_End();
+
+        KON_SetRenderColor(0, 0, 255, 255);
         return 0;
     #else
         return SDL_RenderCopyEx(vi.Renderer, surface->surface, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
@@ -697,4 +749,15 @@ void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
     
     KON_CatVectToRect(dest, (*pos), surface->size);
     KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
+}
+
+void KON_ShowDebugScreen() {
+    #ifdef GEKKO
+        if (!vi.pageflip)
+            return;
+        KON_GCRender();
+        vi.pageflip = false;
+    #else
+        /* TODO: Implement SDL */
+    #endif
 }
