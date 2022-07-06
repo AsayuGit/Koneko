@@ -57,7 +57,6 @@ Map* KON_LoadMap(char* mapFilePath) {
         switch (layerRenderer){
             case RENDER_2D_BITMAP:
                 currentLayer->texture.gpuSide = (void*)KON_LoadBitMap(MapFile, MapRoot);
-
                 KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
                 KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
                 break;

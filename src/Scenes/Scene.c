@@ -61,17 +61,13 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
     SceneHandle* scene;
     int i = 0;
 
-    KON_ShowDebugScreen();
-
-    #ifdef NOPE
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
-    
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
     if (!scene->WorldMap)
         KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
+    #ifdef NOPE
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(scene);
-
     #endif
     /* Main Loop */
     while (true) {
@@ -97,8 +93,11 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         /* Music loop deamon */
         KON_MusicDaemon();
 
+        #endif
         /* Draws the loaded map and its content on scren */
         KON_DrawMap(scene->WorldMap);
+
+        #ifdef NOPE
         if (scenePointer->OnDisplay)
             scenePointer->OnDisplay(scene);
 

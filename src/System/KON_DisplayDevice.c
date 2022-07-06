@@ -79,7 +79,6 @@ typedef struct {
 /* Abstract Koneko's surfaces from their implementations */
 struct KON_Surface {
     #ifdef GEKKO
-        TPLFile surfaceFile;
         GXTexObj surface;
     #else
         SDL_Texture* surface;
@@ -465,7 +464,7 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     if (SURFACE_KEYED & flags)
         KON_KeyCpuSurface(loadingCPUSurface, ColorKey);
 
-    KON_SystemMsg("(KON_LoadRawCPUSurface) Loaded NEW CPU Surface from memory", MESSAGE_LOG, 0);
+    KON_SystemMsg("(KON_LoadCPUSurfaceFromMem) Loaded NEW CPU Surface from memory", MESSAGE_LOG, 0);
 
     return loadingCPUSurface;
 }
@@ -475,25 +474,32 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     INPUT   : char* FilePath        : Path to the surface to load
     INPUT   : uint32_t ColorKey     : The surface's color to key out
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
-    OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged)
+    OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged) null on error
 */
 static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
     #ifdef GEKKO
         uint16_t surfaceWidth, surfaceHeight;
+        TPLFile surfaceTplFile;
+        GXTexObj loadedGPUSurface;
     #else
         KON_CPUSurface* loadedCPUSurface = NULL;
         SDL_Texture* loadedGPUSurface;
         int surfaceWidth, surfaceHeight;
     #endif
 
-    KON_Surface* loadedSurface;
-    
-    if (!FilePath) {
-        KON_SystemMsg("(KON_LoadRawSurface) Incorrect Parameters", MESSAGE_WARNING, 0);
-        return NULL;
-    }
+    KON_Surface* loadedSurface = NULL;
 
-    #ifndef GEKKO
+    #ifdef GEKKO
+        if (TPL_OpenTPLFromFile(&surfaceTplFile, FilePath) != 1) {
+            KON_SystemMsg("(KON_LoadSurface) TPL_OpenTPLFromFile couldn't open :\n", MESSAGE_ERROR, FilePath);
+            return NULL;
+        }
+
+        if (TPL_GetTexture(&surfaceTplFile, 0, &loadedGPUSurface) != 0) {
+            KON_SystemMsg("(KON_LoadSurface) TPL_GetTexture couldn't retreive texture\n", MESSAGE_ERROR, 0);
+            return NULL;
+        }
+    #else
         if (!(loadedCPUSurface = KON_LoadRawCPUSurface(FilePath, ColorKey, flags)))
             return NULL;
 
@@ -509,19 +515,17 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     #endif
 
     if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
-        KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_WARNING, 0);
+        KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_ERROR, 0);
         return NULL;
     }
 
     #ifdef GEKKO
-        TPL_OpenTPLFromFile(&loadedSurface->surfaceFile, FilePath);
-        TPL_GetTexture(&loadedSurface->surfaceFile, 0, &loadedSurface->surface);
-        TPL_GetTextureInfo(&loadedSurface->surfaceFile, 0, NULL, &surfaceWidth, &surfaceHeight);
+        TPL_GetTextureInfo(&surfaceTplFile, 0, NULL, &surfaceWidth, &surfaceHeight);
     #else
         SDL_QueryTexture(loadedGPUSurface, NULL, NULL, &surfaceWidth, &surfaceHeight);
-        loadedSurface->surface = loadedGPUSurface;
     #endif
 
+    loadedSurface->surface = loadedGPUSurface;
     loadedSurface->size.x = surfaceWidth;
     loadedSurface->size.y = surfaceHeight;
 
@@ -537,7 +541,10 @@ KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
     }
 
     if (!(loadedSurface = (KON_Surface*)KON_GetManagedRessource(filePath, RESSOURCE_GPU_SURFACE))) {
-        loadedSurface = KON_LoadRawSurface(filePath, colorKey, flags);
+        if (!(loadedSurface = KON_LoadRawSurface(filePath, colorKey, flags))) {
+            KON_SystemMsg("(KON_LoadSurface) Failed to load : ", MESSAGE_ERROR, 1, filePath);
+            return NULL;
+        }
         KON_AddManagedRessource(filePath, RESSOURCE_GPU_SURFACE, loadedSurface);
         KON_SystemMsg("(KON_LoadSurface) Loaded NEW GPU Surface : ", MESSAGE_LOG, 1, filePath);
         return loadedSurface;
@@ -699,8 +706,6 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
             GX_TexCoord2f32(0, 1);
         }
         GX_End();
-
-        KON_SetRenderColor(0, 0, 255, 255);
         return 0;
     #else
         return SDL_RenderCopyEx(vi.Renderer, surface->surface, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
