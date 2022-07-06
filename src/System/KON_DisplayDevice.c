@@ -80,10 +80,13 @@ typedef struct {
 struct KON_Surface {
     #ifdef GEKKO
         GXTexObj surface;
+        uint16_t width;
+        uint16_t height;
     #else
         SDL_Texture* surface;
+        unsigned int width;
+        unsigned int height;
     #endif
-    Vector2d size;
 };
 
 struct KON_CPUSurface {
@@ -292,32 +295,36 @@ void KON_RotateCamera(double angle) {
 }
 
 void KON_UpdateRenderRect() {
-    int ScreenWidth, ScreenHeight; /* Signed because SDL said so :c */
 
     #ifdef GEKKO
-        /* TODO: implement libogc */
+        Koneko.dDevice.IRScalar = 1;
+        vi.RenderRect.w = vi.ScreenResolution.x = 640;
+        vi.RenderRect.h = vi.ScreenResolution.y = 480;
+        vi.RenderRect.x = vi.RenderRect.y = 0;
     #else
+        int ScreenWidth, ScreenHeight; /* Signed because SDL said so :c */
+        
         SDL_GetWindowSize(vi.Screen, &ScreenWidth, &ScreenHeight);
+
+        if (Koneko.dDevice.integerScalling && (ScreenWidth > Koneko.dDevice.InternalResolution.x) && (ScreenHeight > Koneko.dDevice.InternalResolution.y))
+            Koneko.dDevice.IRScalar = MIN(ScreenWidth / Koneko.dDevice.InternalResolution.x, ScreenHeight / Koneko.dDevice.InternalResolution.y);
+        else
+            Koneko.dDevice.IRScalar = MIN((double)ScreenWidth / (double)Koneko.dDevice.InternalResolution.x, (double)ScreenHeight / (double)Koneko.dDevice.InternalResolution.y);
+
+        vi.ScreenResolution.x = ScreenWidth;
+        vi.ScreenResolution.y = ScreenHeight;   
+
+        vi.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
+        vi.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
+
+        vi.RenderRect.x = (int)(vi.ScreenResolution.x - vi.RenderRect.w) >> 1;
+        vi.RenderRect.y = (int)(vi.ScreenResolution.y - vi.RenderRect.h) >> 1;
     #endif
-
-    if (Koneko.dDevice.integerScalling && (ScreenWidth > Koneko.dDevice.InternalResolution.x) && (ScreenHeight > Koneko.dDevice.InternalResolution.y))
-        Koneko.dDevice.IRScalar = MIN(ScreenWidth / Koneko.dDevice.InternalResolution.x, ScreenHeight / Koneko.dDevice.InternalResolution.y);
-    else
-        Koneko.dDevice.IRScalar = MIN((double)ScreenWidth / (double)Koneko.dDevice.InternalResolution.x, (double)ScreenHeight / (double)Koneko.dDevice.InternalResolution.y);
-
-    vi.ScreenResolution.x = ScreenWidth;
-    vi.ScreenResolution.y = ScreenHeight;
-
-    vi.RenderRect.w = (int)(Koneko.dDevice.InternalResolution.x * Koneko.dDevice.IRScalar);
-    vi.RenderRect.h = (int)(Koneko.dDevice.InternalResolution.y * Koneko.dDevice.IRScalar);
-
-    vi.RenderRect.x = (int)(vi.ScreenResolution.x - vi.RenderRect.w) >> 1;
-    vi.RenderRect.y = (int)(vi.ScreenResolution.y - vi.RenderRect.h) >> 1;
 
     vi.OffScreenRender = false;
 
-    KON_InitRect(vi.Frame[0], 0, 0, vi.RenderRect.x, ScreenHeight);                                                    /* Left Frame */
-    KON_InitRect(vi.Frame[1], vi.RenderRect.x + vi.RenderRect.w, 0, vi.RenderRect.x, ScreenHeight);                    /* Right Frame */
+    KON_InitRect(vi.Frame[0], 0, 0, vi.RenderRect.x, vi.ScreenResolution.y);                                                    /* Left Frame */
+    KON_InitRect(vi.Frame[1], vi.RenderRect.x + vi.RenderRect.w, 0, vi.RenderRect.x, vi.ScreenResolution.y);                    /* Right Frame */
     KON_InitRect(vi.Frame[2], vi.RenderRect.x, 0, vi.RenderRect.w, vi.RenderRect.y);                                   /* Top Frame */
     KON_InitRect(vi.Frame[3], vi.RenderRect.x, vi.RenderRect.y + vi.RenderRect.h, vi.RenderRect.w, vi.RenderRect.y);   /* Bottom Frame */
 }
@@ -520,14 +527,17 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     }
 
     #ifdef GEKKO
-        TPL_GetTextureInfo(&surfaceTplFile, 0, NULL, &surfaceWidth, &surfaceHeight);
+        if (TPL_GetTextureInfo(&surfaceTplFile, 0, NULL, &surfaceWidth, &surfaceHeight)) {
+            KON_SystemMsg("(KON_LoadSurface) Couldn't get texture size", MESSAGE_ERROR, 0);
+            return NULL;
+        }
     #else
         SDL_QueryTexture(loadedGPUSurface, NULL, NULL, &surfaceWidth, &surfaceHeight);
     #endif
 
     loadedSurface->surface = loadedGPUSurface;
-    loadedSurface->size.x = surfaceWidth;
-    loadedSurface->size.y = surfaceHeight;
+    loadedSurface->width = surfaceWidth;
+    loadedSurface->height = surfaceHeight;
 
     return loadedSurface;
 }
@@ -648,8 +658,10 @@ KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
 }
 
 void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
-    if (surface && size)
-        *size = surface->size;
+    if (surface && size) {
+        size->x = surface->width;
+        size->y = surface->height;
+    }
 }
 
 int KON_SetRenderTarget(KON_Surface* surface) {
@@ -674,7 +686,6 @@ void KON_SetRenderColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 /* API level draw */
 static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
-
     /* TODO: Flags decoding */
     flags = 0;
 
@@ -691,17 +702,17 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
             GX_TexCoord2f32(0, 0);
 
             // Top Right
-            GX_Position2f32(dstrect->x + 100, dstrect->y);
+            GX_Position2f32(dstrect->x + dstrect->w, dstrect->y);
             GX_Color3f32(1.0f,1.0f,1.0f);
             GX_TexCoord2f32(1, 0);
 
             // Bottom Right
-            GX_Position2f32(dstrect->x + 100, dstrect->y + 100);
+            GX_Position2f32(dstrect->x + dstrect->w, dstrect->y + dstrect->h);
             GX_Color3f32(1.0f,1.0f,1.0f);
             GX_TexCoord2f32(1, 1);
 
             // Bottom Left
-            GX_Position2f32(dstrect->x, dstrect->y + 100);
+            GX_Position2f32(dstrect->x, dstrect->y + dstrect->h);
             GX_Color3f32(1.0f,1.0f,1.0f);
             GX_TexCoord2f32(0, 1);
         }
@@ -741,7 +752,10 @@ void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect*
 void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
     KON_Rect dest;
 
-    KON_CatVectToRect(dest, (*pos), surface->size);
+    dest.x = pos->x;
+    dest.y = pos->y;
+    dest.w = surface->width;
+    dest.y = surface->height;
     KON_DrawScaledSurfaceRectEx(surface, rect, &dest, flags);
 }
 
@@ -752,7 +766,11 @@ void KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags fla
 void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
     KON_Rect dest;
     
-    KON_CatVectToRect(dest, (*pos), surface->size);
+    dest.x = pos->x;
+    dest.y = pos->y;
+    dest.w = surface->width;
+    dest.h = surface->height;
+
     KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
 }
 
