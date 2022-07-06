@@ -65,10 +65,8 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
     if (!scene->WorldMap)
         KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
-    #ifdef NOPE
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(scene);
-    #endif
     /* Main Loop */
     while (true) {
         #ifdef NOPE

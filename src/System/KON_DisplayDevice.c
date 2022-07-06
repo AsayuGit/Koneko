@@ -498,7 +498,7 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
 
     #ifdef GEKKO
         if (TPL_OpenTPLFromFile(&surfaceTplFile, FilePath) != 1) {
-            KON_SystemMsg("(KON_LoadSurface) TPL_OpenTPLFromFile couldn't open :\n", MESSAGE_ERROR, FilePath);
+            KON_SystemMsg("(KON_LoadSurface) TPL_OpenTPLFromFile couldn't open :\n", MESSAGE_ERROR, 1, FilePath);
             return NULL;
         }
 
@@ -641,7 +641,6 @@ unsigned int KON_GetCPUSurfacePitch(KON_CPUSurface* surface) {
 
 /* Unmanaged */
 KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
-    int w, h;
     KON_Surface* newSurface = (KON_Surface*)malloc(sizeof(KON_Surface));
 
     #ifdef GEKKO
@@ -650,8 +649,7 @@ KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
         if (!(newSurface->surface = SDL_CreateTextureFromSurface(vi.Renderer, cpuSurface->surface)))
             return NULL;
 
-        SDL_QueryTexture(newSurface->surface, NULL, NULL, &w, &h);
-        newSurface->size = KON_InitVector2d(w, h);
+        SDL_QueryTexture(newSurface->surface, NULL, NULL, &newSurface->width, &newSurface->height);
     #endif
 
     return newSurface;
@@ -690,6 +688,20 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
     flags = 0;
 
     #ifdef GEKKO
+        f32 normSrectX, normSrectY, normSrectW, normSrectH;
+
+        if (!srcrect) {
+            normSrectX = 0;
+            normSrectY = 0;
+            normSrectW = 1;
+            normSrectH = 1;
+        } else {
+            normSrectX = (f32)srcrect->x / (f32)surface->width;
+            normSrectY = (f32)srcrect->y / (f32)surface->height;
+            normSrectW = ((f32)srcrect->x + (f32)srcrect->w) / (f32)surface->width;
+            normSrectH = ((f32)srcrect->y + (f32)srcrect->h) / (f32)surface->height;
+        }
+
         GX_LoadTexObj(&surface->surface, GX_TEXMAP0);
         
         GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
@@ -699,22 +711,22 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
             // Top Left
             GX_Position2f32(dstrect->x, dstrect->y);
             GX_Color3f32(1.0f,1.0f,1.0f);
-            GX_TexCoord2f32(0, 0);
+            GX_TexCoord2f32(normSrectX, normSrectY);
 
             // Top Right
             GX_Position2f32(dstrect->x + dstrect->w, dstrect->y);
             GX_Color3f32(1.0f,1.0f,1.0f);
-            GX_TexCoord2f32(1, 0);
+            GX_TexCoord2f32(normSrectW, normSrectY);
 
             // Bottom Right
             GX_Position2f32(dstrect->x + dstrect->w, dstrect->y + dstrect->h);
             GX_Color3f32(1.0f,1.0f,1.0f);
-            GX_TexCoord2f32(1, 1);
+            GX_TexCoord2f32(normSrectW, normSrectH);
 
             // Bottom Left
             GX_Position2f32(dstrect->x, dstrect->y + dstrect->h);
             GX_Color3f32(1.0f,1.0f,1.0f);
-            GX_TexCoord2f32(0, 1);
+            GX_TexCoord2f32(normSrectX, normSrectH);
         }
         GX_End();
         return 0;
