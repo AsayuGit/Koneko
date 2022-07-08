@@ -21,12 +21,16 @@
 
 #include "XML.h"
 
+#include "Log.h"
 #include <stdlib.h>
 
-xmlDoc* KON_LoadXml(char* filePath){
-    #ifdef GEKKO
-        return NULL;
-    #else
+#ifdef MXML
+    #include <stdio.h>
+#endif
+
+/* spriteNode = xmlDocGetRootElement(spriteXml); rootNode */
+KON_XMLDocument* KON_LoadXml(char* filePath) {
+    #ifdef LIBXML2
         xmlKeepBlanksDefault(0); /* Ignore white space */
 
         #ifdef _XBOX
@@ -34,16 +38,125 @@ xmlDoc* KON_LoadXml(char* filePath){
         #else
             return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
         #endif
+    #elif defined(MXML)
+        /* TODO: Implement MXML */
+        FILE* xmlFile;
+        KON_XMLNode* xmlTree;
+        KON_XMLDocument* loadedNode;
+
+        if (!(xmlFile = fopen(filePath, "r"))) {
+            KON_SystemMsg("(KON_LoadXml) Couldn't open XML file: ", MESSAGE_ERROR, 1, filePath);
+            return NULL;
+        }
+
+        if (!(xmlTree = mxmlLoadFile(NULL, xmlFile, MXML_OPAQUE_CALLBACK))) {
+            KON_SystemMsg("(KON_LoadXml) Couldn't parse XML file: ", MESSAGE_ERROR, 1, filePath);
+            fclose(xmlFile);
+            return NULL;
+        }
+        fclose(xmlFile);
+
+        if (!(loadedNode = (KON_XMLDocument*)malloc(sizeof(KON_XMLDocument)))) {
+            KON_SystemMsg("(KON_LoadXml) Couldn't alocate more memory", MESSAGE_ERROR, 0);
+            return NULL;
+        }
+
+        loadedNode->document = xmlTree;
+        loadedNode->rootNode = KON_GetXMLNodeChild(xmlTree);
+
+        return loadedNode;
     #endif
 }
 
-void KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect) {
-    #ifndef GEKKO
+void KON_FreeXML(KON_XMLDocument* document) {
+    #ifdef LIBXML2
+        xmlFreeDoc(spriteXml);
+    #elif defined(MXML)
+        mxmlDelete(document->document);
+    #endif
+
+    free(document);
+}
+
+const char* KON_GetXMLNodeName(KON_XMLNode* node) {
+    #ifdef LIBXML2
+        return node->name
+    #elif defined(MXML)
+        return mxmlGetElement(node);
+    #endif
+}
+
+bool KON_CompareXMLNodeName(KON_XMLNode* node, char* name) {
+    #ifdef LIBXML2
+        return (strcmp(node->name, name) == 0);
+    #elif defined(MXML)
+        return (strcmp(mxmlGetElement(node), name) == 0);
+    #endif
+}
+
+KON_XMLNode* KON_GetXMLNodeChild(KON_XMLNode* node) {
+    #ifdef LIBXML2
+        return node->children;
+    #elif defined(MXML)
+        return KON_GetXMLNodeSibling(mxmlGetFirstChild(node));
+    #endif
+}
+
+KON_XMLNode* KON_GetXMLNodeSibling(KON_XMLNode* node) {
+    #ifdef LIBXML2
+        return node->next;
+    #elif defined(MXML)
+        KON_XMLNode* sibling = node;
+        mxml_type_t nodeType;
+
+        do {
+            sibling = mxmlGetNextSibling(sibling);
+            if ((nodeType = mxmlGetType(sibling)) == MXML_IGNORE)
+                return NULL;
+        } while (nodeType != MXML_ELEMENT);
+
+        return sibling;
+    #endif
+}
+
+const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute) {
+    #ifdef LIBXML2
+        return (char*)xmlGetProp(node, (xmlChar*)attribute);
+    #elif defined(MXML)
+        return mxmlElementGetAttr(node, attribute);
+    #endif
+}
+
+unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node) {
+    #ifdef LIBXML2
+        return xmlChildElementCount(node);
+    #elif defined(MXML)
+        unsigned int nbOfChilds = 0;
+
+        node = mxmlGetFirstChild(node);
+        while (node) {
+            nbOfChilds++;
+            node = mxmlGetNextSibling(node);
+        }
+
+        return nbOfChilds;
+    #endif
+}
+
+void KON_LoadRectFromXmlNode(KON_XMLNode* node, KON_Rect* rect) {
+    #ifdef LIBXML2
         KON_InitRect((*rect),
             atoi((char*)xmlGetProp(node, (xmlChar*)"X")),
             atoi((char*)xmlGetProp(node, (xmlChar*)"Y")),
             atoi((char*)xmlGetProp(node, (xmlChar*)"W")),
             atoi((char*)xmlGetProp(node, (xmlChar*)"H"))
+        );
+    #elif defined(MXML)
+        KON_InitRect((*rect),
+            atoi(mxmlElementGetAttr(node, "X")),
+            atoi(mxmlElementGetAttr(node, "Y")),
+            atoi(mxmlElementGetAttr(node, "W")),
+            atoi(mxmlElementGetAttr(node, "H"))
         );
     #endif
 }

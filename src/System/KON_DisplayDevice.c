@@ -417,7 +417,7 @@ void KON_KeyCpuSurface(KON_CPUSurface* SurfaceToKey, uint32_t ColorKey) {
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
     OUTPUT  : KON_CPUSurface*          : Pointer to the loaded surface (UnMannaged)
 */
-static KON_CPUSurface* KON_LoadRawCPUSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+static KON_CPUSurface* KON_LoadRawCPUSurface(const char* FilePath, uint32_t ColorKey, uint8_t flags) {
     KON_CPUSurface* loadingCPUSurface = NULL;
 
     if (!FilePath)
@@ -483,7 +483,7 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     INPUT   : uint8_t flags         : Wether the surface should be keyed or alpha
     OUTPUT  : KON_Surface*          : Pointer to the loaded surface (UnMannaged) null on error
 */
-static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_t flags) {
+static KON_Surface* KON_LoadRawSurface(const char* FilePath, uint32_t ColorKey, uint8_t flags) {
     #ifdef GEKKO
         uint16_t surfaceWidth, surfaceHeight;
         TPLFile surfaceTplFile;
@@ -542,7 +542,7 @@ static KON_Surface* KON_LoadRawSurface(char* FilePath, uint32_t ColorKey, uint8_
     return loadedSurface;
 }
 
-KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags) {
+KON_Surface* KON_LoadSurface(const char* filePath, uint32_t colorKey, uint8_t flags) {
     KON_Surface* loadedSurface;
 
     if (!filePath) {
@@ -649,7 +649,7 @@ KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface) {
         if (!(newSurface->surface = SDL_CreateTextureFromSurface(vi.Renderer, cpuSurface->surface)))
             return NULL;
 
-        SDL_QueryTexture(newSurface->surface, NULL, NULL, &newSurface->width, &newSurface->height);
+        SDL_QueryTexture(newSurface->surface, NULL, NULL, (int*)&newSurface->width, (int*)&newSurface->height);
     #endif
 
     return newSurface;

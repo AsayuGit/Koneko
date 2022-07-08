@@ -22,31 +22,95 @@
 #ifndef _XML_H
 #define _XML_H
 
+    #include "Platform.h"
     #include "Rect.h"
 
-    #ifdef _XBOX
-        #include <libxml/parser.h>
-    #elif defined(GEKKO)
-        /* Temporary until we port libxml2 over to the gamecube */
-        typedef void xmlDoc;
-        typedef void xmlNode;
-        typedef void xmlChar;
-    #else
-        #include <libxml2/libxml/parser.h>
+    #ifdef LIBXML2
+        #ifdef _XBOX
+            #include <libxml/parser.h>
+        #else
+            #include <libxml2/libxml/parser.h>
+        #endif
+
+        typedef xmlNode KON_XMLNode;
+    #elif defined(MXML)
+        #include <mxml.h>
+
+        typedef mxml_node_t KON_XMLNode;
     #endif
+
+    typedef struct {
+        #ifdef LIBXML2
+            xmlDoc* document;
+            KON_XMLNode* rootNode;
+        #elif defined(MXML)
+            KON_XMLNode* document;
+            KON_XMLNode* rootNode;
+        #endif
+    } KON_XMLDocument;
 
     /*
         SUMMARY : Loads a XML file from disk.
-        INPUT   : char* filePath : The path to the xml file to load.
-        OUTPUT  : xmlDoc*        : The newly loaded xml file (or NULL on error).
+        INPUT   : char* filePath     : The path to the xml file to load.
+        OUTPUT  : KON_XMLDocument*   : The newly loaded xml file (or NULL on error).
     */
-    xmlDoc* KON_LoadXml(char* filePath);
-    
+    KON_XMLDocument* KON_LoadXml(char* filePath);
+
+    /*
+        SUMMARY : Free a previously loaded xml document.
+        INPUT   : KON_XMLDocument* document : The xml document to free.
+    */
+    void KON_FreeXML(KON_XMLDocument* document);
+
+    /*
+        SUMMARY : Returns a node's name.
+        INPUT   : KON_XMLNode* node : The xml node to get the name of.
+        OUTPUT  : char*             : The xml node's name.
+    */
+    const char* KON_GetXMLNodeName(KON_XMLNode* node);
+
+    /*
+        SUMMARY : Test if the node's name is the passed name.
+        INPUT   : KON_XMLNode* node : The xml node to test the name of. 
+        INPUT   : char* name        : The name to test the node with.
+        OUTPUT  : bool              : The test result.
+    */
+    bool KON_CompareXMLNodeName(KON_XMLNode* node, char* name);
+
+    /*
+        SUMMARY : Returns a node's child node.
+        INPUT   : KON_XMLNode* node : Parent node.
+        OUTPUT  : KON_XMLNode*      : Child node.
+    */
+    KON_XMLNode* KON_GetXMLNodeChild(KON_XMLNode* node);
+
+    /*
+        SUMMARY : Returns a node's next sibling.
+        INPUT   : KON_XMLNode* node : Curent node.
+        OUTPUT  : KON_XMLNode*      : Next node.
+    */
+    KON_XMLNode* KON_GetXMLNodeSibling(KON_XMLNode* node);
+
+    /*
+        SUMMARY : Returns an attribute from an xml node.
+        INPUT   : KON_XMLNode* node : The xml node.
+        INPUT   : char* attribute   : The attribute to look for.
+        OUTPUT  : char *            : The attribute value.
+    */
+    const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute);
+
+    /*
+        SUMMARY : Returns the number of child of an xml node.
+        INPUT   : KON_XMLNode* node : The node to count the child of.
+        OUTPUT  : unsigned int      : The number of child of the node.
+    */
+    unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node);
+
     /*
         SUMMARY : Parses a KON_Rect from a xml node.
-        INPUT   : xmlNode* node  : The node where the rect should be parsed from.
-        OUTPUT  : KON_Rect* rect : The resulting parsed rect.
+        INPUT   : KON_XMLDocument* node : The node where the rect should be parsed from.
+        OUTPUT  : KON_Rect* rect        : The resulting parsed rect.
     */
-    void    KON_LoadRectFromXmlNode(xmlNode* node, KON_Rect* rect);
+    void    KON_LoadRectFromXmlNode(KON_XMLNode* node, KON_Rect* rect);
 
 #endif

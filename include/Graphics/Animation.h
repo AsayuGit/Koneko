@@ -37,7 +37,7 @@
         INPUT   : xmlNode* array : The node the animation should be parsed from.
         OUTPUT  : Animation*     : The parsed animation.
     */
-    Animation* KON_ParseAnimation(xmlNode* array);
+    Animation* KON_ParseAnimation(KON_XMLNode* array);
 
     /*
         SUMMARY : Frees a previously loaded animation.

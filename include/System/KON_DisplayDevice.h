@@ -106,7 +106,7 @@
         INPUT   : uint8_t flags     : Flags ruling how to load the surface.
         OUTPUT  : KON_Surface*      : The newly loaded surface (or NULL if error).
     */
-    KON_Surface* KON_LoadSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+    KON_Surface* KON_LoadSurface(const char* filePath, uint32_t colorKey, uint8_t flags);
 
     /*
         SUMMARY : Loads a CPU-Side Surface from disk.

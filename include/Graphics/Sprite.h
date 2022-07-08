@@ -56,7 +56,7 @@
         INPUT   : uint32_t colorKey        : The colorKey the texture should use if keyed.
         INPUT   : uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not).
     */
-    void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
+    void KON_LoadSprite(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
 
     /*
         SUMMARY : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags.
@@ -65,7 +65,7 @@
         INPUT   : KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from.
         INPUT   : KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at.
     */
-    void KON_LoadSpriteAlpha(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination);
+    void KON_LoadSpriteAlpha(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination);
 
     /*
         SUMMARY : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags.
@@ -74,7 +74,7 @@
         INPUT   : KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from.
         INPUT   : KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at.
     */
-    void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
+    void KON_LoadSpriteKeyed(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
 
     /*
         SUMMARY : Loads a sprite from a xml property file.

@@ -23,6 +23,7 @@
 #define _KONEKO_H
 
     #include "System.h"
+    #include "Platform.h"
 
     /*
         The Koneko Engine's handle.

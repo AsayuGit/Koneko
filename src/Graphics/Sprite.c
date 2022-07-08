@@ -30,7 +30,7 @@
 /* defines an empty sprite */
 static const Sprite emptySprite;
 
-void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+void KON_LoadSprite(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
     Vector2d spriteSize;
     
     if (!sprite)
@@ -51,59 +51,63 @@ void KON_LoadSprite(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect
     sprite->isVisible = true;
 }
 
-void KON_LoadSpriteAlpha(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination) {
+void KON_LoadSpriteAlpha(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination) {
     KON_LoadSprite(sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
 }
 
-void KON_LoadSpriteKeyed(Sprite* sprite, char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
+void KON_LoadSpriteKeyed(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
     KON_LoadSprite(sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
 }
 
 void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
-    #ifndef GEKKO
-    xmlDoc* spriteXml;
-    xmlNode *spriteNode, *property;
+    KON_XMLDocument* spriteXml;
+    KON_XMLNode* property;
     uint32_t colorKey;
-    char* spritePath, *Buffer;
+    const char* spritePath, *colorKeyBuffer;
     bool sourceDestDefined = false;
 
-    if (!sprite || !spriteXmlPath)
+    if (!sprite || !spriteXmlPath) {
+        KON_SystemMsg("(KON_LoadSpriteFromXml) Invalid parameters", MESSAGE_WARNING, 0);
         return;
+    }
 
     *sprite = emptySprite;
+    if (!(spriteXml = KON_LoadXml(spriteXmlPath))) { /* Load the xml file in memory */
+        KON_SystemMsg("(KON_LoadSpriteFromXml) Can't load xml file:", MESSAGE_WARNING, 1, spriteXmlPath);
+        return;
+    }
 
-    spriteXml = KON_LoadXml(spriteXmlPath); /* Load the xml file in memory */
-    spriteNode = xmlDocGetRootElement(spriteXml); /* root node */
-
-    if ((spritePath = (char*)xmlGetProp(spriteNode, (xmlChar*)"texture"))){
-        if ((Buffer = (char*)xmlGetProp(spriteNode, (xmlChar*)"colorKey"))){
-            sscanf(Buffer, "%x", &colorKey);
+    if ((spritePath = KON_GetXMLAttribute(spriteXml->rootNode, "texture"))){
+        if ((colorKeyBuffer = KON_GetXMLAttribute(spriteXml->rootNode, "colorKey"))){
+            sscanf(colorKeyBuffer, "%x", &colorKey);
             KON_LoadSpriteKeyed(sprite, spritePath, NULL, NULL, colorKey);
         } else {
             KON_LoadSpriteAlpha(sprite, spritePath, NULL, NULL);
         }
+    } else {
+        KON_SystemMsg("(KON_LoadSpriteFromXml) Invalid xml sprite file:", MESSAGE_WARNING, 1, spriteXmlPath);
+        return;
     }
 
     /* Parsing */
-    property = spriteNode->children;
-    while (property){
-        if (strcmp((char*)property->name, "src") == 0) {
+    property = KON_GetXMLNodeChild(spriteXml->rootNode);
+    while (property) {
+        if (KON_CompareXMLNodeName(property, "src")) {
             sourceDestDefined = true;
             KON_LoadRectFromXmlNode(property, &sprite->source);
-        } else if (strcmp((char*)property->name, "dst") == 0) {
+        } else if (KON_CompareXMLNodeName(property, "dst")) {
             sourceDestDefined = true;
             KON_LoadRectFromXmlNode(property, &sprite->destination);
-        } else if (strcmp((char*)property->name, "animArray") == 0) {
+        } else if (KON_CompareXMLNodeName(property, "animArray")) {
             sprite->animationArray = KON_ParseAnimation(property);
         }
-        property = property->next;
+        property = KON_GetXMLNodeSibling(property);
     }
 
     if (sprite->animationArray && !sourceDestDefined)
         KON_PlaySpriteAnimation(sprite, 0, true, true);
 
-    xmlFreeDoc(spriteXml);
-    #endif
+    KON_FreeXML(spriteXml);
 }
 
 void KON_FreeSprite(Sprite* sprite) {

@@ -4,9 +4,9 @@ endif
 
 include $(DEVKITPPC)/gamecube_rules
 
-export INCLUDE += -I$(LIBOGC_INC)
+export INCLUDE += -I$(LIBOGC_INC) -I$(DEVKITPRO)/portlibs/ppc/include
 
-export CFLAGS := -g -O2 -Wall $(MACHDEP) $(INCLUDE)
+export CFLAGS += $(MACHDEP) $(INCLUDE)
 
 ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
 

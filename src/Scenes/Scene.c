@@ -59,7 +59,6 @@ static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
 
 int KON_StartScene(SceneDescriptor* scenePointer) {
     SceneHandle* scene;
-    int i = 0;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
@@ -69,16 +68,19 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         scenePointer->OnSetup(scene);
     /* Main Loop */
     while (true) {
-        #ifdef NOPE
         /* Events Loop */
         while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
+            
+            #ifdef NOPE
             if (scenePointer->OnEvent)
                 scenePointer->OnEvent(scene);
 
             KON_MapEvents(scene);
+            #endif
         }
-
+        
+        #ifdef NOPE
         if (scenePointer->OnFrame)
             scenePointer->OnFrame(scene);
 
@@ -88,10 +90,10 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         /* Process entitiy collisions */
         KON_ProcessEntityCollisions(scene);
 
+        #endif
         /* Music loop deamon */
         KON_MusicDaemon();
 
-        #endif
         /* Draws the loaded map and its content on scren */
         KON_DrawMap(scene->WorldMap);
 

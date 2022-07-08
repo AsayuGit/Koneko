@@ -43,14 +43,14 @@
         INPUT   : char* name  : The name the new ressource should be reffered as
         INPUT   : void* data : Pointer to the ressource to be managed
     */
-    void  KON_AddManagedRessource(char* name, RessourceType type, void* data);
+    void  KON_AddManagedRessource(const char* name, RessourceType type, void* data);
     
     /*
         SUMMARY : Finds a managed ressource in the ressource bank, return NULL if not found.
         INPUT   : char* name : Ressource to search for
         OUTPUT  : void*     : Ressource pointer or NULL
     */
-    void* KON_GetManagedRessource(char* name, RessourceType type);
+    void* KON_GetManagedRessource(const char* name, RessourceType type);
     
     /*
         SUMMARY : Free a managed ressource's container and return the contained ressource if

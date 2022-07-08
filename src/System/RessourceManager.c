@@ -33,7 +33,7 @@ static LinkedList* loadedRessources = NULL;
     INPUT   : char* name   : Ressource to search for
     OUTPUT  : LinkedList* : Ressource node or null
 */
-static LinkedList* KON_SearchRessourceNodeByID(char* name, RessourceType type) {
+static LinkedList* KON_SearchRessourceNodeByID(const char* name, RessourceType type) {
     LinkedList* ressourceIterator = loadedRessources;
     ManagedRessource* ressource;
 
@@ -64,7 +64,7 @@ static LinkedList* KON_SearchRessourceNodeByRef(void* ressource) {
     return NULL;
 }
 
-void KON_AddManagedRessource(char* name, RessourceType type, void* data) {
+void KON_AddManagedRessource(const char* name, RessourceType type, void* data) {
     ManagedRessource* managedRessource = (ManagedRessource*)malloc(sizeof(ManagedRessource));
 
     managedRessource->name = (char*)malloc(sizeof(char) * (strlen(name) + 1));
@@ -75,7 +75,7 @@ void KON_AddManagedRessource(char* name, RessourceType type, void* data) {
     KON_AppendRefToLinkedList(&loadedRessources, managedRessource);
 }
 
-void* KON_GetManagedRessource(char* name, RessourceType type) {
+void* KON_GetManagedRessource(const char* name, RessourceType type) {
     LinkedList* managedRessource = NULL;
     
     if (!(managedRessource = KON_SearchRessourceNodeByID(name, type)))
