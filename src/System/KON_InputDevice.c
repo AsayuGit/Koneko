@@ -167,6 +167,10 @@ static void KON_FreeUserActions() {
     KON_FreeLinkedList(&userActions);
 }
 
+static bool KON_PollKeyBinding(KON_Keyboard binding) {
+    return (Koneko.iDevice.KeyStates[binding]);
+}
+
 bool KON_PollAction(unsigned int actionID) {
     LinkedList** action = NULL;
     LinkedList* bindingList = NULL;
