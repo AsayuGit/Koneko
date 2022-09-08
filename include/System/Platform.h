@@ -9,7 +9,8 @@
         #define MXML
     #else
         #define SDL2
-        #define LIBXML2
+        /*#define LIBXML2*/
+        #define MXML
     #endif
 
 #endif

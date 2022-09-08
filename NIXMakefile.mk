@@ -2,10 +2,9 @@ CC := gcc
 LD := gcc
 AR := ar
 
-#CFLAGS += -DLIBXML2
-#LIBS = $$(sdl2-config --cflags) $$(xml2-config --cflags)
+##LIBS = $$(sdl2-config --cflags) $$(xml2-config --cflags)
 
-CFLAGS += -DMXML
+#CFLAGS += -DMXML
 LIBS = $$(sdl2-config --cflags) $$(pkg-config --cflags mxml)
 
 ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
