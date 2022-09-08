@@ -9,7 +9,7 @@ TEXTURES := Assets
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
-export CFLAGS = -g -O2 -Wall
+export CFLAGS = -g -Wall
 export LDFLAGS = -g
 
 export PROJECT := Koneko

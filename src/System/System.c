@@ -72,16 +72,16 @@ void KON_InitEngine(int resX, int resY, char* gameTitle) {
 void KON_SystemEvents() {
 
     switch (Koneko.iDevice.event.type) {
-        case KON_GAME_EXIT:
+        case KON_EVENT_GAME_EXIT:
             /* TODO: make it nicer */
             exit(0);
             break;
 
-        case KON_RESOLUTION_CHANGED:
+        case KON_EVENT_RESOLUTION_CHANGED:
             KON_UpdateRenderRect();
             break;
 
-        case KON_KEY_DOWN:
+        case KON_EVENT_KEY_DOWN:
 
             /*
 

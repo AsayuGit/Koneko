@@ -71,18 +71,16 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         /* Events Loop */
         while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
-            
-            #ifdef NOPE
+
             if (scenePointer->OnEvent)
                 scenePointer->OnEvent(scene);
 
             KON_MapEvents(scene);
-            #endif
         }
         
-        #ifdef NOPE
         if (scenePointer->OnFrame)
             scenePointer->OnFrame(scene);
+        #ifdef NOPE
 
         /* Entity OnFrame Logic */
         KON_MapFrame(scene);

@@ -5,11 +5,11 @@
 
     enum {
         KON_EVENT_NONE,
-        KON_GAME_EXIT,
-        KON_RESOLUTION_CHANGED,
-        KON_KEY_DOWN,
-        KON_KEY_UP,
-        KON_USER_ACTION
+        KON_EVENT_GAME_EXIT,
+        KON_EVENT_RESOLUTION_CHANGED,
+        KON_EVENT_KEY_DOWN,
+        KON_EVENT_KEY_UP,
+        KON_EVENT_ACTION
     };
 
     struct KON_EventResChanged {
@@ -24,7 +24,7 @@
         int8_t Y;
     };
 
-    struct KON_EventUserAction {
+    struct KON_EventAction {
         uint8_t type;
         unsigned int actionID;
         int8_t X;
@@ -35,7 +35,7 @@
         uint8_t type;
         struct KON_EventResChanged res;
         struct KON_EventJoystick joy;
-        struct KON_EventUserAction action;
+        struct KON_EventAction action;
     } KON_Event;
 
 #endif
