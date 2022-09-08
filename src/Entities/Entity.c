@@ -167,8 +167,15 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     LinkedList* nodePointer = NULL;
     MapLayer* mapLayer;
 
-    if (!(newInstance = KON_LoadEntity(spawnedEntity)))
+    if (layerID >= scene->WorldMap->nbOfLayers) {
+        KON_SystemMsg("(KON_SpawnEntity) Invalid LayerID!", MESSAGE_WARNING, 0);
         return NULL;
+    }
+
+    if (!(newInstance = KON_LoadEntity(spawnedEntity))) {
+        KON_SystemMsg("(KON_SpawnEntity) Couldn't load Entity!", MESSAGE_WARNING, 0);
+        return NULL;
+    }
 
     /* Load the new entity in memory */
     newInstance->pos.x = X;
