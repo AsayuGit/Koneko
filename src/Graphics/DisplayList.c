@@ -39,7 +39,7 @@ void KON_FreeDisplayList(DisplayList* listToFree) {
 
 void KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int priority) {
     register LinkedList** listPointer = list;
-    register DisplayListItem* item;
+    DisplayListItem item;
 
     while (*listPointer) { /* Search for the right priority */
         if (((DisplayListItem*)((*listPointer)->data))->priority >= priority)
@@ -47,10 +47,9 @@ void KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int prior
         listPointer = &(*listPointer)->next;
     }
 
-    item = (DisplayListItem*)calloc(1, sizeof(DisplayListItem));
-    item->priority = priority;
-    item->sprite = sprite;
-    KON_InsertRefIntoLinkedList(listPointer, item);
+    item.priority = priority;
+    item.sprite = sprite;
+    KON_InsertIntoLinkedList(listPointer, &item, sizeof(DisplayListItem));
 }
 
 void KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite) {

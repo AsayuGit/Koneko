@@ -65,14 +65,14 @@ static LinkedList* KON_SearchRessourceNodeByRef(void* ressource) {
 }
 
 void KON_AddManagedRessource(const char* name, RessourceType type, void* data) {
-    ManagedRessource* managedRessource = (ManagedRessource*)malloc(sizeof(ManagedRessource));
+    ManagedRessource managedRessource;
 
-    managedRessource->name = (char*)malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(managedRessource->name, name);
-    managedRessource->type = type;
-    managedRessource->nbOfReferences = 1;
-    managedRessource->ressource = data;
-    KON_AppendRefToLinkedList(&loadedRessources, managedRessource);
+    managedRessource.name = (char*)malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(managedRessource.name, name);
+    managedRessource.type = type;
+    managedRessource.nbOfReferences = 1;
+    managedRessource.ressource = data;
+    KON_AppendToLinkedList(&loadedRessources, &managedRessource, sizeof(ManagedRessource));
 }
 
 void* KON_GetManagedRessource(const char* name, RessourceType type) {

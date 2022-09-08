@@ -39,19 +39,6 @@ LinkedList* KON_AppendToLinkedList(LinkedList** List, void* newData, size_t data
     return *List;
 }
 
-LinkedList* KON_AppendRefToLinkedList(LinkedList** List, void* newDataRef) {
-    if (!List)
-        return NULL;
-
-    while (*List)
-        List = &(*List)->next;
-    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
-    (*List)->data = newDataRef;
-    (*List)->next = NULL;
-
-    return *List;
-}
-
 LinkedList* KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t dataSize) {
     LinkedList* oldElement;
 
@@ -64,20 +51,6 @@ LinkedList* KON_InsertIntoLinkedList(LinkedList** List, void* newData, size_t da
     (*List)->next = oldElement;
 
     memcpy((*List)->data, newData, dataSize);
-
-    return *List;
-}
-
-LinkedList* KON_InsertRefIntoLinkedList(LinkedList** List, void* newDataRef) {
-    LinkedList* oldElement;
-
-    if (!List)
-        return NULL;
-
-    oldElement = *List;
-    (*List) = (LinkedList*)malloc(sizeof(LinkedList));
-    (*List)->data = newDataRef;
-    (*List)->next = oldElement;
 
     return *List;
 }
@@ -126,6 +99,7 @@ void KON_FreeLinkedList(LinkedList** List){
             if ((*List)->next){
                 KON_FreeLinkedList(&(*List)->next);
             }
+            free((*List)->data);
             free(*List);
             *List = NULL;
         }
