@@ -3,6 +3,7 @@
 #include "Koneko.h"
 #include "API.h"
 #include "LinkedList.h"
+#include "KON_FIFO.h"
 
 #include <stdbool.h>
 
@@ -11,7 +12,6 @@ typedef struct {
 
     #else
         /* Events */
-        SDL_Event event;
         bool EventEnabled;
 
         /* Joystick */
@@ -30,9 +30,12 @@ typedef struct {
     LinkedList* bindings;
 } KON_Action;
 
+const static KON_Event eventNone;
 static KON_InputInterface inInt;
 static LinkedList* userActions = NULL;
-static bool dupEvent = false;
+static KON_FIFO* eventQueue = NULL;
+
+#define KON_EVENT_QUEUE_SIZE 256
 
 void KON_InitInputs() {
     #ifdef GEKKO
@@ -46,6 +49,8 @@ void KON_InitInputs() {
         inInt.JoyEnabled = (bool)(inInt.Joy1);
         inInt.EventEnabled = true;
     #endif
+
+    eventQueue = KON_CreateFIFO(KON_EVENT_QUEUE_SIZE, sizeof(KON_Event));
 }
 
 void KON_FreeInputDevice() {
@@ -70,26 +75,28 @@ static LinkedList** KON_SearchActionNode(unsigned int actionID) {
     return NULL;
 }
 
-bool KON_PollEvent() {
+void KON_PumpEvent() {
+    KON_Event newEvent;
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
-        while (true) {
-            if (!dupEvent && !SDL_PollEvent(&inInt.event))
-                break;
+        SDL_Event sdlEvent;
 
-            switch (inInt.event.type) {
+        while (SDL_PollEvent(&sdlEvent)) {
+            newEvent = eventNone;
+
+            switch (sdlEvent.type) {
                 case SDL_WINDOWEVENT:
-                    switch (inInt.event.window.event) {
+                    switch (sdlEvent.window.event) {
                         case SDL_WINDOWEVENT_CLOSE:
-                            Koneko.iDevice.event.type = KON_EVENT_GAME_EXIT;
-                            return true;
+                            newEvent.type = KON_EVENT_GAME_EXIT;
+                            break;
 
                         case SDL_WINDOWEVENT_RESIZED:
-                            Koneko.iDevice.event.type = KON_EVENT_RESOLUTION_CHANGED;
-                            Koneko.iDevice.event.res.width = inInt.event.window.data1;
-                            Koneko.iDevice.event.res.height = inInt.event.window.data2;
-                            return true;
+                            newEvent.type = KON_EVENT_RESOLUTION_CHANGED;
+                            newEvent.res.width = sdlEvent.window.data1;
+                            newEvent.res.height = sdlEvent.window.data2;
+                            break;
                     }
                     break;
 
@@ -114,13 +121,19 @@ bool KON_PollEvent() {
                 */
                 
                 default:
-                    break;
+                    continue;
             }
-        }
 
-        Koneko.iDevice.event.type = KON_EVENT_NONE;
-        return false;
+            KON_FIFOPush(eventQueue, &newEvent);
+        }
     #endif
+}
+
+bool KON_PollEvent() {
+    if (KON_FIFOPop(eventQueue, &Koneko.iDevice.event))
+        return true;
+    Koneko.iDevice.event = eventNone;
+    return false;
 }
 
 void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned int binding) {
@@ -198,4 +211,8 @@ bool KON_PollAction(unsigned int actionID) {
     }
 
     return false;
+}
+
+static void KON_PollAllActions() {
+    
 }

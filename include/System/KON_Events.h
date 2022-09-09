@@ -4,7 +4,7 @@
     #include <stdint.h>
 
     enum {
-        KON_EVENT_NONE,
+        KON_EVENT_NONE = 0,
         KON_EVENT_GAME_EXIT,
         KON_EVENT_RESOLUTION_CHANGED,
         KON_EVENT_KEY_DOWN,

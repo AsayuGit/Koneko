@@ -69,6 +69,7 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
     /* Main Loop */
     while (true) {
         /* Events Loop */
+        KON_PumpEvent();
         while (KON_PollEvent()){
             KON_SystemEvents(); /* Engine events */
 

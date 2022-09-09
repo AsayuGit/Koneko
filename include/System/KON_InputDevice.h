@@ -53,6 +53,11 @@
     /*
         TODO: Doc
     */
+    void KON_PumpEvent();
+
+    /*
+        TODO: Doc
+    */
     bool KON_PollEvent();
 
     /* UserActions */
