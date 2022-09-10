@@ -81,11 +81,11 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         
         if (scenePointer->OnFrame)
             scenePointer->OnFrame(scene);
-        #ifdef NOPE
 
         /* Entity OnFrame Logic */
         KON_MapFrame(scene);
 
+        #ifdef NOPE
         /* Process entitiy collisions */
         KON_ProcessEntityCollisions(scene);
 

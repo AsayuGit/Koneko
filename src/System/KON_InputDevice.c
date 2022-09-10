@@ -75,6 +75,53 @@ static LinkedList** KON_SearchActionNode(unsigned int actionID) {
     return NULL;
 }
 
+static bool KON_PollKeyBinding(KON_Keyboard binding) {
+    return (Koneko.iDevice.KeyStates[binding]);
+}
+
+static bool KON_PollActionRef(KON_Action* action) {
+    LinkedList* bindingList = NULL;
+    register KON_Binding* binding = NULL;
+
+    bindingList = action->bindings;
+
+    while (bindingList) {
+        binding = (KON_Binding*)bindingList->data;
+
+        switch (binding->type) {
+            case KON_BINDING_KEY:
+                if (KON_PollKeyBinding(binding->binding))
+                    return true;
+                break;
+            default:
+                break;
+        }
+
+        bindingList = bindingList->next;
+    }
+
+    return false;
+}
+
+static void KON_PollAllActions() {
+    LinkedList* actionList = userActions;
+    KON_Action* action = NULL;
+    KON_Event newEvent;
+
+    while (actionList) {
+        action = (KON_Action*)actionList->data;
+        newEvent = eventNone;
+
+        if (KON_PollActionRef(action)) {
+            newEvent.type = KON_EVENT_ACTION;
+            newEvent.action.actionID = action->actionID;
+            KON_FIFOPush(eventQueue, &newEvent);
+        }
+        
+        actionList = actionList->next;
+    }
+}
+
 void KON_PumpEvent() {
     KON_Event newEvent;
     #ifdef GEKKO
@@ -127,6 +174,8 @@ void KON_PumpEvent() {
             KON_FIFOPush(eventQueue, &newEvent);
         }
     #endif
+
+    KON_PollAllActions();
 }
 
 bool KON_PollEvent() {
@@ -180,39 +229,13 @@ static void KON_FreeUserActions() {
     KON_FreeLinkedList(&userActions);
 }
 
-static bool KON_PollKeyBinding(KON_Keyboard binding) {
-    return (Koneko.iDevice.KeyStates[binding]);
-}
-
 bool KON_PollAction(unsigned int actionID) {
     LinkedList** action = NULL;
-    LinkedList* bindingList = NULL;
-    register KON_Binding* binding = NULL;
 
     if (!(action = KON_SearchActionNode(actionID))) {
         KON_SystemMsg("(KON_PollAction) No Such Action", MESSAGE_WARNING, 0);
         return false;
     }
-    bindingList = ((KON_Action*)(*action)->data)->bindings;
 
-    while (bindingList) {
-        binding = (KON_Binding*)bindingList->data;
-
-        switch (binding->type) {
-            case KON_BINDING_KEY:
-                if (KON_PollKeyBinding(binding->binding))
-                    return true;
-                break;
-            default:
-                break;
-        }
-
-        bindingList = bindingList->next;
-    }
-
-    return false;
-}
-
-static void KON_PollAllActions() {
-    
+    return KON_PollActionRef((KON_Action*)(*action)->data);
 }
