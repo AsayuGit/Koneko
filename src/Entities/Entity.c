@@ -42,7 +42,7 @@ EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
     newEntityInstance->descriptor = entityToLoad;
 
     /* Load */
-    KON_LoadSpriteFromXml(&newEntityInstance->entitySprite, entityToLoad->spriteXmlPath);
+    newEntityInstance->entitySprite = KON_LoadSpriteFromXml(entityToLoad->spriteXmlPath);
 
     /* Copy properties over */
     newEntityInstance->properties = entityToLoad->properties;
@@ -65,12 +65,12 @@ void KON_FreeEntity(EntityInstance* entityInstanceToFree){
 /* KON_UpdateEntity() */
 void KON_UpdateEntityPosition(EntityInstance* entity) { /* Display "A" Character on screen  */
     entity->lastPos = entity->pos;
-    entity->entitySprite.spritePosition = entity->pos = KON_GetVectAddition(&entity->pos, &entity->mov);
+    entity->entitySprite->spritePosition = entity->pos = KON_GetVectAddition(&entity->pos, &entity->mov);
     entity->mov = KON_InitVector2d(0, 0);
 }
 
 void KON_PlayEntityAnimation(EntityInstance* entity, unsigned int animationID, bool reset, bool loop){
-    KON_PlaySpriteAnimation(&entity->entitySprite, animationID, reset, loop);
+    KON_PlaySpriteAnimation(entity->entitySprite, animationID, reset, loop);
 }
 
 /*
@@ -192,7 +192,7 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     free(newInstance);
 
     /* Add the entity's sprite to its mapLayer's DisplayList */
-    KON_AddToDisplayList(&mapLayer->displayList, &((EntityInstance*)nodePointer->data)->entitySprite, priority);
+    KON_AddToDisplayList(&mapLayer->displayList, ((EntityInstance*)nodePointer->data)->entitySprite, priority);
 
     return ((EntityInstance*)nodePointer->data);
 }

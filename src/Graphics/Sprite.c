@@ -30,11 +30,14 @@
 /* defines an empty sprite */
 static const Sprite emptySprite;
 
-void KON_LoadSprite(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+Sprite* KON_LoadSprite(const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
+    Sprite* sprite = NULL;
     Vector2d spriteSize;
-    
-    if (!sprite)
-        return;
+
+    if (!(sprite = (Sprite*)calloc(1, sizeof(Sprite)))) {
+        KON_SystemMsg("(KON_LoadSprite) No more memory", MESSAGE_WARNING, 0);
+        return NULL;
+    }
 
     sprite->spriteTexture = KON_LoadSurface(spritePath, colorKey, textureFlags);
     
@@ -49,44 +52,47 @@ void KON_LoadSprite(Sprite* sprite, const char* spritePath, KON_Rect* source, KO
     sprite->destination = (destination) ? *destination : sprite->source;
     sprite->colorKey = colorKey;
     sprite->isVisible = true;
+
+    return sprite;
 }
 
-void KON_LoadSpriteAlpha(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination) {
-    KON_LoadSprite(sprite, spritePath, source, destination, 0x0, SURFACE_ALPHA);
+Sprite* KON_LoadSpriteAlpha(const char* spritePath, KON_Rect* source, KON_Rect* destination) {
+    return KON_LoadSprite(spritePath, source, destination, 0x0, SURFACE_ALPHA);
 }
 
-void KON_LoadSpriteKeyed(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
-    KON_LoadSprite(sprite, spritePath, source, destination, colorKey, SURFACE_KEYED);
+Sprite* KON_LoadSpriteKeyed(const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey) {
+    return KON_LoadSprite(spritePath, source, destination, colorKey, SURFACE_KEYED);
 }
 
-void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
+Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath) {
     KON_XMLDocument* spriteXml;
     KON_XMLNode* property;
     uint32_t colorKey;
+    Sprite* sprite = NULL;
     const char* spritePath, *colorKeyBuffer;
     bool sourceDestDefined = false;
 
-    if (!sprite || !spriteXmlPath) {
+    if (!spriteXmlPath) {
         KON_SystemMsg("(KON_LoadSpriteFromXml) Invalid parameters", MESSAGE_WARNING, 0);
-        return;
+        return NULL;
     }
 
     *sprite = emptySprite;
     if (!(spriteXml = KON_LoadXml(spriteXmlPath))) { /* Load the xml file in memory */
         KON_SystemMsg("(KON_LoadSpriteFromXml) Can't load xml file:", MESSAGE_WARNING, 1, spriteXmlPath);
-        return;
+        return NULL;
     }
 
     if ((spritePath = KON_GetXMLAttribute(spriteXml->rootNode, "texture"))){
         if ((colorKeyBuffer = KON_GetXMLAttribute(spriteXml->rootNode, "colorKey"))){
             sscanf(colorKeyBuffer, "%x", &colorKey);
-            KON_LoadSpriteKeyed(sprite, spritePath, NULL, NULL, colorKey);
+            sprite = KON_LoadSpriteKeyed(spritePath, NULL, NULL, colorKey);
         } else {
-            KON_LoadSpriteAlpha(sprite, spritePath, NULL, NULL);
+            sprite = KON_LoadSpriteAlpha(spritePath, NULL, NULL);
         }
     } else {
         KON_SystemMsg("(KON_LoadSpriteFromXml) Invalid xml sprite file:", MESSAGE_WARNING, 1, spriteXmlPath);
-        return;
+        return NULL;
     }
 
     /* Parsing */
@@ -108,14 +114,16 @@ void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath) {
         KON_PlaySpriteAnimation(sprite, 0, true, true);
 
     KON_FreeXML(spriteXml);
+
+    return sprite;
 }
 
-void KON_FreeSprite(Sprite* sprite) {
+void KON_FreeSprite(Sprite** sprite) {
     if (!sprite) /* Check if sprite's not null */
         return;
 
-    KON_FreeSurface(sprite->spriteTexture);
-    *sprite = emptySprite;
+    KON_FreeSurface((*sprite)->spriteTexture);
+    *sprite = NULL;
 }
 
 void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool reset, bool loop) {

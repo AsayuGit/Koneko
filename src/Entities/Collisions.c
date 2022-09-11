@@ -158,8 +158,8 @@ static void KON_EntityEntityCollisionCheck(SceneHandle* scene) {
                 entityB = (EntityInstance*)nodePointerB->data;
 
                 /* Collision test */
-                KON_RectPlusVect(entityABoundingBox, entityA->entitySprite.boundingBox, entityA->mov);
-                KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite.boundingBox, entityB->mov);
+                KON_RectPlusVect(entityABoundingBox, entityA->entitySprite->boundingBox, entityA->mov);
+                KON_RectPlusVect(entityBBoundingBox, entityB->entitySprite->boundingBox, entityB->mov);
                 if (KON_GetRectRectIntersection(&entityABoundingBox, &entityBBoundingBox, &collisionResult) && entityB->collision.generateCollisionEvents) {
                     
                     if (entityA->properties.isSolid) {

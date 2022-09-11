@@ -455,7 +455,7 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     KON_CPUSurface* loadingCPUSurface = NULL;
 
     if (!(loadingCPUSurface = (KON_CPUSurface*)malloc(sizeof(KON_CPUSurface)))) {
-        KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
+        KON_SystemMsg("(KON_LoadCPUSurfaceFromMem) Couldn't allocate more memory !\n", MESSAGE_ERROR, 0);
         return NULL;
     }
 
@@ -463,7 +463,7 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
         /* TODO: implement libogc */
     #else
         if (!(loadingCPUSurface->surface = SDL_CreateRGBSurfaceWithFormatFrom(bitmap->pixels, bitmap->width, bitmap->height, bitmap->depth, bitmap->pitch, SDL_PIXELFORMAT_RGB24))) {
-            KON_SystemMsg("(KON_LoadRawCPUSurface) Couldn't load memory surface : ", MESSAGE_WARNING, 1, SDL_GetError());
+            KON_SystemMsg("(KON_LoadCPUSurfaceFromMem) Couldn't load memory surface : ", MESSAGE_WARNING, 1, SDL_GetError());
             return NULL;
         }
     #endif

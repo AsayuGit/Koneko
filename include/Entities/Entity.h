@@ -73,7 +73,7 @@
         EntityProperties properties;
 
         /* Visual properties */
-        Sprite entitySprite;
+        Sprite* entitySprite;
         Vector2d pos; /* Absolute position in space */
         Vector2d mov; /* Relative frame-to-frame movement (reset each frame) */
 

@@ -56,7 +56,7 @@
         INPUT   : uint32_t colorKey        : The colorKey the texture should use if keyed.
         INPUT   : uint8_t textureFlags     : Texture parameters (Ex: Alpha or Not).
     */
-    void KON_LoadSprite(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
+    Sprite* KON_LoadSprite(const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags);
 
     /*
         SUMMARY : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags.
@@ -65,7 +65,7 @@
         INPUT   : KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from.
         INPUT   : KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at.
     */
-    void KON_LoadSpriteAlpha(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination);
+    Sprite* KON_LoadSpriteAlpha(const char* spritePath, KON_Rect* source, KON_Rect* destination);
 
     /*
         SUMMARY : Helper function for KON_LoadSprite() if you don't need to mess with the textureFlags.
@@ -74,20 +74,20 @@
         INPUT   : KON_Rect* source       : Pointer to the sub-rect of the source texture the sprite should be displayed from.
         INPUT   : KON_Rect* destination  : Pointer to the destination rect the sprite should be displayed at.
     */
-    void KON_LoadSpriteKeyed(Sprite* sprite, const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
+    Sprite* KON_LoadSpriteKeyed(const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey);
 
     /*
         SUMMARY : Loads a sprite from a xml property file.
         INPUT   : Sprite*                   : Pointer to the newly created sprite.
         INPUT   : char* spriteXmlPath       : Path the sprite should be loaded from.
     */
-    void KON_LoadSpriteFromXml(Sprite* sprite, char* spriteXmlPath);
+    Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath);
 
     /*
         SUMMARY : Free a loaded sprite form memory.
         INPUT   : Sprite** sprite : Pointer to a Sprite loaded in memory.
     */
-    void KON_FreeSprite(Sprite* sprite);
+    void KON_FreeSprite(Sprite** sprite);
 
     /*
         SUMMARY : Starts a new sprite animation.
