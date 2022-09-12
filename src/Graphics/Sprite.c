@@ -27,9 +27,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* defines an empty sprite */
-static const Sprite emptySprite;
-
 Sprite* KON_LoadSprite(const char* spritePath, KON_Rect* source, KON_Rect* destination, uint32_t colorKey, uint8_t textureFlags) {
     Sprite* sprite = NULL;
     Vector2d spriteSize;
@@ -77,7 +74,6 @@ Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath) {
         return NULL;
     }
 
-    *sprite = emptySprite;
     if (!(spriteXml = KON_LoadXml(spriteXmlPath))) { /* Load the xml file in memory */
         KON_SystemMsg("(KON_LoadSpriteFromXml) Can't load xml file:", MESSAGE_WARNING, 1, spriteXmlPath);
         return NULL;
