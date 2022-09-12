@@ -23,7 +23,6 @@
 #define _KON_KEYBOARD_H
 
     /* Values from: https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf */
-
     typedef enum {
         KON_KEYBOARD_A = 0x04,
         KON_KEYBOARD_B,

@@ -3,6 +3,13 @@
 
     #include <stdint.h>
 
+    typedef enum{
+        KON_INPUT_IDLE,
+        KON_INPUT_PRESSED,
+        KON_INPUT_HELD,
+        KON_INPUT_RELEASED
+    } KON_InputState;
+
     enum {
         KON_EVENT_NONE = 0,
         KON_EVENT_GAME_EXIT,
@@ -27,8 +34,7 @@
     struct KON_EventAction {
         uint8_t type;
         unsigned int actionID;
-        int8_t X;
-        int8_t Y;
+        KON_InputState state;
     };
 
     typedef union {

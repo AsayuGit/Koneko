@@ -27,6 +27,7 @@ typedef struct {
 
 typedef struct {
     unsigned int actionID;
+    KON_InputState state;
     LinkedList* bindings;
 } KON_Action;
 
@@ -81,23 +82,57 @@ static bool KON_PollKeyBinding(KON_Keyboard binding) {
 
 static bool KON_PollActionRef(KON_Action* action) {
     LinkedList* bindingList = NULL;
+    bool matchFound = false;
     register KON_Binding* binding = NULL;
 
     bindingList = action->bindings;
 
-    while (bindingList) {
+    while (bindingList && !matchFound) {
         binding = (KON_Binding*)bindingList->data;
 
         switch (binding->type) {
             case KON_BINDING_KEY:
                 if (KON_PollKeyBinding(binding->binding))
-                    return true;
+                    matchFound = true;
                 break;
             default:
                 break;
         }
 
         bindingList = bindingList->next;
+    }
+
+    if (matchFound) {
+        switch (action->state) {
+        case KON_INPUT_IDLE:
+        case KON_INPUT_RELEASED:
+            action->state = KON_INPUT_PRESSED;
+            break;
+
+        case KON_INPUT_PRESSED:
+            action->state = KON_INPUT_HELD;
+            break;
+        
+        case KON_INPUT_HELD:
+            break;
+        }
+        return true;
+    } else {
+        switch (action->state) {
+        case KON_INPUT_IDLE:
+            break;
+
+        case KON_INPUT_RELEASED:
+            action->state = KON_INPUT_IDLE;
+            return true;
+            break;
+
+        case KON_INPUT_HELD:
+        case KON_INPUT_PRESSED:
+            action->state = KON_INPUT_RELEASED;
+            return true;
+            break;
+        }
     }
 
     return false;
@@ -115,6 +150,7 @@ static void KON_PollAllActions() {
         if (KON_PollActionRef(action)) {
             newEvent.type = KON_EVENT_ACTION;
             newEvent.action.actionID = action->actionID;
+            newEvent.action.state = action->state;
             KON_FIFOPush(eventQueue, &newEvent);
         }
         
@@ -190,6 +226,7 @@ void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned in
     KON_Binding newBinding;
 
     newAction.actionID = actionID;
+    newAction.state = KON_INPUT_IDLE;
     newAction.bindings = NULL;
 
     newBinding.type = type;
