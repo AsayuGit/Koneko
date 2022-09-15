@@ -41,15 +41,18 @@ void KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int prior
     register LinkedList** listPointer = list;
     DisplayListItem item;
 
+    item.priority = priority;
+    item.sprite = sprite;
+
     while (*listPointer) { /* Search for the right priority */
-        if (((DisplayListItem*)((*listPointer)->data))->priority >= priority)
-            break;
+        if (((DisplayListItem*)((*listPointer)->data))->priority > priority) {
+            KON_InsertIntoLinkedList(listPointer, &item, sizeof(DisplayListItem));
+            return;
+        }
         listPointer = &(*listPointer)->next;
     }
 
-    item.priority = priority;
-    item.sprite = sprite;
-    KON_InsertIntoLinkedList(listPointer, &item, sizeof(DisplayListItem));
+    KON_AppendToLinkedList(listPointer, &item, sizeof(DisplayListItem));
 }
 
 void KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite) {
