@@ -85,22 +85,18 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         /* Entity OnFrame Logic */
         KON_MapFrame(scene);
 
-        #ifdef NOPE
         /* Process entitiy collisions */
         KON_ProcessEntityCollisions(scene);
 
-        #endif
         /* Music loop deamon */
         KON_MusicDaemon();
 
         /* Draws the loaded map and its content on scren */
         KON_DrawMap(scene->WorldMap);
 
-        #ifdef NOPE
         if (scenePointer->OnDisplay)
             scenePointer->OnDisplay(scene);
 
-        #endif
         KON_FinishFrame(); /* Update the main window */
     }
 

@@ -179,3 +179,10 @@ void KON_DrawSprite(Sprite* sprite) {
     if (sprite->flipY) flags |= DRAW_VERTICAL_FLIP;
     KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, flags);
 }
+
+void KON_DrawSpriteAt(Sprite* sprite, double x, double y) {
+    sprite->spritePosition.x = x;
+    sprite->spritePosition.y = y;
+
+    KON_DrawSprite(sprite);
+}

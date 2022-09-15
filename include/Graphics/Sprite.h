@@ -104,4 +104,11 @@
     */
     void KON_DrawSprite(Sprite* sprite);
 
+    /*
+        SUMMARY : Draws a sprite on screen at a position.
+        INPUT   : Sprite* sprite          : Sprite to draw.
+        INPUT   : double x, y             : Where to draw the sprite at.
+    */
+    void KON_DrawSpriteAt(Sprite* sprite, double x, double y);
+
 #endif
