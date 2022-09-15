@@ -125,10 +125,10 @@
         INPUT   : EntityDescriptor* spawnedEntity : The EntityDescriptor of the entity to be spawned.
         INPUT   : unsigned int layerID            : The layer the new entity should be spawned on.
         INPUT   : unsigned int priority           : The display priority the entity should use amongst its layer.
-        INPUT   : unsigned int X, Y               : The new entity's coordinates.
+        INPUT   : double x, y                     : The new entity's coordinates.
         OUTPUT  : EntityInstance*                 : The spawned EntityInstance (or NULL on error).
     */
-    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, unsigned int X, unsigned int Y);
+    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y);
 
     /*
         SUMMARY : Kills a previously spawned entity instance.

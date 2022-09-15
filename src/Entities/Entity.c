@@ -162,7 +162,7 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     }
 }
 
-EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, unsigned int X, unsigned int Y) {
+EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
     MapLayer* mapLayer;
@@ -178,8 +178,8 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     }
 
     /* Load the new entity in memory */
-    newInstance->pos.x = X;
-    newInstance->pos.y = Y;
+    newInstance->pos.x = x;
+    newInstance->pos.y = y;
     newInstance->collision.generateCollisionEvents = true;
 
     /* The MapLayer to spawn the new entity in */
