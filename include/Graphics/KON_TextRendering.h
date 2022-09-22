@@ -23,10 +23,17 @@
 #define _KON_TextRendering_H
 
 #include "Font.h"
+#include "KON_DisplayDevice.h"
 
-int      gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y);
-Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds);
-Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
+/*
+    SUMMARY: Writes a character from a font to a textbox
+    INPUT  :
+    OUTPUT : 
+*/
+int      KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y);
+
+Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const unsigned int x, const unsigned int y);
+Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce);
 
 
 #endif

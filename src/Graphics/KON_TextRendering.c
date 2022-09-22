@@ -25,7 +25,7 @@
 #include <string.h>
 
 /* FIXME */
-int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
+int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y) {
     /* Declaration */
     KON_Rect DstLetter, SrcLetter;
 
@@ -34,6 +34,7 @@ int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned
         KON_SystemMsg("(gputc) No Font to print with !", MESSAGE_WARNING, 0);
         return 0;
     }
+
     c -= 32; /* We only want the printable characters*/
     
     if (c < 0)
@@ -47,43 +48,27 @@ int gputc(BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned
     SrcLetter = Font->Rects[(int)c];
     SrcLetter.y += (SrcLetter.h + 1) * color;
 
-    /*printf("Font: %d %d %d %d\n", SrcLetter.x, SrcLetter.y, SrcLetter.w, SrcLetter.h);*/
-
-    /* Logic */
-    /*
-    if (Koneko.dDevice.OffScreenRender){
-        KON_DrawScaledSurfaceRect(Font->FontSurface, &SrcLetter, &DstLetter);
-    } else {
-        KON_DrawScaledSurfaceRectEx(Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE);
-    }*/
+    /* We could optimize that when rendering a sentence TODO */
+    if (!KON_SetRenderTarget(target)) {
+        KON_DrawScaledSurfaceRectEx(Font->FontSurface, &SrcLetter, &DstLetter, DRAW_NO_SCALE); /* TO LOOK INTO DrawSurfaceRectEx */
+        KON_SetRenderTarget(NULL);
+    }
 
     return DstLetter.w;
 }
 
 /* Could use the same engine as dialogue for bonds checking */
 /* Or a letter by letter mode */
-Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* Bounds){
+Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const unsigned int x, const unsigned int y) {
     /* Declaration */
-    unsigned int CharID, sizeTmp, DimX, textColor = 0;
+    unsigned int CharID = 0, sizeTmp, DimX = 0, textColor = 0;
     size_t BufferLen = 0;
     char* Buffer;
     Vector2i CharCoords;
-    Vector2i Dimensions;
+    Vector2i Dimensions = {0};
 
-    /* Init */
-    Dimensions.x = 0;
-    Dimensions.y = 0;
-    DimX = 0;
-    if (Bounds) { /* Bounds check */
-        CharCoords.x = Bounds->x;
-        CharCoords.y = Bounds->y;
-    } else {
-        CharCoords.x = 0;
-        CharCoords.y = 0;
-    }
-    CharID = 0;
-
-    /* Logic */
+    CharCoords.x = x;
+    CharCoords.y = y;
 
     if (text[CharID] == '\\') {
         /*printf("ColorChange\n");*/
@@ -99,7 +84,7 @@ Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* 
         if (text[CharID] != '\n'){
             /* FIXME : This isn't coherent anymore */
 
-            sizeTmp = gputc(Font, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
+            sizeTmp = KON_PrintChar(Font, target, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
                 /* sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;*/
             CharCoords.x += sizeTmp;
             DimX += sizeTmp;
@@ -123,6 +108,7 @@ Vector2i gprintf(BitmapFont* Font, char* text, int intCharSpce, const KON_Rect* 
     return Dimensions;
 }
 
-Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
-    return gprintf(Font, text, intCharSpce, NULL); /* dDevice = NULL was used to only get the length without printing anything */
+Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce) {
+    /* TOFIX */
+    return KON_Print(Font, NULL, text, intCharSpce, 0, 0); /* dDevice = NULL was used to only get the length without printing anything */
 }
