@@ -72,12 +72,12 @@ typedef struct {
     KON_Rect Frame[4];              /* Screen Border Frame */
     KON_Rect RenderRect;            /* Where the game is drawn on screen */
     Vector2i ScreenResolution;      /* The external resolution of the game */
-    bool OffScreenRender;
 } KON_VideoInterface;
 
 
 /* Abstract Koneko's surfaces from their implementations */
 struct KON_Surface {
+    bool readOnly;
     #ifdef GEKKO
         GXTexObj surface;
         uint16_t width;
@@ -103,6 +103,8 @@ extern struct BITMAP_SystemFont { int width; int height; int depth; int pitch; u
 
 static bool drawFPS;
 static BitmapFont* font;
+static KON_Surface* fpsTextBox;
+static const KON_Rect fpsTextBoxSize = {0, 0, 100, 50};
 
 #ifdef GEKKO
     static void KON_GCInitOrthCamera() {
@@ -221,7 +223,8 @@ void KON_DrawFPS() {
     double fps = 1000.0 / Koneko.dDevice.frametime;
 
     sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
-    gprintf(font, fpsText, 1, NULL);
+    KON_Print(font, fpsTextBox, fpsText, 1, 0, 0);
+    KON_DrawScaledSurface(fpsTextBox, &fpsTextBoxSize);
 }
 
 static void DrawBordingFrame() {
@@ -321,8 +324,6 @@ void KON_UpdateRenderRect() {
         vi.RenderRect.y = (int)(vi.ScreenResolution.y - vi.RenderRect.h) >> 1;
     #endif
 
-    vi.OffScreenRender = false;
-
     KON_InitRect(vi.Frame[0], 0, 0, vi.RenderRect.x, vi.ScreenResolution.y);                                                    /* Left Frame */
     KON_InitRect(vi.Frame[1], vi.RenderRect.x + vi.RenderRect.w, 0, vi.RenderRect.x, vi.ScreenResolution.y);                    /* Right Frame */
     KON_InitRect(vi.Frame[2], vi.RenderRect.x, 0, vi.RenderRect.w, vi.RenderRect.y);                                   /* Top Frame */
@@ -373,6 +374,7 @@ void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
     KON_UpdateRenderRect();
 
     font = KON_LoadBitmapFontFromMem(&SystemFontBitmap, 0xff00ff);
+    fpsTextBox = KON_CreateSurface(fpsTextBoxSize.w, fpsTextBoxSize.h);
 }
 
 void KON_FreeDisplayDevice() {
@@ -521,7 +523,7 @@ static KON_Surface* KON_LoadRawSurface(const char* FilePath, uint32_t ColorKey, 
         KON_FreeCPUSurface(loadedCPUSurface);
     #endif
 
-    if (!(loadedSurface = (KON_Surface*)malloc(sizeof(KON_Surface)))) {
+    if (!(loadedSurface = (KON_Surface*)calloc(1, sizeof(KON_Surface)))) {
         KON_SystemMsg("(KON_LoadSurface) Couldn't allocate memory", MESSAGE_ERROR, 0);
         return NULL;
     }
@@ -540,6 +542,30 @@ static KON_Surface* KON_LoadRawSurface(const char* FilePath, uint32_t ColorKey, 
     loadedSurface->height = surfaceHeight;
 
     return loadedSurface;
+}
+
+KON_Surface* KON_CreateSurface(unsigned int width, unsigned int height) {
+    KON_Surface* newSurface = NULL;
+    SDL_Texture* renderTexture = NULL;
+
+    if (!(newSurface = (KON_Surface*)calloc(1, sizeof(KON_Surface)))) {
+        KON_SystemMsg("(KON_CreateSurface) Couldn't create surface", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    if (!(renderTexture = SDL_CreateTexture(vi.Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))) {
+        free(newSurface);
+        KON_SystemMsg("(KON_CreateSurface) Couldn't create surface", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+    SDL_SetTextureBlendMode(renderTexture, SDL_BLENDMODE_BLEND);
+
+    newSurface->width = width;
+    newSurface->height = height;
+    newSurface->surface = renderTexture;
+    newSurface->readOnly = false;
+
+    return newSurface;
 }
 
 KON_Surface* KON_LoadSurface(const char* filePath, uint32_t colorKey, uint8_t flags) {
@@ -662,13 +688,16 @@ void KON_GetSurfaceSize(KON_Surface* surface, Vector2d* size) {
     }
 }
 
-int KON_SetRenderTarget(KON_Surface* surface) {
+int KON_SetRenderTarget(KON_Surface* target) {
     #ifdef GEKKO
         /* TODO: implement libogc */
         return 0;
     #else
-        vi.OffScreenRender = (bool)surface->surface;
-        return SDL_SetRenderTarget(vi.Renderer, surface->surface);
+        if (target && target->readOnly) {
+            KON_SystemMsg("(KON_SetRenderTarget) Sprite is readonly!", MESSAGE_WARNING, 0);
+            return -1;
+        }
+        return SDL_SetRenderTarget(vi.Renderer, target ? target->surface : NULL);
     #endif
 }
 
@@ -737,7 +766,7 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
 
 #define KON_Draw(dDevice, texture, srcrect, dstrect) KON_DrawEx(dDevice, texture, srcrect, dstrect, DRAW_DEFAULT)
 
-void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags) {
+void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, const KON_Rect* rect, const KON_Rect* dest, DrawFlags flags) {
     KON_Rect ScaledDstRect;
 
     KON_InitRect(ScaledDstRect, 0, 0, Koneko.dDevice.InternalResolution.x, Koneko.dDevice.InternalResolution.y);
@@ -761,7 +790,7 @@ void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect*
     KON_DrawEx(surface, rect, &ScaledDstRect, flags);
 }
 
-void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags) {
+void KON_DrawSurfaceRectEx(KON_Surface* surface, const KON_Rect* rect, const Vector2d* pos, DrawFlags flags) {
     KON_Rect dest;
 
     dest.x = pos->x;
@@ -771,7 +800,7 @@ void KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, 
     KON_DrawScaledSurfaceRectEx(surface, rect, &dest, flags);
 }
 
-void KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags) {
+void KON_DrawScaledSurfaceEx(KON_Surface* surface, const KON_Rect* dest, DrawFlags flags) {
     KON_DrawScaledSurfaceRectEx(surface, NULL, dest, flags);
 }
 
@@ -784,6 +813,13 @@ void KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags) {
     dest.h = surface->height;
 
     KON_DrawScaledSurfaceRectEx(surface, NULL, &dest, flags);
+}
+
+void KON_ClearTargetSurface(KON_Surface* target) {
+    if (!KON_SetRenderTarget(target)) {
+        KON_ClearScreen();
+        KON_SetRenderTarget(NULL);
+    }
 }
 
 void KON_ShowDebugScreen() {

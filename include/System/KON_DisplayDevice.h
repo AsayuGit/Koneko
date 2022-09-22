@@ -58,6 +58,7 @@
     } DrawFlags;
 
     typedef struct KON_Surface KON_Surface;
+    typedef struct KON_RenderSurface KON_RenderSurface;
     typedef struct KON_CPUSurface KON_CPUSurface;
 
     #include "Rect.h"
@@ -124,6 +125,13 @@
     KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uint8_t flags);
 
     /*
+        SUMMARY : Create a surface of a given size
+        INPUT   : unsigned int width, height : Size of the new surface
+        OUTPUT  : KON_Surface*         : Newly created surface
+    */
+    KON_Surface* KON_CreateSurface(unsigned int width, unsigned int height);
+
+    /*
         TODO: Doc
     */
     void KON_GetCPUSurfaceSize(KON_CPUSurface* surface, size_t* pitch, unsigned int* w, unsigned int* h);
@@ -181,9 +189,9 @@
 
     /*
         SUMMARY : Sets the render target for a CPU-Side surface.
-        INPUT   : KON_Surface* surface : The CPu-Side surface to change the render target for.
+        INPUT   : KON_Surface* target : The CPu-Side surface to change the render target for.
     */
-    int          KON_SetRenderTarget(KON_Surface* surface);
+    int          KON_SetRenderTarget(KON_Surface* target);
 
     /*
         SUMMARY : Sets the render draw color (background)
@@ -228,7 +236,7 @@
         INPUT   : KON_Rect* dest       : Where on the screen to draw it.
         INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
     */
-    void         KON_DrawScaledSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, KON_Rect* dest, DrawFlags flags);
+    void         KON_DrawScaledSurfaceRectEx(KON_Surface* surface, const KON_Rect* rect, const KON_Rect* dest, DrawFlags flags);
 
     /*
         SUMMARY : Draws part of a surface to the screen at a new location with draw option flags.
@@ -237,7 +245,7 @@
         INPUT   : Vector2d* pos        : Where to draw on the screen.
         INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
     */
-    void         KON_DrawSurfaceRectEx(KON_Surface* surface, KON_Rect* rect, Vector2d* pos, DrawFlags flags);
+    void         KON_DrawSurfaceRectEx(KON_Surface* surface, const KON_Rect* rect, const Vector2d* pos, DrawFlags flags);
 
     /*
         SUMMARY : Draws a surface at a new size and location with draw option flags.
@@ -245,7 +253,7 @@
         INPUT   : KON_Rect* dest       : Where on the screen to draw 
         INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.it.
     */
-    void         KON_DrawScaledSurfaceEx(KON_Surface* surface, KON_Rect* dest, DrawFlags flags);
+    void         KON_DrawScaledSurfaceEx(KON_Surface* surface, const KON_Rect* dest, DrawFlags flags);
 
     /*
         SUMMARY : Draws a surface on the screen with draw option flags.
@@ -254,6 +262,12 @@
         INPUT   : DrawFlags flags      : Draw options to be used during the drawing process.
     */
     void         KON_DrawSurfaceEx(KON_Surface* surface, Vector2d* pos, DrawFlags flags);
+
+    /*
+        SUMMARY : Clears a Target Surface
+        INPUT   : The Target Surface to clear.
+    */
+    void         KON_ClearTargetSurface(KON_Surface* target);
 
     /*
         SUMMARY : Present a screen of text for debug purpuses.
