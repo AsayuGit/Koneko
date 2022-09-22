@@ -84,6 +84,13 @@
     Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath);
 
     /*
+        SUMMARY : Create a new empty sprite to render to.
+        INPUT   : unsigned int width, height : The dimensions of the new sprite
+        OUTPUT  : Sprite*                    : The newly created sprite
+    */
+    Sprite* KON_CreateSprite(unsigned int width, unsigned int height);
+
+    /*
         SUMMARY : Free a loaded sprite form memory.
         INPUT   : Sprite** sprite : Pointer to a Sprite loaded in memory.
     */

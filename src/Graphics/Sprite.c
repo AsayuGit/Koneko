@@ -114,6 +114,26 @@ Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath) {
     return sprite;
 }
 
+Sprite* KON_CreateSprite(unsigned int width, unsigned int height) {
+    Sprite* newSprite = NULL;
+
+    if (!(newSprite = (Sprite*)calloc(1, sizeof(Sprite)))) {
+        KON_SystemMsg("(KON_CreateSprite) No more memory!", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    newSprite->spriteTexture = KON_CreateSurface(width, height);
+    KON_InitRect(newSprite->source, 0, 0, width, height);
+
+
+    KON_InitRect(newSprite->destination, 0, 0, width, height);
+    newSprite->isVisible = true;
+
+    KON_SystemMsg("(KON_CreateSprite) Created new Sprite", MESSAGE_LOG, 0);
+
+    return newSprite;
+}
+
 void KON_FreeSprite(Sprite** sprite) {
     if (!sprite) /* Check if sprite's not null */
         return;
