@@ -31,12 +31,12 @@ void KON_RenderLayer(MapLayer* layer) {
     {
     case RENDER_2D_TILEMAP:
         KON_DrawTileMap(layer);
-        KON_DrawDisplayList(layer->displayList);
+        KON_DrawDisplayListAt(layer->displayList, layer->pos.x, layer->pos.y);
         break;
 
     case RENDER_2D_BITMAP:
         KON_DrawBitMap(layer);
-        KON_DrawDisplayList(layer->displayList);
+        KON_DrawDisplayListAt(layer->displayList, layer->pos.x, layer->pos.y);
         break;
 
     case RENDER_3D_RAYCAST:
@@ -45,7 +45,7 @@ void KON_RenderLayer(MapLayer* layer) {
         break;
 
     default:
-        KON_DrawDisplayList(layer->displayList);
+        KON_DrawDisplayListAt(layer->displayList, layer->pos.x, layer->pos.y);
         break;
     }
 }
