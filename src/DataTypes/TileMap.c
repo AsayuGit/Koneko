@@ -37,61 +37,43 @@
 	#include <linux/limits.h>
 #endif
 
-/* Its an helper function but is probably redundant with KON_LoadSurface() */
-KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory) {
-    KON_Surface* loadedSurface;
-    uint32_t colorKey;
-    char buffer[PATH_MAX];
-    char path[PATH_MAX] = {0};
-    
-    fscanf(tileMapFile, "%x\n", &colorKey);
-
-    fgets(buffer, PATH_MAX, tileMapFile);
-    buffer[strcspn(buffer, "\n")] = '\0'; /* Remove trailing \n */
-
-    strcat(path, rootDirectory);
-	#ifndef _XBOX
-		strcat(path, "/");
-	#endif
-    strcat(path, buffer);
-
-    if (!(loadedSurface = KON_LoadSurface(path, colorKey, SURFACE_KEYED)))
-        return NULL;
-
-    return loadedSurface;
-}
-
-KON_CPUSurface* KON_LoadCPUBitMap(FILE* tileMapFile, char* rootDirectory) {
-    KON_CPUSurface* loadedSurface;
-    uint32_t colorKey;
-    char buffer[PATH_MAX];
-    char path[PATH_MAX] = {0};
-    
-    fscanf(tileMapFile, "%x\n", &colorKey);
-
-    fgets(buffer, PATH_MAX, tileMapFile);
-    buffer[strcspn(buffer, "\n")] = '\0'; /* Remove trailing \n */
-
-    strcat(path, rootDirectory);
-	#ifndef _XBOX
-		strcat(path, "/");
-	#endif
-    strcat(path, buffer);
-
-    if (!(loadedSurface = KON_LoadCpuSurface(path, colorKey, SURFACE_KEYED)))
-        return NULL;
-
-    return loadedSurface;
-}
-
-TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
+TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* layerNode) {
+    const char* tileMapData = NULL, *solidTiles = NULL;
+    char* buffer, *strtokPointer;
+    unsigned int i, tile;
+    KON_XMLNode* node, *tileMapNode;
     TileMap* loadedTileMap = NULL;
-    unsigned int nbOfSolidTiles, i, j;
 
-    loadedTileMap = (TileMap*)malloc(sizeof(TileMap));
+    /* Load each tileMap component */
+    node = KON_GetXMLNodeChild(layerNode);
+    while (node) {
+        if (KON_CompareXMLNodeName(node, "tileMap")) {
+            tileMapNode = node;
+            tileMapData = KON_GetXMLNodeText(node);
+        } else if (KON_CompareXMLNodeName(node, "solidTiles")) {
+            solidTiles = KON_GetXMLNodeText(node);
+        } else {
+            return NULL;
+        }
+
+        node = KON_GetXMLNodeSibling(node);
+    }
+    if (!tileMapData || !solidTiles)
+        return NULL;
+
+    if (!(loadedTileMap = (TileMap*)malloc(sizeof(TileMap)))) {
+        KON_SystemMsg("(KON_LoadTileMap) No more memory !", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    loadedTileMap->MapSizeX = KON_GetXMLAttributeAsInt(tileMapNode, "X");
+    loadedTileMap->MapSizeY = KON_GetXMLAttributeAsInt(tileMapNode, "Y");
+    loadedTileMap->MapSizeZ = KON_GetXMLAttributeAsInt(tileMapNode, "Z");
+    loadedTileMap->tMSizeX = KON_GetXMLAttributeAsInt(tileMapNode, "texX");
+    loadedTileMap->tMSizeY = KON_GetXMLAttributeAsInt(tileMapNode, "texY");
+    loadedTileMap->TileSize = KON_GetXMLAttributeAsInt(tileMapNode, "tileSize");
 
     /* Properties */
-    fscanf(tileMapFile, "%u %u %u %u %u %u\n", &loadedTileMap->MapSizeX, &loadedTileMap->MapSizeY, &loadedTileMap->MapSizeZ, &loadedTileMap->tMSizeX, &loadedTileMap->tMSizeY, &loadedTileMap->TileSize);
     loadedTileMap->MapDataLayerPitch = loadedTileMap->MapSizeX * loadedTileMap->MapSizeY;
 
     loadedTileMap->TileIndexSize = loadedTileMap->tMSizeX * loadedTileMap->tMSizeY;
@@ -99,17 +81,27 @@ TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory) {
 
     /* LayerData */
     loadedTileMap->MapDataSize = loadedTileMap->MapDataLayerPitch * loadedTileMap->MapSizeZ;
-    loadedTileMap->MapData = (unsigned int*)malloc(sizeof(unsigned int) * loadedTileMap->MapDataSize);
-    for (i = 0; i < loadedTileMap->MapDataSize; i++) {
-        fscanf(tileMapFile, "%u", &loadedTileMap->MapData[i]);
+    if (!(loadedTileMap->MapData = (unsigned int*)malloc(sizeof(unsigned int) * loadedTileMap->MapDataSize))) {
+        KON_SystemMsg("(KON_LoadTileMap) No more memory !", MESSAGE_ERROR, 0);
+        return NULL;
     }
 
-    /* Solid tiles */
-    fscanf(tileMapFile, "%u", &nbOfSolidTiles);
-    for (i = 0; i < nbOfSolidTiles; i++){
-        fscanf(tileMapFile, "%u", &j);
-        loadedTileMap->TileIndex[j].isSolid = true;
+    astrcpy(&buffer, tileMapData);
+    strtokPointer = strtok(buffer, " \n");
+    for (i = 0; i < loadedTileMap->MapDataSize; i++) {
+        sscanf(strtokPointer, "%u", &loadedTileMap->MapData[i]);
+        strtokPointer = strtok(NULL, " \n");
     }
+    free(buffer);
+
+    /* Solid tiles */
+    astrcpy(&buffer, solidTiles);
+    strtokPointer = strtok(buffer, " ");
+    do {
+        if (sscanf(strtokPointer, "%u", &tile))
+            loadedTileMap->TileIndex[tile].isSolid = true;
+    } while ((strtokPointer = strtok(NULL, " ")));
+    free(buffer);
 
     return loadedTileMap;
 }

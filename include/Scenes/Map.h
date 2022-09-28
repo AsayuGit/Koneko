@@ -56,15 +56,21 @@
     typedef struct{
         char* MapFilePath;
         unsigned int nbOfLayers;
-        MapLayer* MapLayer;
+        MapLayer* MapLayer; /* Map Layer array */
     } Map;
 
     /*
         SUMMARY : Loads a Map form disk.
-        INPUT   : char* mapFilePath : The path to the map to load.
+        INPUT   : char** mapFilePath : The path to the map to load.
         OUTPUT  : Map*              : The newly loaded map (or NULL on error).
     */
     Map* KON_LoadMap(char* mapFilePath);
+
+    /*
+        SUMMAY : Free a previously loaded map.
+        INPUT  : Map* map : The map to free.
+    */
+    void KON_FreeMap(Map** map);
 
     void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsigned int priority, double x, double y);
 

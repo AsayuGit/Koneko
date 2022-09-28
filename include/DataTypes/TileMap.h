@@ -47,7 +47,7 @@
     } TileMap;
 
     /* Load a tilemap from a map file */
-    TileMap* KON_LoadTileMap(FILE* tileMapFile, char* rootDirectory);
+    TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* layerNode);
 
     /*
         SUMMARY : Fetch the source rect of a tile in a tilemap.
@@ -70,26 +70,17 @@
     */
     void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID, Vector2d position);
 
-    void     KON_DrawTileMap(MapLayer* Layer);
-
-    /*
-        SUMMARY : Loads a bitmap from map file.
-        INPUT   : FILE* titleMapFile     : Oppened tilemap file.
-        INPUT   : char* rootDirectory    : Current Map's directory.
-        OUTPUT  : KON_Surface*           : The loaded bitmap or NULL on error.
-    */
-    KON_Surface* KON_LoadBitMap(FILE* tileMapFile, char* rootDirectory); /* TODO: convert to sprite */
-    KON_CPUSurface* KON_LoadCPUBitMap(FILE* tileMapFile, char* rootDirectory);
+    void KON_DrawTileMap(MapLayer* Layer);
 
     /*
         SUMMARY : Draws a bitmap layer on screen.
         INPUT   : MapLayer* Layer : The bitmap layer to draw
     */
-    void         KON_DrawBitMap(MapLayer* Layer);
+    void KON_DrawBitMap(MapLayer* Layer);
 
 
-    bool     KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
-    bool     KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
-    bool     KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
+    bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
+    bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile);
+    bool KON_IsTileMapTileSolid(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
 
 #endif

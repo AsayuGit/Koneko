@@ -19,97 +19,112 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode) {
+    uint32_t colorKey;
+    const char* colorKeyString, *surfacePath = KON_GetXMLAttribute(layerNode, "surfacePath");
+
+    if ((colorKeyString = KON_GetXMLAttribute(layerNode, "colorKey"))) {
+        sscanf(colorKeyString, "0x%x", &colorKey);
+        layer->texture.gpuSide = KON_LoadSurface(surfacePath, colorKey, SURFACE_KEYED);
+    } else {
+        layer->texture.gpuSide = KON_LoadSurface(surfacePath, 0, SURFACE_ALPHA);
+    }
+}
+
+static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    const char* message, *layerType = KON_GetXMLAttribute(layerNode, "type");
+
+    /* Load Layer Data */
+    if (strcmp(layerType, "BitMap") == 0) {
+        KON_LoadLayerSurface(layer, layerNode);
+        layer->layerRenderer = RENDER_2D_BITMAP;
+        layer->shown = true;
+
+        message = "(KON_LoadMapLayer) Loaded NEW BitMap Layer";
+    } else if (strcmp(layerType, "TileMap") == 0) {
+        if (!(layer->layerData = KON_LoadTileMap(layer, layerNode)))
+            return -1;
+
+        KON_LoadLayerSurface(layer, layerNode);
+        layer->layerRenderer = RENDER_2D_TILEMAP;
+        layer->shown = true;
+
+        message = "(KON_LoadMapLayer) Loaded NEW TileMap Layer";
+    } else if (strcmp(layerType, "Empty") == 0) {
+        layer->layerRenderer = RENDER_NONE;
+        layer->shown = true;
+
+        message = "(KON_LoadMapLayer) Loaded NEW Empty Layer";
+    } else {
+        return -1;
+    }
+
+    /* Load Layer Animation (if any) TODO */
+
+    KON_SystemMsg(message, MESSAGE_LOG, 0);
+
+    return 0;
+}
+
 Map* KON_LoadMap(char* mapFilePath) {
-    /* Declaration */
-    Map* LoadedMap = NULL;
-    MapLayer* currentLayer = NULL;
-    FILE* MapFile = NULL;
-    TileMap* loadedTileMap = NULL;
-    Vector2d bdSize;
-    KON_Renderers layerRenderer;
-    unsigned int nbOfLayers, i;
-    char filepath[PATH_MAX];
-    char* MapRoot = NULL;
-    
-    /* Init */
-    MapFile = fopen(mapFilePath, "r");
-    if (!MapFile) {
-        KON_SystemMsg("(KON_LoadMap) Couldn't load map file: ", MESSAGE_ERROR, 1, mapFilePath);
+    KON_XMLDocument* mapFile;
+    KON_XMLNode* node;
+    Map* loadedMap = NULL;
+    unsigned int nbOfLayers, currentLayer;
+
+    if (! mapFilePath) {
+        KON_SystemMsg("(KON_LoadMap) No path provided!", MESSAGE_ERROR, 0);
         return NULL;
     }
 
-    LoadedMap = (Map*)malloc(sizeof(Map));
-    astrcpy(&LoadedMap->MapFilePath, mapFilePath);
-    strcpy(filepath, mapFilePath);
-
-    MapRoot = KON_DirName(filepath);
-
-    fscanf(MapFile, "%u", &nbOfLayers);
-    LoadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer));
-    LoadedMap->nbOfLayers = nbOfLayers;
-
-    /* Logic */
-    for (i = 0; i < nbOfLayers; i++){ /* For each layer */
-        /* Check layer type */
-        layerRenderer = 0;
-        fscanf(MapFile, "%u\n", &layerRenderer);
-        currentLayer = LoadedMap->MapLayer + i;
-        switch (layerRenderer){
-            case RENDER_2D_BITMAP:
-                currentLayer->texture.gpuSide = (void*)KON_LoadBitMap(MapFile, MapRoot);
-                KON_GetSurfaceSize((KON_Surface*)currentLayer->layerData, &bdSize);
-                KON_InitRect(currentLayer->boundingBox, 0, 0, bdSize.x, bdSize.y);
-                break;
-            
-            case RENDER_3D_RAYCAST:
-                currentLayer->effectBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(uint32_t);
-                currentLayer->zBufferPitch = Koneko.dDevice.InternalResolution.x * sizeof(double);
-                currentLayer->effectBuffer = (uint32_t*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->effectBufferPitch);
-                currentLayer->zBuffer = (double*)malloc(Koneko.dDevice.InternalResolution.y * currentLayer->zBufferPitch);
-                /*
-                currentLayer->effectTexture = SDL_CreateTexture(
-                    Koneko.dDevice.Renderer, SDL_PIXELFORMAT_RGB888,
-                    SDL_TEXTUREACCESS_STREAMING,
-                    Koneko.dDevice.InternalResolution.x,
-                    Koneko.dDevice.InternalResolution.y
-                );*/
-
-                {
-                    KON_CPUSurface* surface = KON_LoadCPUBitMap(MapFile, MapRoot);
-                    size_t surfaceSize;
-                    
-                    KON_GetCPUSurfaceSize(surface, &surfaceSize, &currentLayer->texture.cpuSide.width, &currentLayer->texture.cpuSide.height);
-                    surfaceSize *= currentLayer->texture.cpuSide.height;
-
-                    currentLayer->texture.cpuSide.pixelData = (uint32_t*)malloc(surfaceSize);
-                    memcpy(currentLayer->texture.cpuSide.pixelData, KON_GetCPUSurfacePixelData(surface), surfaceSize);
-                    KON_FreeCPUSurface(surface);
-                }
-
-                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
-                KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
-                break;
-
-            case RENDER_2D_TILEMAP:
-                currentLayer->texture.gpuSide = KON_LoadBitMap(MapFile, MapRoot);
-                loadedTileMap = currentLayer->layerData = (void*)KON_LoadTileMap(MapFile, MapRoot);
-                KON_InitRect(currentLayer->boundingBox, 0, 0, loadedTileMap->MapSizeX * loadedTileMap->TileSize, loadedTileMap->MapSizeY * loadedTileMap->TileSize);
-                break;
-
-            default:
-                KON_SystemMsg("(KON_LoadMap) unknown layer mode", MESSAGE_WARNING, 0);
-                break;
-        }
-        LoadedMap->MapLayer[i].layerRenderer = layerRenderer;
-        LoadedMap->MapLayer[i].shown = true;
-        LoadedMap->MapLayer[i].displayList = KON_InitDisplayList();
+    if (!(mapFile = KON_LoadXml(mapFilePath))) {
+        KON_SystemMsg("(KON_LoadMap) Couldn't oppen map file :", MESSAGE_ERROR, 1, mapFilePath);
+        return NULL;
     }
 
-    /* free */
-    if (MapFile)
-        fclose(MapFile);
+    if (!KON_CompareXMLNodeName(mapFile->rootNode, "map") || !(nbOfLayers = KON_GetXMLNodeCount(mapFile->rootNode, "layer"))) {
+        KON_FreeXML(mapFile);
+        KON_SystemMsg("(KON_LoadMap) Invalid map file!", MESSAGE_ERROR, 1, mapFilePath);
+        return NULL;
+    }
 
-    return LoadedMap;
+    if (!(loadedMap = (Map*)calloc(1, sizeof(Map)))) {
+        KON_FreeXML(mapFile);
+        KON_SystemMsg("(KON_LoadMap) No more memory!", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    if (!(loadedMap->MapLayer = (MapLayer*)calloc(nbOfLayers, sizeof(MapLayer)))) {
+        free(loadedMap);
+        KON_FreeXML(mapFile);
+        KON_SystemMsg("(KON_LoadMap) No more memory!", MESSAGE_ERROR, 0);
+        return NULL;
+    }
+
+    loadedMap->nbOfLayers = nbOfLayers;
+    loadedMap->MapFilePath = mapFilePath;
+
+    /* Loads Each Layers*/
+    node = KON_GetXMLNodeChild(mapFile->rootNode);
+    for (currentLayer = 0; currentLayer < nbOfLayers; currentLayer++) {
+        if (KON_LoadMapLayer(loadedMap->MapLayer + currentLayer, node)) {
+            KON_FreeMap(&loadedMap);
+            KON_SystemMsg("(KON_LoadMap) Invalid Layer in map:", MESSAGE_ERROR, 1, mapFilePath);
+        }
+
+        node = KON_GetXMLNodeSibling(node);
+    }
+    KON_FreeXML(mapFile);
+
+    KON_SystemMsg("(KON_LoadMap) Loaded NEW Map :", MESSAGE_LOG, 1, mapFilePath);
+
+    return loadedMap;
+}
+
+void KON_FreeMap(Map** map) {
+    /* TODO Implement */
+    free(*map);
+    *map = NULL;
 }
 
 static void KON_UpdateLayerEntityPosition(MapLayer* layer) {

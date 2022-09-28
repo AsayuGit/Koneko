@@ -78,7 +78,7 @@ void KON_DrawDisplayList(DisplayList* list) {
 
     /* Draw each sprite */
     while (listIterator) {
-        KON_DrawSprite(((DisplayListItem*)listIterator->data)->sprite);
+        KON_DrawSprite(((DisplayListItem*)listIterator->data)->sprite); /* Sprites should be drawn as an offset from their layer's position*/
         listIterator = listIterator->next;
     }
 }
