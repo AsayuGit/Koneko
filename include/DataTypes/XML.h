@@ -107,6 +107,14 @@
     unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node);
 
     /*
+        SUMMARY : Returns the number of child nodes matching the provided name.
+        INPUT   : KON_XMLNode* node : The node to count the child of.
+        INPUT   : char* name        : The name of the nodes to check for.
+        OUTPUT  : undigned int      : the number of nodes.
+    */
+    unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, char* name);
+
+    /*
         SUMMARY : Parses a KON_Rect from a xml node.
         INPUT   : KON_XMLDocument* node : The node where the rect should be parsed from.
         OUTPUT  : KON_Rect* rect        : The resulting parsed rect.

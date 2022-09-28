@@ -143,6 +143,20 @@ unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node) {
     #endif
 }
 
+unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, char* name) {
+    unsigned int nodeCount = 0;
+    KON_XMLNode* childNode = KON_GetXMLNodeChild(node);
+
+    while (childNode) {
+        if (KON_CompareXMLNodeName(childNode, name))
+            nodeCount++;
+
+        childNode = KON_GetXMLNodeSibling(childNode);
+    }
+
+    return nodeCount;
+}
+
 void KON_LoadRectFromXmlNode(KON_XMLNode* node, KON_Rect* rect) {
     #ifdef LIBXML2
         KON_InitRect((*rect),
