@@ -112,6 +112,13 @@
     void KON_DrawSprite(Sprite* sprite);
 
     /*
+        SUMMARY : Draws a sprite on screen by an offset.
+        INPUT   : Sprite* sprite          : Sprite to draw.
+        INPUT   : double x, y             : Offset to apply to the sprite's position.
+    */
+    void KON_DrawSpriteOffset(Sprite* sprite, double x, double y);
+
+    /*
         SUMMARY : Draws a sprite on screen at a position.
         INPUT   : Sprite* sprite          : Sprite to draw.
         INPUT   : double x, y             : Where to draw the sprite at.

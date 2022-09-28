@@ -183,6 +183,14 @@ void KON_UpdateSpriteAnimation(Sprite* sprite) {
 }
 
 void KON_DrawSprite(Sprite* sprite) {
+    KON_DrawSpriteAt(sprite, sprite->spritePosition.x, sprite->spritePosition.y);
+}
+
+void KON_DrawSpriteOffset(Sprite* sprite, double x, double y) {
+    KON_DrawSpriteAt(sprite, sprite->spritePosition.x + x, sprite->spritePosition.y + y);
+}
+
+void KON_DrawSpriteAt(Sprite* sprite, double x, double y) {
     DrawFlags flags = 0;
     if (!sprite || !sprite->isVisible)
         return;
@@ -191,18 +199,11 @@ void KON_DrawSprite(Sprite* sprite) {
     sprite->boundingBox = sprite->destination;
 
     /* Convert world space coordinates into screen space */
-    sprite->boundingBox.x += (int)(sprite->spritePosition.x - Koneko.dDevice.camera.position.x);
-    sprite->boundingBox.y += (int)(sprite->spritePosition.y - Koneko.dDevice.camera.position.y);
+    sprite->boundingBox.x += (int)(x - Koneko.dDevice.camera.position.x);
+    sprite->boundingBox.y += (int)(y - Koneko.dDevice.camera.position.y);
 
     /* Draws sprite in screen space*/
     if (sprite->flipX) flags |= DRAW_HORIZONTAL_FLIP;
     if (sprite->flipY) flags |= DRAW_VERTICAL_FLIP;
     KON_DrawScaledSurfaceRectEx(sprite->spriteTexture, &sprite->source, &sprite->boundingBox, flags);
-}
-
-void KON_DrawSpriteAt(Sprite* sprite, double x, double y) {
-    sprite->spritePosition.x = x;
-    sprite->spritePosition.y = y;
-
-    KON_DrawSprite(sprite);
 }
