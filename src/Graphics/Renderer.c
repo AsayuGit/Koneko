@@ -41,9 +41,11 @@ void KON_RenderLayer(MapLayer* layer) {
 
     case RENDER_3D_RAYCAST:
         KON_DrawRaycast(layer);
+        /* We don't draw the display list here because the raycast renderer will do it for us (as 3D sprites) */
         break;
 
     default:
+        KON_DrawDisplayList(layer->displayList);
         break;
     }
 }
