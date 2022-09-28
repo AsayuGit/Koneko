@@ -73,8 +73,15 @@
 
     /*
         SUMMARY : Draws a DisplayList to the screen.
-        INPUT   : DisplayList* list : The DisplayListToBeDrawn.
+        INPUT   : DisplayList* list : The DisplayList to be drawn.
     */
     void         KON_DrawDisplayList(DisplayList* list);
+
+    /*
+        SUMMARY: Draws a DisplayList at a set location.
+        INPUT   : DisplayList* list : The DisplayList to be drawn.
+        INPUT   : double x, y       : Where to draw the DisplayList at.
+    */
+    void         KON_DrawDisplayListAt(DisplayList* list, double x, double y);
 
 #endif

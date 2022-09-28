@@ -74,11 +74,15 @@ void KON_ClearDisplayList(DisplayList* list) {
 }
 
 void KON_DrawDisplayList(DisplayList* list) {
+    KON_DrawDisplayListAt(list, 0, 0);
+}
+
+void KON_DrawDisplayListAt(DisplayList* list, double x, double y) {
     register LinkedList* listIterator = list;
 
     /* Draw each sprite */
     while (listIterator) {
-        KON_DrawSprite(((DisplayListItem*)listIterator->data)->sprite); /* Sprites should be drawn as an offset from their layer's position*/
+        KON_DrawSpriteOffset(((DisplayListItem*)listIterator->data)->sprite, x, y);
         listIterator = listIterator->next;
     }
 }
