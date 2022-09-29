@@ -174,3 +174,11 @@ void KON_LoadRectFromXmlNode(KON_XMLNode* node, KON_Rect* rect) {
         );
     #endif
 }
+
+const char* KON_GetXMLNodeText(KON_XMLNode* node) {
+    #ifdef LIBXML2
+        return (const char*)xmlNodeGetContent(node);
+    #elif defined(MXML)
+        return mxmlGetOpaque(node);
+    #endif
+}

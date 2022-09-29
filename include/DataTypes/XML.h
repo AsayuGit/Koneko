@@ -121,4 +121,11 @@
     */
     void    KON_LoadRectFromXmlNode(KON_XMLNode* node, KON_Rect* rect);
 
+    /*
+        SUMMARY : Return the text data of an XML node.
+        INPUT   : KON_XMLNode* node : The node to return the text data of.
+        OUTPUT  : const char*       : The text data of said node.
+    */
+    const char* KON_GetXMLNodeText(KON_XMLNode* node);
+
 #endif
