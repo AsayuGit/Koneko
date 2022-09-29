@@ -29,7 +29,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-char* astrcpy(char** dst, char* src){
+char* astrcpy(char** dst, const char* src){
     size_t length;
 
     length = strlen(src)+1;                     /* First we compute how long is the input string */

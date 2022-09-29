@@ -35,7 +35,7 @@
     }                                                                              \
 
     /* Copy a source string to a newly allocated destination */
-    char*    astrcpy(char** dst, char* src);
+    char*    astrcpy(char** dst, const char* src);
     KON_Rect RectToVieport(const KON_Rect* InputRect, const KON_Rect* ViewPort, const Vector2i* Position);
     void     BoundVect2iToRect(Vector2i* vect, KON_Rect rect);
     unsigned char KON_BoundVect2dToRect(Vector2d* vect, KON_Rect* rect);
