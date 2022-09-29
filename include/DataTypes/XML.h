@@ -95,9 +95,25 @@
         SUMMARY : Returns an attribute from an xml node.
         INPUT   : KON_XMLNode* node : The xml node.
         INPUT   : char* attribute   : The attribute to look for.
-        OUTPUT  : char *            : The attribute value.
+        OUTPUT  : char*             : The attribute value.
     */
     const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute);
+
+    /*
+        SUMMARY : Returns an attribute from an xml node as an int.
+        INPUT   : KON_XMLNode* node : The xml node.
+        INPUT   : char* attribute   : The attribute to look for.
+        OUTPUT  : int               : The attribute value.
+    */
+    int         KON_GetXMLAttributeAsInt(KON_XMLNode* node, char* attribute);
+
+    /*
+        SUMMARY : Returns an attribute from an xml node as a double.
+        INPUT   : KON_XMLNode* node : The xml node.
+        INPUT   : char* attribute   : The attribute to look for.
+        OUTPUT  : double            : The attribute value.
+    */
+    double      KON_GetXMLAttributeAsDouble(KON_XMLNode* node, char* attribute);
 
     /*
         SUMMARY : Returns the number of child of an xml node.

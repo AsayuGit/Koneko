@@ -127,6 +127,16 @@ const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute) {
     #endif
 }
 
+int KON_GetXMLAttributeAsInt(KON_XMLNode* node, char* attribute) {
+    const char* buffer = KON_GetXMLAttribute(node, attribute);
+    return buffer ? atoi(buffer) : 0;
+}
+
+double KON_GetXMLAttributeAsDouble(KON_XMLNode* node, char* attribute) {
+    const char* buffer = KON_GetXMLAttribute(node, attribute);
+    return buffer ? atof(buffer) : 0.0;
+}
+
 unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node) {
     #ifdef LIBXML2
         return xmlChildElementCount(node);
