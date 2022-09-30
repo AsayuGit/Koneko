@@ -48,6 +48,7 @@
         DisplayList* displayList;
 
         size_t nbOfKeyFrameAnimations;
+        unsigned int playingAnimation;
         KON_KeyFrameAnimation* keyFrameAnimationArray;
 
         size_t effectBufferPitch;
@@ -71,12 +72,23 @@
     Map* KON_LoadMap(char* mapFilePath);
 
     /*
-        SUMMAY : Free a previously loaded map.
+        SUMMARY : Free a previously loaded map.
         INPUT  : Map* map : The map to free.
     */
     void KON_FreeMap(Map** map);
 
+    /*
+        SUMMARY : Adds a prite to a layer
+    */
     void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsigned int priority, double x, double y);
+
+    /*
+        SUMMARY : Start an animation on a layer.
+        INPUT   : Map* map             : The map the layer is part of.
+        INPUT   : unsigned int layerID : The Nb of the layer to animate.
+        INPUT   : unsigned int animID  : The NB of the animation to play.
+    */
+    void KON_PlayLayerAnimation(Map* map, unsigned int layerID, unsigned int animID);
 
     void KON_DrawMap(Map* map);
 

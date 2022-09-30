@@ -22,6 +22,7 @@
 #include "Animation.h"
 #include "XML.h"
 #include "Log.h"
+#include "System.h"
 
 #include <stdlib.h>
 
@@ -108,9 +109,9 @@ KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t
         for (keyFrameNode = KON_GetXMLNodeChild(animNode); keyFrameNode; keyFrameNode = KON_GetXMLNodeSibling(keyFrameNode)) {
             if (!KON_CompareXMLNodeName(keyFrameNode, "keyFrame"))
                 continue;
-            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.x = KON_GetXMLAttributeAsDouble(animNode, "X");
-            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.y = KON_GetXMLAttributeAsDouble(animNode, "Y");
-            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].timeCodeMS = ((unsigned int)KON_GetXMLAttributeAsDouble(animNode, "timeCode")) * 1000;
+            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.x = KON_GetXMLAttributeAsDouble(keyFrameNode, "X");
+            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.y = KON_GetXMLAttributeAsDouble(keyFrameNode, "Y");
+            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].timeCodeMS = ((unsigned int)KON_GetXMLAttributeAsDouble(keyFrameNode, "length")) * 1000;
             keyFrameIndex++;
         }
     }
@@ -120,5 +121,69 @@ KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t
 }
 
 void KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim) {
+    /* TODO */
+}
 
+/*
+    SUMMARY : Animate a vector with no interpolation.
+    INPUT   : Vector2d* vector            : The Vector to animate.
+    INPUT   : KON_KeyFrameAnimation* anim : The KeyFrame animation to animate the vector with.
+*/
+static void KON_UpdateJumpAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim) {
+    uint32_t currentTimeCode = KON_GetMs();
+
+    if (currentTimeCode < anim->lastTimeCode + anim->keyFrameArray[anim->currentKeyFrame].timeCodeMS)
+        return;
+
+    anim->lastTimeCode = currentTimeCode;
+    *vector = anim->keyFrameArray[anim->currentKeyFrame].pos;
+    anim->currentKeyFrame++;
+}
+
+/*
+    SUMMARY : Animate a vector with linear interpolation.
+    INPUT   : Vector2d* vector            : The Vector to animate.
+    INPUT   : KON_KeyFrameAnimation* anim : The KeyFrame animation to animate the vector with.
+*/
+static void KON_UpdateLinearAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim) {
+
+}
+
+/*
+    SUMMARY : Animate a vector with cubic interpolation.
+    INPUT   : Vector2d* vector            : The Vector to animate.
+    INPUT   : KON_KeyFrameAnimation* anim : The KeyFrame animation to animate the vector with.
+*/
+static void KON_UpdateCubicAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim) {
+
+}
+
+void KON_UpdateAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim) {
+    if (!vector || !anim) {
+        KON_SystemMsg("(KON_UpdateAnimation) Invalid parameters!", MESSAGE_WARNING, 0);
+        return;
+    }
+
+    if (anim->currentKeyFrame == -1)
+        return;
+
+    switch (anim->interpolation) {
+    case KON_NO_INTERPOLATION:
+        KON_UpdateJumpAnimation(vector, anim);
+        break;
+
+    case KON_LINEAR_INTERPOLATION:
+        KON_UpdateLinearAnimation(vector, anim);
+        break;
+
+    case KON_CUBIC_INTERPOLATION:
+        KON_UpdateCubicAnimation(vector, anim);
+        break;
+    
+    default:
+        break;
+    }
+
+    if (anim->currentKeyFrame >= anim->nbOfKeyFrames)
+        anim->currentKeyFrame = -1;
 }

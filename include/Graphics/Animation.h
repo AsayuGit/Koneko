@@ -47,6 +47,7 @@
     typedef struct {
         unsigned int nbOfKeyFrames;
         unsigned int currentKeyFrame;
+        uint32_t lastTimeCode;
         KON_InterpolationFunction interpolation;
         KON_KeyFrame* keyFrameArray;
     } KON_KeyFrameAnimation;
@@ -78,5 +79,12 @@
         INPUT   : KON_KeyFrameAnimation* layerAnim : The KeyFrame Animation to free.
     */
     void            KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim);
+
+    /*
+        SUMMARY : Animate a vector.
+        INPUT   : Vector2d* vector            : The Vector to animate.
+        INPUT   : KON_KeyFrameAnimation* anim : The KeyFrame animation to animate the vector with.
+    */
+    void KON_UpdateAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim);
 
 #endif

@@ -69,6 +69,7 @@ static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
         layerProperty = KON_GetXMLNodeSibling(layerProperty);
     }
 
+    layer->playingAnimation = -1;
     layer->shown = true;
     KON_SystemMsg(message, MESSAGE_LOG, 0);
 
@@ -159,6 +160,28 @@ void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsign
     KON_AddToDisplayList(&map->MapLayer[layerID].displayList, sprite, priority);
 }
 
+void KON_PlayLayerAnimation(Map* map, unsigned int layerID, unsigned int animID) {
+    if (!map || layerID >= map->nbOfLayers || animID >= map->MapLayer[layerID].nbOfKeyFrameAnimations) {
+        KON_SystemMsg("(KON_PlayLayerAnimation) Invalid parameters!", MESSAGE_WARNING, 0);
+        return;
+    }
+
+    map->MapLayer[layerID].playingAnimation = animID;
+    map->MapLayer[layerID].keyFrameAnimationArray[animID].lastTimeCode = KON_GetMs();
+    map->MapLayer[layerID].keyFrameAnimationArray[animID].currentKeyFrame = 0;
+}
+
+/*
+    SUMMARY : Updates the layer position by its playing animation
+    INPUT   : MapLayer* layer : The layer to update the animation for
+*/
+static void KON_UpdateLayerAnimation(MapLayer* layer) {
+    if (layer->playingAnimation == -1)
+        return;
+
+    KON_UpdateAnimation(&layer->pos, &layer->keyFrameAnimationArray[layer->playingAnimation]);
+}
+
 void KON_DrawMap(Map* map) {
     MapLayer* currentLayer;
     unsigned int i;
@@ -170,6 +193,9 @@ void KON_DrawMap(Map* map) {
     /*for (i = map->nbOfLayers - 1; i >= 0; i--) {*/
     for (i = 0; i < map->nbOfLayers; i++) {
         currentLayer = map->MapLayer + i;
+
+        /* Update layer position */
+        KON_UpdateLayerAnimation(currentLayer);
 
         /* Update all entities position */
         KON_UpdateLayerEntityPosition(currentLayer);
