@@ -29,11 +29,6 @@
     #define MAX(x, y) (((x) > (y)) ? (x) : (y))
     #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-    #define map(DstA, DstB, SrcA, SrcB, Value) {                                   \
-        int mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA); \
-        return (mappedValue < DstB) ? mappedValue : DstB;                          \
-    }                                                                              \
-
     /* Copy a source string to a newly allocated destination */
     char*    astrcpy(char** dst, const char* src);
     KON_Rect RectToVieport(const KON_Rect* InputRect, const KON_Rect* ViewPort, const Vector2i* Position);

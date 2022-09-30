@@ -111,7 +111,7 @@ KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t
                 continue;
             newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.x = KON_GetXMLAttributeAsDouble(keyFrameNode, "X");
             newKeyFrameAnimation->keyFrameArray[keyFrameIndex].pos.y = KON_GetXMLAttributeAsDouble(keyFrameNode, "Y");
-            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].timeCodeMS = ((unsigned int)KON_GetXMLAttributeAsDouble(keyFrameNode, "length")) * 1000;
+            newKeyFrameAnimation->keyFrameArray[keyFrameIndex].timeCodeMS = KON_GetXMLAttributeAsDouble(keyFrameNode, "length") * 1000;
             keyFrameIndex++;
         }
     }
@@ -122,6 +122,12 @@ KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t
 
 void KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim) {
     /* TODO */
+}
+
+static double KON_DoubleLinearInterpolate(double DstA, double DstB, double SrcA, double SrcB, double Value) {
+    if (SrcA == SrcB)
+        return DstA; /* In this case any dest value is solution */
+    return DstA + (DstB - DstA) * ((Value - SrcA) / (SrcB - SrcA));
 }
 
 /*
@@ -146,7 +152,19 @@ static void KON_UpdateJumpAnimation(Vector2d* vector, KON_KeyFrameAnimation* ani
     INPUT   : KON_KeyFrameAnimation* anim : The KeyFrame animation to animate the vector with.
 */
 static void KON_UpdateLinearAnimation(Vector2d* vector, KON_KeyFrameAnimation* anim) {
+    #define keyFramePos anim->keyFrameArray[anim->currentKeyFrame].pos
+    uint32_t currentTimeCode = KON_GetMs();
+    register uint32_t nextTimeCode = anim->lastTimeCode + anim->keyFrameArray[anim->currentKeyFrame].timeCodeMS;
 
+    if (!anim->currentKeyFrame || currentTimeCode >= nextTimeCode) {
+        anim->lastTimeCode = currentTimeCode;
+        *vector = keyFramePos;
+        anim->currentKeyFrame++;
+        return;
+    }
+
+    vector->x = KON_DoubleLinearInterpolate(anim->keyFrameArray[anim->currentKeyFrame - 1].pos.x, anim->keyFrameArray[anim->currentKeyFrame].pos.x, anim->lastTimeCode, nextTimeCode, currentTimeCode);
+    vector->y = KON_DoubleLinearInterpolate(anim->keyFrameArray[anim->currentKeyFrame - 1].pos.y, anim->keyFrameArray[anim->currentKeyFrame].pos.y, anim->lastTimeCode, nextTimeCode, currentTimeCode);
 }
 
 /*
