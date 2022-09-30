@@ -39,11 +39,12 @@
         bool flipY;
         bool isVisible;
         
-        /* Animation */
-        Animation* animationArray;
+        /* KON_SpriteAnimation */
+        size_t nbOfSpriteAnimations;
+        KON_SpriteAnimation* animationArray;
         uint32_t lastFrame;                /* Time at which the last frame was displayed */
         unsigned int currentFrame;       /* Frame currently being displayed */
-        unsigned int playingAnimation;   /* The Animation currently playing */
+        unsigned int playingAnimation;   /* The KON_SpriteAnimation currently playing */
         bool alimationLoop;
     } Sprite;
 

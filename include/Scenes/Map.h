@@ -25,6 +25,7 @@
     #include "LinkedList.h"
     #include "Rect.h"
     #include "DisplayList.h"
+    #include "Animation.h"
 
     typedef struct MapLayer MapLayer;
 
@@ -45,6 +46,9 @@
         KON_Rect boundingBox;
         LinkedList* entityInstanceList;
         DisplayList* displayList;
+
+        size_t nbOfKeyFrameAnimations;
+        KON_KeyFrameAnimation* keyFrameAnimationArray;
 
         size_t effectBufferPitch;
         uint32_t* effectBuffer; /* Used to rendrer CPU driven effects to the screen. Most notably the raycasting output */

@@ -37,15 +37,14 @@
 	#include <linux/limits.h>
 #endif
 
-TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* layerNode) {
+TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* node) {
     const char* tileMapData = NULL, *solidTiles = NULL;
     char* buffer, *strtokPointer;
     unsigned int i, tile;
-    KON_XMLNode* node, *tileMapNode;
+    KON_XMLNode* tileMapNode;
     TileMap* loadedTileMap = NULL;
 
     /* Load each tileMap component */
-    node = KON_GetXMLNodeChild(layerNode);
     while (node) {
         if (KON_CompareXMLNodeName(node, "tileMap")) {
             tileMapNode = node;

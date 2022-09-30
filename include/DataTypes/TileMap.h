@@ -47,7 +47,7 @@
     } TileMap;
 
     /* Load a tilemap from a map file */
-    TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* layerNode);
+    TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* node);
 
     /*
         SUMMARY : Fetch the source rect of a tile in a tilemap.

@@ -101,7 +101,7 @@ Sprite* KON_LoadSpriteFromXml(char* spriteXmlPath) {
             sourceDestDefined = true;
             KON_LoadRectFromXmlNode(property, &sprite->destination);
         } else if (KON_CompareXMLNodeName(property, "animArray")) {
-            sprite->animationArray = KON_ParseAnimation(property);
+            sprite->animationArray = KON_ParseSpriteAnimation(property, &sprite->nbOfSpriteAnimations);
         }
         property = KON_GetXMLNodeSibling(property);
     }
@@ -143,6 +143,14 @@ void KON_FreeSprite(Sprite** sprite) {
 }
 
 void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool reset, bool loop) {
+    if (!sprite) {
+        KON_SystemMsg("(KON_PlaySpriteAnimation) Invalid Arguments!", MESSAGE_WARNING, 0);
+        return;
+    }
+    if (animationID >= sprite->nbOfSpriteAnimations) {
+        KON_SystemMsg("(KON_PlaySpriteAnimation) Invalid Sprite Animation!", MESSAGE_WARNING, 0);
+        return;
+    }
     if (reset || animationID != sprite->playingAnimation){
         sprite->playingAnimation = animationID;
         sprite->currentFrame = 0;
@@ -151,7 +159,7 @@ void KON_PlaySpriteAnimation(Sprite* sprite, unsigned int animationID, bool rese
 }
 
 void KON_UpdateSpriteAnimation(Sprite* sprite) {
-    Animation* spriteAnimation = NULL;
+    KON_SpriteAnimation* spriteAnimation = NULL;
     
     if (!sprite->animationArray)
         return;

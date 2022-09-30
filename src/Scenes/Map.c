@@ -33,34 +33,43 @@ static void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode) {
 
 static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     const char* message, *layerType = KON_GetXMLAttribute(layerNode, "type");
+    KON_XMLNode* layerProperty;
+    bool loadTileMap = false;
 
-    /* Load Layer Data */
     if (strcmp(layerType, "BitMap") == 0) {
         KON_LoadLayerSurface(layer, layerNode);
         layer->layerRenderer = RENDER_2D_BITMAP;
-        layer->shown = true;
-
         message = "(KON_LoadMapLayer) Loaded NEW BitMap Layer";
     } else if (strcmp(layerType, "TileMap") == 0) {
-        if (!(layer->layerData = KON_LoadTileMap(layer, layerNode)))
-            return -1;
-
         KON_LoadLayerSurface(layer, layerNode);
         layer->layerRenderer = RENDER_2D_TILEMAP;
-        layer->shown = true;
-
         message = "(KON_LoadMapLayer) Loaded NEW TileMap Layer";
+        loadTileMap = true;
+    } else if (strcmp(layerType, "Raycast") == 0) {
+        KON_LoadLayerSurface(layer, layerNode);
+        layer->layerRenderer = RENDER_3D_RAYCAST;
+        message = "(KON_LoadMapLayer) Loaded NEW Raycast Layer";
+        loadTileMap = true;
     } else if (strcmp(layerType, "Empty") == 0) {
         layer->layerRenderer = RENDER_NONE;
-        layer->shown = true;
-
         message = "(KON_LoadMapLayer) Loaded NEW Empty Layer";
     } else {
         return -1;
     }
 
-    /* Load Layer Animation (if any) TODO */
+    layerProperty = KON_GetXMLNodeChild(layerNode);
+    while (layerProperty) {
+        if (loadTileMap && KON_CompareXMLNodeName(layerProperty, "tileMap")) {
+            if (!(layer->layerData = KON_LoadTileMap(layer, layerProperty)))
+                return -1;
+        } else if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
+            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
+        }
 
+        layerProperty = KON_GetXMLNodeSibling(layerProperty);
+    }
+
+    layer->shown = true;
     KON_SystemMsg(message, MESSAGE_LOG, 0);
 
     return 0;

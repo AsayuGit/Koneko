@@ -24,25 +24,59 @@
 
     #include "Rect.h"
     #include "XML.h"
+    #include <stdint.h>
 
-    typedef struct{
+    typedef struct {
         KON_Rect SrcRect;       /* Character source rect */
         KON_Rect DstRect;       /* Character destination */
         int NbOfFrames;         /* Number of frames in an animation */
         int Framerate;          /* Number of milliseconds between two frames */
-    } Animation;
+    } KON_SpriteAnimation;
+
+    typedef enum {
+        KON_NO_INTERPOLATION,
+        KON_LINEAR_INTERPOLATION,
+        KON_CUBIC_INTERPOLATION
+    } KON_InterpolationFunction;
+
+    typedef struct {
+        uint32_t timeCodeMS;
+        Vector2d pos;
+    } KON_KeyFrame;
+
+    typedef struct {
+        unsigned int nbOfKeyFrames;
+        unsigned int currentKeyFrame;
+        KON_InterpolationFunction interpolation;
+        KON_KeyFrame* keyFrameArray;
+    } KON_KeyFrameAnimation;
 
     /*
-        SUMMARY : Parses an Animation from a xmlNode.
-        INPUT   : xmlNode* array : The node the animation should be parsed from.
-        OUTPUT  : Animation*     : The parsed animation.
+        SUMMARY : Parses an KON_SpriteAnimation array from a XML Node.
+        INPUT   : KON_XMLNode* animArray      : The XML Node the Sprite animation should be parsed from.
+        INPUT   : size_t* nbOfSpriteAnumation : The number of sprite animations in the array.
+        OUTPUT  : KON_SpriteAnimation*        : The parsed Sprite Animation.
     */
-    Animation* KON_ParseAnimation(KON_XMLNode* array);
+    KON_SpriteAnimation* KON_ParseSpriteAnimation(KON_XMLNode* animArray, size_t* nbOfSpriteAnimation);
 
     /*
-        SUMMARY : Frees a previously loaded animation.
-        INPUT   : Animation* anim : The animation to free.
+        SUMMARY : Frees a previously loaded Sprite Animation.
+        INPUT   : KON_SpriteAnimation* anim : The Sprite Animation to free.
     */
-    void       KON_FreeAnimation(Animation* anim);
+    void            KON_FreeSpriteAnimation(KON_SpriteAnimation* spriteAnim);
+
+    /*
+        SUMMARY : Parses a KON_KeyFrameAnimation array from an XML Node
+        INPUT   : KON_XMLNode* animArray        : The XML Node the KeyFrame animation should be parsed from.
+        INPUT   : size_t* nbOfKeyFrameAnimation : The number of KeyFrame Animations in the array.
+        OUTPUT  : KON_KeyFrameAnimation*        : The parsed KeyFrame Animation.
+    */
+    KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t* nbOfKeyFrameAnimation);
+
+    /*
+        SUMMARY : Frees a previously loaded KeyFrame Animation.
+        INPUT   : KON_KeyFrameAnimation* layerAnim : The KeyFrame Animation to free.
+    */
+    void            KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim);
 
 #endif
