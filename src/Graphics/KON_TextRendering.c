@@ -57,58 +57,58 @@ int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int co
     return DstLetter.w;
 }
 
-/* Could use the same engine as dialogue for bonds checking */
-/* Or a letter by letter mode */
-Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const unsigned int x, const unsigned int y) {
+Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const bool skipWhiteSpace, const unsigned int x, const unsigned int y) {
     /* Declaration */
-    unsigned int CharID = 0, sizeTmp, DimX = 0, textColor = 0;
-    size_t BufferLen = 0;
-    char* Buffer;
+    unsigned int CharID = 0, sizeTmp, textColor = 0;
     Vector2i CharCoords;
     Vector2i Dimensions = {0};
+    bool skip = skipWhiteSpace;
+
+    if (!text)
+        return Dimensions;
 
     CharCoords.x = x;
     CharCoords.y = y;
 
-    if (text[CharID] == '\\') {
-        /*printf("ColorChange\n");*/
-        BufferLen = strcspn(&text[CharID + 1], ";");
-        Buffer = malloc(sizeof(char)*BufferLen);
-        strncpy(Buffer, &text[CharID + 1], BufferLen);
-        textColor = atoi(Buffer);
-        free(Buffer);
-        CharID += BufferLen + 2;
-    }
+    if (skipWhiteSpace)
+        for (; text[CharID] != '\0' && text[CharID] == '\n'; CharID++);
 
-    while (text[CharID] != '\0'){
-        if (text[CharID] != '\n'){
-            /* FIXME : This isn't coherent anymore */
+    while (text[CharID] != '\0') {
+        if (skip)
+            for (; text[CharID] != '\0' && text[CharID] == ' '; CharID++);
 
-            sizeTmp = KON_PrintChar(Font, target, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
-                /* sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;*/
-            CharCoords.x += sizeTmp;
-            DimX += sizeTmp;
-        } else {
-            /* New line */
-            sizeTmp = Font->Rects[0].h + 1;
-            Dimensions.y += sizeTmp;
-            CharCoords.y += sizeTmp;
-            CharCoords.x -= DimX;
-            
-            if (DimX > (unsigned int)Dimensions.x){
-                Dimensions.x = DimX - intCharSpce;
-                DimX = 0;
+        for (; text[CharID] != '\0'; CharID++) {
+            if (text[CharID] != '\n') {
+                sizeTmp = KON_PrintChar(Font, target, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
+                CharCoords.x += sizeTmp;
+            } else {
+                if (CharCoords.x > Dimensions.x)
+                    Dimensions.x = CharCoords.x;
+
+                /* New line */
+                CharCoords.y += Font->Rects[0].h + 1;
+                CharCoords.x = x;
+                CharID++;
+                break;
             }
         }
-        CharID++;
     }
 
-    if (DimX > (unsigned int)Dimensions.x) Dimensions.x = DimX - intCharSpce; /* Because we don't count the lase inter char space*/
+    Dimensions.y = CharCoords.y + Font->Rects[0].h;
 
     return Dimensions;
 }
 
+#define KON_DEFAULT_CHAR_SPACE 1
+Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, const unsigned int x, const unsigned int y) {
+    return KON_PrintEx(Font, target, text, KON_DEFAULT_CHAR_SPACE, false, x, y);
+}
+
+Vector2i KON_PrintTrim(BitmapFont* Font, KON_Surface* target, const char* text, const unsigned int x, const unsigned int y) {
+    return KON_PrintEx(Font, target, text, KON_DEFAULT_CHAR_SPACE, true, x, y);
+}
+
+/* TOFIX */
 Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce) {
-    /* TOFIX */
-    return KON_Print(Font, NULL, text, intCharSpce, 0, 0); /* dDevice = NULL was used to only get the length without printing anything */
+    return KON_PrintEx(Font, NULL, text, intCharSpce, false, 0, 0);
 }

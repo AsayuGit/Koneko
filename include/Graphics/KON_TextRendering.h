@@ -32,8 +32,12 @@
 */
 int      KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y);
 
-Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const unsigned int x, const unsigned int y);
-Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce);
+Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, const unsigned int x, const unsigned int y);
 
+Vector2i KON_PrintTrim(BitmapFont* Font, KON_Surface* target, const char* text, const unsigned int x, const unsigned int y);
+
+Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const bool skipWhiteSpace, const unsigned int x, const unsigned int y);
+
+Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce);
 
 #endif

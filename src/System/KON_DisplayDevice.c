@@ -223,7 +223,7 @@ void KON_DrawFPS() {
     double fps = 1000.0 / Koneko.dDevice.frametime;
 
     sprintf(fpsText, "FPS: %.2f\nFrametime: %u ms", fps, Koneko.dDevice.frametime);
-    KON_Print(font, fpsTextBox, fpsText, 1, 0, 0);
+    KON_PrintEx(font, fpsTextBox, fpsText, 1, false, 0, 0);
     KON_DrawScaledSurface(fpsTextBox, &fpsTextBoxSize);
 }
 

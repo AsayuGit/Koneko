@@ -87,6 +87,8 @@ const char* KON_GetXMLNodeName(KON_XMLNode* node) {
 }
 
 bool KON_CompareXMLNodeName(KON_XMLNode* node, char* name) {
+    if (!node || !name)
+        return false;
     #ifdef LIBXML2
         return (strcmp(node->name, name) == 0);
     #elif defined(MXML)
