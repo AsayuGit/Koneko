@@ -2,6 +2,7 @@
 #define KON_EVENTS_H
 
     #include <stdint.h>
+    #include <Vector.h>
 
     typedef enum{
         KON_INPUT_IDLE,
@@ -31,10 +32,15 @@
         int8_t Y;
     };
 
+    typedef union {
+        Vector2i mousePos;
+    } KON_ActionData;
+
     struct KON_EventAction {
         uint8_t type;
         unsigned int actionID;
         KON_InputState state;
+        KON_ActionData data;
     };
 
     typedef union {

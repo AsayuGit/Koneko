@@ -80,7 +80,15 @@ static bool KON_PollKeyBinding(KON_Keyboard binding) {
     return (Koneko.iDevice.KeyStates[binding]);
 }
 
-static bool KON_PollActionRef(KON_Action* action) {
+static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos) {
+    if (Koneko.iDevice.mouseState & binding) {
+        *mousePos = KON_ScreenToRenderCoordinate(Koneko.iDevice.mousePos);
+        return true;
+    }
+    return false;
+}
+
+static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
     LinkedList* bindingList = NULL;
     bool matchFound = false;
     register KON_Binding* binding = NULL;
@@ -95,6 +103,12 @@ static bool KON_PollActionRef(KON_Action* action) {
                 if (KON_PollKeyBinding(binding->binding))
                     matchFound = true;
                 break;
+
+            case KON_BINDING_MOUSE_BUTTON:
+                if (KON_PollMouseButtonBinding(binding->binding, &data->mousePos))
+                    matchFound = true;
+                break;
+
             default:
                 break;
         }
@@ -147,7 +161,7 @@ static void KON_PollAllActions() {
         action = (KON_Action*)actionList->data;
         newEvent = eventNone;
 
-        if (KON_PollActionRef(action)) {
+        if (KON_PollActionRef(action, &newEvent.action.data)) {
             newEvent.type = KON_EVENT_ACTION;
             newEvent.action.actionID = action->actionID;
             newEvent.action.state = action->state;
@@ -164,6 +178,7 @@ void KON_PumpEvent() {
         /* TODO: implement libogc */
     #else
         SDL_Event sdlEvent;
+        Koneko.iDevice.mouseState = SDL_GetMouseState(&Koneko.iDevice.mousePos.x, &Koneko.iDevice.mousePos.y);
 
         while (SDL_PollEvent(&sdlEvent)) {
             newEvent = eventNone;
@@ -266,7 +281,7 @@ static void KON_FreeUserActions() {
     KON_FreeLinkedList(&userActions);
 }
 
-bool KON_PollAction(unsigned int actionID) {
+bool KON_PollAction(unsigned int actionID, KON_ActionData* data) {
     LinkedList** action = NULL;
 
     if (!(action = KON_SearchActionNode(actionID))) {
@@ -274,5 +289,5 @@ bool KON_PollAction(unsigned int actionID) {
         return false;
     }
 
-    return KON_PollActionRef((KON_Action*)(*action)->data);
+    return KON_PollActionRef((KON_Action*)(*action)->data, data);
 }

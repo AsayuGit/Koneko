@@ -25,11 +25,14 @@
     #include <Bool.h>
     #include "KON_Events.h"
     #include "KON_Keyboard.h"
+    #include "KON_Mouse.h"
 
     typedef struct {
         /* Key Presses */
         KON_Event event;
         const uint8_t* KeyStates; /* Pointer to the keypresses */
+        uint32_t mouseState;
+        Vector2i mousePos;
     } InputDevice;
 
     typedef enum {
@@ -80,8 +83,9 @@
     /*
         SUMMARY : Test if the conditions for an Action are met
         INPUT   : unsigned int actionID : The Action to test for
+        INPUT   : KON_ActionData* data  : Data relative to the action
         OUTPUT  : bool                  : Wether or not the conditions are met
     */
-    bool KON_PollAction(unsigned int actionID);
+    bool KON_PollAction(unsigned int actionID, KON_ActionData* data);
 
 #endif
