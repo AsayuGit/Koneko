@@ -72,6 +72,7 @@ typedef struct {
     KON_Rect Frame[4];              /* Screen Border Frame */
     KON_Rect RenderRect;            /* Where the game is drawn on screen */
     Vector2i ScreenResolution;      /* The external resolution of the game */
+    bool offScreenRendering;
 } KON_VideoInterface;
 
 
@@ -708,11 +709,16 @@ int KON_SetRenderTarget(KON_Surface* target) {
         /* TODO: implement libogc */
         return 0;
     #else
-        if (target && target->readOnly) {
-            KON_SystemMsg("(KON_SetRenderTarget) Sprite is readonly!", MESSAGE_WARNING, 0);
-            return -1;
+        if (target) { 
+            if (target->readOnly) {
+                KON_SystemMsg("(KON_SetRenderTarget) Sprite is readonly!", MESSAGE_WARNING, 0);
+                return -1;
+            }
+            vi.offScreenRendering = true;
+            return SDL_SetRenderTarget(vi.Renderer, target->surface);
         }
-        return SDL_SetRenderTarget(vi.Renderer, target ? target->surface : NULL);
+        vi.offScreenRendering = false;
+        return SDL_SetRenderTarget(vi.Renderer, NULL);
     #endif
 }
 
@@ -788,6 +794,11 @@ void KON_DrawScaledSurfaceRectEx(KON_Surface* surface, const KON_Rect* rect, con
     
     if (!surface)
         return;
+
+    if (vi.offScreenRendering) {
+        KON_DrawEx(surface, rect, dest, flags);
+        return;
+    }
 
     if (dest){
         if (!RectOnScreen(dest))
