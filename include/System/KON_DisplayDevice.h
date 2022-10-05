@@ -101,6 +101,13 @@
     void KON_RotateCamera(double angle);
 
     /*
+        SUMMARY : Convert ScreenSpace coordinates to RenderSpace.
+        INPUT   : Vector2i screenCoordinate : The ScreenSpace coordinate.
+        OUTPUT  : Vector2i                  : The RenderSpace coordinate.
+    */
+    Vector2i KON_ScreenToRenderCoordinate(Vector2i screenCoordinate);
+
+    /*
         SUMMARY : Loads a KON_Surface from disk.
         INPUT   : char* filePath    : The path to the surface to load.
         INPUT   : uint32_t colorKey : The color to key the surface with (if needs be).

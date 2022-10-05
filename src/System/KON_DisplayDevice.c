@@ -297,6 +297,21 @@ void KON_RotateCamera(double angle) {
     KON_RotateVector(&Koneko.dDevice.camera.plane, angle);
 }
 
+Vector2i KON_ScreenToRenderCoordinate(Vector2i screenCoordinate) {
+    Vector2i renderCoordinate = {0};
+
+    if (screenCoordinate.x < vi.RenderRect.x || screenCoordinate.y < vi.RenderRect.y)
+        return renderCoordinate;
+    if (screenCoordinate.x > vi.RenderRect.x + vi.RenderRect.w || screenCoordinate.y > vi.RenderRect.y + vi.RenderRect.h)
+        return renderCoordinate;
+    
+
+    renderCoordinate.x = (screenCoordinate.x - vi.RenderRect.x) / Koneko.dDevice.IRScalar;
+    renderCoordinate.y = (screenCoordinate.y - vi.RenderRect.y) / Koneko.dDevice.IRScalar;
+
+    return renderCoordinate;
+}
+
 void KON_UpdateRenderRect() {
 
     #ifdef GEKKO
