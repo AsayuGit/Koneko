@@ -57,6 +57,8 @@
 static void KON_MapEvents(SceneHandle* scene) { KON_EntityOnX(scene, OnEvent); }
 static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
 
+static bool sceneAlive;
+
 int KON_StartScene(SceneDescriptor* scenePointer) {
     SceneHandle* scene;
 
@@ -67,7 +69,8 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
     if (scenePointer->OnSetup)
         scenePointer->OnSetup(scene);
     /* Main Loop */
-    while (true) {
+    sceneAlive = true;
+    while (sceneAlive) {
         /* Events Loop */
         KON_PumpEvent();
         while (KON_PollEvent()){
@@ -104,4 +107,8 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         scenePointer->OnExit(scene);
 
     return 0;
+}
+
+void KON_EndScene(SceneHandle* scene) {
+    sceneAlive = false;
 }

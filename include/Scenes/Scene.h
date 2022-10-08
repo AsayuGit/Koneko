@@ -54,4 +54,10 @@
     */
     int KON_StartScene(SceneDescriptor* scenePointer);
 
+    /*
+        SUMMARY : End a running scene.
+        INPUT   : SceneHandle* scene.
+    */
+    void KON_EndScene(SceneHandle* scene);
+
 #endif
