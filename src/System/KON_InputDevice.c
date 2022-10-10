@@ -80,9 +80,10 @@ static bool KON_PollKeyBinding(KON_Keyboard binding) {
     return (Koneko.iDevice.KeyStates[binding]);
 }
 
-static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos) {
+static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos, Vector2i* mouseMvt) {
     if (Koneko.iDevice.mouseState & binding) {
         *mousePos = KON_ScreenToRenderCoordinate(Koneko.iDevice.mousePos);
+        *mouseMvt = Koneko.iDevice.mouseMvt;
         return true;
     }
     return false;
@@ -105,7 +106,7 @@ static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
                 break;
 
             case KON_BINDING_MOUSE_BUTTON:
-                if (KON_PollMouseButtonBinding(binding->binding, &data->mousePos))
+                if (KON_PollMouseButtonBinding(binding->binding, &data->mousePos, &data->mouseMvt))
                     matchFound = true;
                 break;
 
@@ -179,6 +180,7 @@ void KON_PumpEvent() {
     #else
         SDL_Event sdlEvent;
         Koneko.iDevice.mouseState = SDL_GetMouseState(&Koneko.iDevice.mousePos.x, &Koneko.iDevice.mousePos.y);
+        SDL_GetRelativeMouseState(&Koneko.iDevice.mouseMvt.x, &Koneko.iDevice.mouseMvt.y);
 
         while (SDL_PollEvent(&sdlEvent)) {
             newEvent = eventNone;

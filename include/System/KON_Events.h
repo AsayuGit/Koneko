@@ -34,6 +34,7 @@
 
     typedef union {
         Vector2i mousePos;
+        Vector2i mouseMvt;
     } KON_ActionData;
 
     struct KON_EventAction {

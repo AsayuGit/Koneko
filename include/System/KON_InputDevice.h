@@ -33,6 +33,7 @@
         const uint8_t* KeyStates; /* Pointer to the keypresses */
         uint32_t mouseState;
         Vector2i mousePos;
+        Vector2i mouseMvt;
     } InputDevice;
 
     typedef enum {
