@@ -75,3 +75,7 @@ bool KON_GetRectVectIntersect(KON_Rect* rect, Vector2d* segStart, Vector2d* segE
 int KON_RectToString(KON_Rect* rect, char* buffer) {
     return sprintf(buffer, "{%d, %d, %d, %d}\n", rect->x, rect->y, rect->w, rect->h);
 }
+
+bool KON_coordInRect(int x, int y, KON_Rect* rect) {
+    return (x >= rect->x && x <= rect->x + rect->w && y >= rect->y && y <= rect->y + rect->h);
+}

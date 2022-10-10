@@ -90,4 +90,11 @@
     */
     int     KON_RectToString(KON_Rect* rect, char* buffer);
 
+    /*
+        SUMMARY : Test wether a coordinate is in a rect or not.
+        INPUT   : int x, y       : The coordinate to test.
+        INPUT   : KON_rect* rect : The rect to test against.
+        OUTPUT  : bool           : The test result.
+    */
+    bool KON_coordInRect(int x, int y, KON_Rect* rect);
 #endif
