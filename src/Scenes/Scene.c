@@ -31,28 +31,28 @@
 
 #include <stdlib.h>
 
-#define KON_EntityOnX(scene, function) {                                                   \
-    MapLayer* currentLayer;                                                                \
-    LinkedList* entityInstanceList;                                                        \
-    EntityInstance* entityInstancePointer;                                                 \
-    unsigned int i;                                                                        \
-                                                                                           \
-    /* For each layer */                                                                   \
-    for (i = 0; i < scene->WorldMap->nbOfLayers; i++){                                     \
-        currentLayer = scene->WorldMap->MapLayer + i;                                      \
-                                                                                           \
-        /* For each entity instance */                                                     \
-        entityInstanceList = currentLayer->entityInstanceList;                             \
-        while (entityInstanceList) {                                                       \
-                                                                                           \
-            entityInstancePointer = ((EntityInstance*)entityInstanceList->data);           \
-            if (entityInstancePointer->descriptor->function)                               \
+#define KON_EntityOnX(scene, function) {                                                                 \
+    MapLayer* currentLayer;                                                                              \
+    LinkedList* entityInstanceList;                                                                      \
+    EntityInstance* entityInstancePointer;                                                               \
+    unsigned int i;                                                                                      \
+                                                                                                         \
+    /* For each layer */                                                                                 \
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++){                                                   \
+        currentLayer = scene->WorldMap->MapLayer + i;                                                    \
+                                                                                                         \
+        /* For each entity instance */                                                                   \
+        entityInstanceList = currentLayer->entityInstanceList;                                           \
+        while (entityInstanceList) {                                                                     \
+                                                                                                         \
+            entityInstancePointer = ((EntityInstance*)entityInstanceList->data);                         \
+            if (entityInstancePointer->enabled && entityInstancePointer->descriptor->function)           \
                 entityInstancePointer->descriptor->function(scene, currentLayer, entityInstancePointer); \
-                                                                                           \
-            entityInstanceList = entityInstanceList->next;                                 \
-        }                                                                                  \
-    }                                                                                      \
-}                                                                                          \
+                                                                                                         \
+            entityInstanceList = entityInstanceList->next;                                               \
+        }                                                                                                \
+    }                                                                                                    \
+}                                                                                                        \
 
 static void KON_MapEvents(SceneHandle* scene) { KON_EntityOnX(scene, OnEvent); }
 static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }

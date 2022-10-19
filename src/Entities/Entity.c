@@ -40,6 +40,7 @@ EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
         return NULL;
     }
     newEntityInstance->descriptor = entityToLoad;
+    newEntityInstance->enabled = true;
 
     /* Load */
     newEntityInstance->entitySprite = KON_LoadSpriteFromXml(entityToLoad->spriteXmlPath);

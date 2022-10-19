@@ -66,6 +66,8 @@
     struct EntityInstance{
         EntityDescriptor* descriptor;
 
+        bool enabled;
+
         /* "Behind the scene" properties */
         Vector2d lastPos;
 
