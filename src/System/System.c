@@ -50,15 +50,20 @@ static void KON_InitSoundDevice() {
 
 /* FIXME : Implement memoru cleanup */
 void KON_Exit(){
+    KON_FreeFileSystem();
     KON_FreeInputDevice();
     KON_FreeSoundDevice();
     KON_FreeDisplayDevice();
+
+    #ifndef GEKKO
+        SDL_Quit();
+    #endif
 }
 
 void KON_InitEngine(int resX, int resY, char* gameTitle) {
     #ifndef GEKKO
         /* SDL Init */
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
             KON_SystemMsg("(KON_InitEngine) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
         }
     #endif

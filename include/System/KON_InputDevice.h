@@ -79,6 +79,11 @@
     /*
         TODO: Doc
     */
+    void KON_FreeUserActions();
+
+    /*
+        TODO: Doc
+    */
     void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned int binding);
 
     /*

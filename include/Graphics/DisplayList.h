@@ -28,12 +28,6 @@
     typedef struct LinkedList DisplayList;
 
     /*
-        SUMMARY : Initialize a new DisplayList.
-        OUTPUT  : DisplayList* : The newly allocated DisplayList.
-    */
-    DisplayList* KON_InitDisplayList();
-
-    /*
         SUMMARY : Frees a previously allocated DisplayList.
         INPUT   : DisplayList* listToFree : The DisplayList to be freed.
     */

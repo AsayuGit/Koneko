@@ -22,6 +22,8 @@ void KON_InitFileSystem() {
     #endif
 }
 
+void KON_FreeFileSystem() {}
+
 char* KON_DirName(char *path) {
     #ifdef _XBOX
         /* TODO: Check */

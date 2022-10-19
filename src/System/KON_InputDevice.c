@@ -33,6 +33,7 @@ typedef struct {
 
 const static KON_Event eventNone;
 static KON_InputInterface inInt;
+
 static LinkedList* userActions = NULL;
 static KON_FIFO* eventQueue = NULL;
 
@@ -61,6 +62,9 @@ void KON_FreeInputDevice() {
         if (inInt.Joy1)
             SDL_JoystickClose(inInt.Joy1);
     #endif
+
+    KON_FreeFIFO(&eventQueue);
+    KON_FreeUserActions();
 }
 
 static LinkedList** KON_SearchActionNode(unsigned int actionID) {
@@ -272,7 +276,7 @@ void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned 
     KON_AppendToLinkedList(&((KON_Action*)(*action)->data)->bindings, &newBinding, sizeof(KON_Binding));
 }
 
-static void KON_FreeUserActions() {
+void KON_FreeUserActions() {
     LinkedList** actions = &userActions;
 
     while (*actions) {

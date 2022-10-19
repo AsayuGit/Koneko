@@ -389,7 +389,7 @@ void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
 
     KON_UpdateRenderRect();
 
-    font = KON_LoadBitmapFontFromMem(&SystemFontBitmap, 0xff00ff);
+    font = KON_LoadBitmapFontFromMem("KON_SystemFont", &SystemFontBitmap, 0xff00ff);
     fpsTextBox = KON_CreateSurface(fpsTextBoxSize.w, fpsTextBoxSize.h);
 }
 
@@ -397,6 +397,8 @@ void KON_FreeDisplayDevice() {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
+        KON_FreeBitmapFont(&font);
+        KON_FreeSurface(fpsTextBox);
         SDL_DestroyRenderer(vi.Renderer);
         SDL_DestroyWindow(vi.Screen);
     #endif
@@ -407,6 +409,8 @@ void KON_FreeDisplayDevice() {
     INPUT   : SDL_Texture* surface : Surface to be freed
 */
 void KON_FreeRawSurface(KON_Surface* surface) {
+    if (!surface)
+        return;
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else

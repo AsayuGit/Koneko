@@ -28,10 +28,6 @@ typedef struct {
     Sprite* sprite; /* Linked list of Sprite* */
 } DisplayListItem;
 
-DisplayList* KON_InitDisplayList() {
-    return NULL;
-}
-
 void KON_FreeDisplayList(DisplayList* listToFree) {
     KON_ClearDisplayList(listToFree);
     free(listToFree);

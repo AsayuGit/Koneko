@@ -76,9 +76,9 @@
 
     /*
         SUMMARY : Frees a previously loaded KeyFrame Animation.
-        INPUT   : KON_KeyFrameAnimation* layerAnim : The KeyFrame Animation to free.
+        INPUT   : KON_KeyFrameAnimation* keyframeAnim : The KeyFrame Animation to free.
     */
-    void            KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim);
+    void            KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* keyframeAnim);
 
     /*
         SUMMARY : Animate a vector.

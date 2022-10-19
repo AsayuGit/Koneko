@@ -39,15 +39,18 @@
     BitmapFont* KON_LoadBitmapFont(char* FilePath, uint32_t FontColorKey);
 
     /*
-        SUMMARY : Load a bitmap font from memory
+        SUMMARY : Load a bitmap font from memory.
+        INPUT   : const char* fontName   : How to name the font.
+        INPUT   : BITMAP* bitmap         : The pointer to the bitmap in mem.
+        INPUT   : uint32_t fontColorKey  : The color key to apply to the font.
         OUTPUT  : BitmapFont*            : Pointer to the newly loaded font, or NULL on error.
     */
-    BitmapFont* KON_LoadBitmapFontFromMem(BITMAP* bitmap, uint32_t FontColorKey);
+    BitmapFont* KON_LoadBitmapFontFromMem(const char* fontName, BITMAP* bitmap, uint32_t fontColorKey);
 
     /*
         SUMMARY : Free a previously loaded font
         INPUT   : BitmapFont* font : Pointer to the font to free
     */
-    void KON_FreeBitmapFont(BitmapFont* font);
+    void KON_FreeBitmapFont(BitmapFont** font);
 
 #endif

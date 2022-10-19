@@ -120,8 +120,11 @@ KON_KeyFrameAnimation* KON_ParseKeyFrameAnimation(KON_XMLNode* animArray, size_t
     return newKeyFrameAnimation;
 }
 
-void KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* layerAnim) {
-    /* TODO */
+void KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* keyframeAnim) {
+    if (!keyframeAnim)
+        return;
+    free(keyframeAnim->keyFrameArray);
+    free(keyframeAnim);
 }
 
 static double KON_DoubleLinearInterpolate(double DstA, double DstB, double SrcA, double SrcB, double Value) {

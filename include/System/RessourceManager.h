@@ -64,9 +64,9 @@
 
     /*
         SUMMARY : Free a managed ressource's container and return the contained ressource if
-                said managed ressources isn't shared anymore. Otherwise decrement the
-                reference counter and return NULL.
-                (meaning the contained ressource shouldn't be freed yet).
+                  said managed ressources isn't shared anymore. Otherwise decrement the
+                  reference counter and return NULL.
+                  (meaning the contained ressource shouldn't be freed yet).
         INPUT   : void* ressource : The managed ressource reference
         OUTPUT  : void*           : The contained ressource to be freed
     */

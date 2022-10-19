@@ -90,7 +90,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
     INPUT   : uint32_t fontColorKey  : The color key the font should be keyed with.
     OUTPUT  : BitmapFont*            : The newly loaded font (or NULL on error).
 */
-BitmapFont* KON_LoadBitmapFontFromMem(BITMAP* bitmap, uint32_t fontColorKey) {
+BitmapFont* KON_LoadBitmapFontFromMem(const char* fontName, BITMAP* bitmap, uint32_t fontColorKey) {
     BitmapFont* LoadingFont;
     KON_CPUSurface* LoadingSurface;
     unsigned int FontPixX = 1, FontPixY;
@@ -135,6 +135,9 @@ BitmapFont* KON_LoadBitmapFontFromMem(BITMAP* bitmap, uint32_t fontColorKey) {
     LoadingFont->FontSurface = KON_CpuToGpuSurface(LoadingSurface);
     KON_FreeCPUSurface(LoadingSurface);
 
+    KON_AddManagedRessource(fontName, RESSOURCE_FONT, LoadingFont);
+    KON_SystemMsg("(KON_LoadBitmapFont) Loaded new font from mem: ", MESSAGE_LOG, 1, fontName);
+
     return LoadingFont;
 }
 
@@ -167,9 +170,10 @@ BitmapFont* KON_LoadBitmapFont(char* FilePath, uint32_t FontColorKey) {
     return loadedFont;
 }
 
-void KON_FreeBitmapFont(BitmapFont* font) {
-    if (!font)
+void KON_FreeBitmapFont(BitmapFont** font) {
+    if (!font || !(*font))
         return;
 
-    KON_FreeRawBitmapFont(KON_FreeManagedRessourceByRef(font));
+    KON_FreeRawBitmapFont(KON_FreeManagedRessourceByRef(*font));
+    *font = NULL;
 }
