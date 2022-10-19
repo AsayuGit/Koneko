@@ -90,6 +90,19 @@ static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos, Ve
     *mouseMvt = Koneko.iDevice.mouseMvt;
     return (Koneko.iDevice.mouseState & binding);
 }
+static bool KON_PollMouseAxisBinding(KON_MouseAxis binding, Vector2i* mousePos, Vector2i* mouseMvt) {
+    uint8_t mvtMask = 0;
+    
+    *mousePos = KON_ScreenToRenderCoordinate(Koneko.iDevice.mousePos);
+    *mouseMvt = Koneko.iDevice.mouseMvt;
+
+    if (Koneko.iDevice.mouseMvt.x)
+        mvtMask |= KON_MOUSE_AXIS_X;
+    if (Koneko.iDevice.mouseMvt.y)
+        mvtMask |= KON_MOUSE_AXIS_Y;
+
+    return binding & mvtMask;
+}
 
 static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventAction) {
     LinkedList* bindingList = NULL;
@@ -112,6 +125,13 @@ static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventA
             case KON_BINDING_MOUSE_BUTTON:
                 if (KON_PollMouseButtonBinding(binding->binding, &eventAction->data.mouse.pos, &eventAction->data.mouse.mvt)) {
                     action->bindingType = KON_BINDING_MOUSE_BUTTON;
+                    matchFound = true;
+                }
+                break;
+
+            case KON_BINDING_MOUSE_AXIS:
+                if (KON_PollMouseAxisBinding(binding->binding, &eventAction->data.mouse.pos, &eventAction->data.mouse.mvt)) {
+                    action->bindingType = KON_BINDING_MOUSE_AXIS;
                     matchFound = true;
                 }
                 break;

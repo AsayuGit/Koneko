@@ -28,4 +28,10 @@
         KON_MOUSE_RIGHTCLICK = 4
     } KON_Mouse;
 
+    typedef enum {
+        KON_MOUSE_AXIS_X = 1,
+        KON_MOUSE_AXIS_Y = 2,
+        KON_MOUSE_AXIS_BOTH = 3
+    } KON_MouseAxis;
+
 #endif
