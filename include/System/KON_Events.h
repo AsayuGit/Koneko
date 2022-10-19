@@ -11,6 +11,14 @@
         KON_INPUT_RELEASED
     } KON_InputState;
 
+    typedef enum {
+        KON_BINDING_GAMEPAD_BUTTON,
+        KON_BINDING_GAMEPAD_AXIS,
+        KON_BINDING_MOUSE_BUTTON,
+        KON_BINDING_MOUSE_AXIS,
+        KON_BINDING_KEY
+    } KON_BindingType;
+
     enum {
         KON_EVENT_NONE = 0,
         KON_EVENT_GAME_EXIT,
@@ -43,6 +51,7 @@
         uint8_t type;
         unsigned int actionID;
         KON_InputState state;
+        KON_BindingType bindingType;
         KON_ActionData data;
     };
 

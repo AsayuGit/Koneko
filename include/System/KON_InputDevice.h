@@ -36,14 +36,6 @@
         Vector2i mouseMvt;
     } InputDevice;
 
-    typedef enum {
-        KON_BINDING_GAMEPAD_BUTTON,
-        KON_BINDING_GAMEPAD_AXIS,
-        KON_BINDING_MOUSE_BUTTON,
-        KON_BINDING_MOUSE_AXIS,
-        KON_BINDING_KEY
-    } KON_BindingType;
-
     /*
         TODO: Doc
     */
@@ -88,10 +80,10 @@
 
     /*
         SUMMARY : Test if the conditions for an Action are met
-        INPUT   : unsigned int actionID : The Action to test for
-        INPUT   : KON_ActionData* data  : Data relative to the action
-        OUTPUT  : bool                  : Wether or not the conditions are met
+        INPUT   : unsigned int actionID               : The Action to test for
+        INPUT   : struct KON_EventAction* eventAction : Data relative to the action
+        OUTPUT  : bool                                : Wether or not the conditions are met
     */
-    bool KON_PollAction(unsigned int actionID, KON_ActionData* data);
+    bool KON_PollAction(unsigned int actionID, struct KON_EventAction* eventAction);
 
 #endif

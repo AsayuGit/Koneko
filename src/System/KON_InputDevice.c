@@ -28,6 +28,7 @@ typedef struct {
 typedef struct {
     unsigned int actionID;
     KON_InputState state;
+    KON_BindingType bindingType;
     LinkedList* bindings;
 } KON_Action;
 
@@ -90,25 +91,29 @@ static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos, Ve
     return (Koneko.iDevice.mouseState & binding);
 }
 
-static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
+static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventAction) {
     LinkedList* bindingList = NULL;
     bool matchFound = false;
     register KON_Binding* binding = NULL;
 
     bindingList = action->bindings;
 
-    while (bindingList && !matchFound) {
+    while (bindingList) {
         binding = (KON_Binding*)bindingList->data;
 
         switch (binding->type) {
             case KON_BINDING_KEY:
-                if (KON_PollKeyBinding(binding->binding))
+                if (KON_PollKeyBinding(binding->binding)) {
+                    action->bindingType = KON_BINDING_KEY;
                     matchFound = true;
+                }
                 break;
 
             case KON_BINDING_MOUSE_BUTTON:
-                if (KON_PollMouseButtonBinding(binding->binding, &data->mouse.pos, &data->mouse.mvt))
+                if (KON_PollMouseButtonBinding(binding->binding, &eventAction->data.mouse.pos, &eventAction->data.mouse.mvt)) {
+                    action->bindingType = KON_BINDING_MOUSE_BUTTON;
                     matchFound = true;
+                }
                 break;
 
             default:
@@ -118,6 +123,7 @@ static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
         bindingList = bindingList->next;
     }
 
+    eventAction->bindingType = action->bindingType;
     if (matchFound) {
         switch (action->state) {
         case KON_INPUT_IDLE:
@@ -141,13 +147,11 @@ static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
         case KON_INPUT_RELEASED:
             action->state = KON_INPUT_IDLE;
             return true;
-            break;
 
         case KON_INPUT_HELD:
         case KON_INPUT_PRESSED:
             action->state = KON_INPUT_RELEASED;
             return true;
-            break;
         }
     }
 
@@ -163,7 +167,7 @@ static void KON_PollAllActions() {
         action = (KON_Action*)actionList->data;
         newEvent = eventNone;
 
-        if (KON_PollActionRef(action, &newEvent.action.data)) {
+        if (KON_PollActionRef(action, &newEvent.action)) {
             newEvent.type = KON_EVENT_ACTION;
             newEvent.action.actionID = action->actionID;
             newEvent.action.state = action->state;
@@ -284,7 +288,7 @@ void KON_FreeUserActions() {
     KON_FreeLinkedList(&userActions);
 }
 
-bool KON_PollAction(unsigned int actionID, KON_ActionData* data) {
+bool KON_PollAction(unsigned int actionID, struct KON_EventAction* eventAction) {
     LinkedList** action = NULL;
 
     if (!(action = KON_SearchActionNode(actionID))) {
@@ -292,5 +296,5 @@ bool KON_PollAction(unsigned int actionID, KON_ActionData* data) {
         return false;
     }
 
-    return KON_PollActionRef((KON_Action*)(*action)->data, data);
+    return KON_PollActionRef((KON_Action*)(*action)->data, eventAction);
 }
