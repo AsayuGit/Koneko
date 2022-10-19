@@ -33,8 +33,10 @@
     };
 
     typedef union {
-        Vector2i mousePos;
-        Vector2i mouseMvt;
+        struct KON_MouseActionData {
+            Vector2i pos;
+            Vector2i mvt;
+        } mouse;
     } KON_ActionData;
 
     struct KON_EventAction {

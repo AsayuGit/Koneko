@@ -85,12 +85,9 @@ static bool KON_PollKeyBinding(KON_Keyboard binding) {
 }
 
 static bool KON_PollMouseButtonBinding(KON_Mouse binding, Vector2i* mousePos, Vector2i* mouseMvt) {
-    if (Koneko.iDevice.mouseState & binding) {
-        *mousePos = KON_ScreenToRenderCoordinate(Koneko.iDevice.mousePos);
-        *mouseMvt = Koneko.iDevice.mouseMvt;
-        return true;
-    }
-    return false;
+    *mousePos = KON_ScreenToRenderCoordinate(Koneko.iDevice.mousePos);
+    *mouseMvt = Koneko.iDevice.mouseMvt;
+    return (Koneko.iDevice.mouseState & binding);
 }
 
 static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
@@ -110,7 +107,7 @@ static bool KON_PollActionRef(KON_Action* action, KON_ActionData* data) {
                 break;
 
             case KON_BINDING_MOUSE_BUTTON:
-                if (KON_PollMouseButtonBinding(binding->binding, &data->mousePos, &data->mouseMvt))
+                if (KON_PollMouseButtonBinding(binding->binding, &data->mouse.pos, &data->mouse.mvt))
                     matchFound = true;
                 break;
 
