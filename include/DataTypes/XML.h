@@ -51,10 +51,10 @@
 
     /*
         SUMMARY : Loads a XML file from disk.
-        INPUT   : char* filePath     : The path to the xml file to load.
-        OUTPUT  : KON_XMLDocument*   : The newly loaded xml file (or NULL on error).
+        INPUT   : const char* filePath : The path to the xml file to load.
+        OUTPUT  : KON_XMLDocument*     : The newly loaded xml file (or NULL on error).
     */
-    KON_XMLDocument* KON_LoadXml(char* filePath);
+    KON_XMLDocument* KON_LoadXml(const char* filePath);
 
     /*
         SUMMARY : Free a previously loaded xml document.
@@ -72,10 +72,10 @@
     /*
         SUMMARY : Test if the node's name is the passed name.
         INPUT   : KON_XMLNode* node : The xml node to test the name of. 
-        INPUT   : char* name        : The name to test the node with.
+        INPUT   : cosnt char* name  : The name to test the node with.
         OUTPUT  : bool              : The test result.
     */
-    bool KON_CompareXMLNodeName(KON_XMLNode* node, char* name);
+    bool KON_CompareXMLNodeName(KON_XMLNode* node, const char* name);
 
     /*
         SUMMARY : Returns a node's child node.
@@ -93,27 +93,27 @@
 
     /*
         SUMMARY : Returns an attribute from an xml node.
-        INPUT   : KON_XMLNode* node : The xml node.
-        INPUT   : char* attribute   : The attribute to look for.
-        OUTPUT  : char*             : The attribute value.
+        INPUT   : KON_XMLNode* node     : The xml node.
+        INPUT   : const char* attribute : The attribute to look for.
+        OUTPUT  : char*                 : The attribute value.
     */
-    const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute);
+    const char* KON_GetXMLAttribute(KON_XMLNode* node, const char* attribute);
 
     /*
         SUMMARY : Returns an attribute from an xml node as an int.
-        INPUT   : KON_XMLNode* node : The xml node.
-        INPUT   : char* attribute   : The attribute to look for.
-        OUTPUT  : int               : The attribute value.
+        INPUT   : KON_XMLNode* node     : The xml node.
+        INPUT   : const char* attribute : The attribute to look for.
+        OUTPUT  : int                   : The attribute value.
     */
-    int         KON_GetXMLAttributeAsInt(KON_XMLNode* node, char* attribute);
+    int         KON_GetXMLAttributeAsInt(KON_XMLNode* node, const char* attribute);
 
     /*
         SUMMARY : Returns an attribute from an xml node as a double.
-        INPUT   : KON_XMLNode* node : The xml node.
-        INPUT   : char* attribute   : The attribute to look for.
-        OUTPUT  : double            : The attribute value.
+        INPUT   : KON_XMLNode* node     : The xml node.
+        INPUT   : const char* attribute : The attribute to look for.
+        OUTPUT  : double                : The attribute value.
     */
-    double      KON_GetXMLAttributeAsDouble(KON_XMLNode* node, char* attribute);
+    double      KON_GetXMLAttributeAsDouble(KON_XMLNode* node, const char* attribute);
 
     /*
         SUMMARY : Returns the number of child of an xml node.
@@ -125,10 +125,10 @@
     /*
         SUMMARY : Returns the number of child nodes matching the provided name.
         INPUT   : KON_XMLNode* node : The node to count the child of.
-        INPUT   : char* name        : The name of the nodes to check for.
+        INPUT   : const char* name  : The name of the nodes to check for.
         OUTPUT  : undigned int      : the number of nodes.
     */
-    unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, char* name);
+    unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, const char* name);
 
     /*
         SUMMARY : Parses a KON_Rect from a xml node.

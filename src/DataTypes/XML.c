@@ -29,7 +29,7 @@
 #endif
 
 /* spriteNode = xmlDocGetRootElement(spriteXml); rootNode */
-KON_XMLDocument* KON_LoadXml(char* filePath) {
+KON_XMLDocument* KON_LoadXml(const char* filePath) {
     #ifdef LIBXML2
         xmlKeepBlanksDefault(0); /* Ignore white space */
 
@@ -86,7 +86,7 @@ const char* KON_GetXMLNodeName(KON_XMLNode* node) {
     #endif
 }
 
-bool KON_CompareXMLNodeName(KON_XMLNode* node, char* name) {
+bool KON_CompareXMLNodeName(KON_XMLNode* node, const char* name) {
     if (!node || !name)
         return false;
     #ifdef LIBXML2
@@ -121,7 +121,7 @@ KON_XMLNode* KON_GetXMLNodeSibling(KON_XMLNode* node) {
     #endif
 }
 
-const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute) {
+const char* KON_GetXMLAttribute(KON_XMLNode* node, const char* attribute) {
     #ifdef LIBXML2
         return (char*)xmlGetProp(node, (xmlChar*)attribute);
     #elif defined(MXML)
@@ -129,12 +129,12 @@ const char* KON_GetXMLAttribute(KON_XMLNode* node, char* attribute) {
     #endif
 }
 
-int KON_GetXMLAttributeAsInt(KON_XMLNode* node, char* attribute) {
+int KON_GetXMLAttributeAsInt(KON_XMLNode* node, const char* attribute) {
     const char* buffer = KON_GetXMLAttribute(node, attribute);
     return buffer ? atoi(buffer) : 0;
 }
 
-double KON_GetXMLAttributeAsDouble(KON_XMLNode* node, char* attribute) {
+double KON_GetXMLAttributeAsDouble(KON_XMLNode* node, const char* attribute) {
     const char* buffer = KON_GetXMLAttribute(node, attribute);
     return buffer ? atof(buffer) : 0.0;
 }
@@ -155,7 +155,7 @@ unsigned int KON_GetXMLNodeChildCount(KON_XMLNode* node) {
     #endif
 }
 
-unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, char* name) {
+unsigned int KON_GetXMLNodeCount(KON_XMLNode* node, const char* name) {
     unsigned int nodeCount = 0;
     KON_XMLNode* childNode = KON_GetXMLNodeChild(node);
 
