@@ -89,4 +89,6 @@
 
     LinkedList*  KON_SearchDataInLinkedList(LinkedList* list, void* data);
 
+    LinkedList**  KON_SearchDataPointerInLinkedList(LinkedList** list, void* data);
+
 #endif

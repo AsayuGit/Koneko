@@ -58,7 +58,7 @@
         bool shown;
     };
 
-    typedef struct{
+    typedef struct {
         char* MapFilePath;
         unsigned int nbOfLayers;
         MapLayer* MapLayer; /* Map Layer array */
