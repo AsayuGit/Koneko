@@ -51,10 +51,7 @@ EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
     return newEntityInstance;
 }
 
-void KON_FreeEntity(EntityInstance* entityInstanceToFree){
-    if (entityInstanceToFree->descriptor->OnExit)
-        entityInstanceToFree->descriptor->OnExit(entityInstanceToFree);
-
+void KON_FreeEntity(EntityInstance* entityInstanceToFree) {
     KON_FreeSprite(&entityInstanceToFree->entitySprite);
 
     KON_FreeLinkedList(entityInstanceToFree->collision.collisionEvents);
@@ -198,7 +195,26 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     return ((EntityInstance*)nodePointer->data);
 }
 
-/* FIXME: Implement */
 void KON_KillEntityInstance(SceneHandle* scene, EntityInstance* entityInstanceToKill) {
-    KON_SystemMsg("(KON_KillEntityInstance) Not Implemented !", MESSAGE_WARNING, 0);
+    LinkedList** entityNode = NULL;
+    unsigned int i = 0;
+
+    /* Search for the entity node in all layers */
+    for (; i < scene->WorldMap->nbOfLayers; i++) {
+        if ((entityNode = KON_SearchDataPointerInLinkedList(&scene->WorldMap->MapLayer[i].entityInstanceList, entityInstanceToKill)))
+            break;
+    }
+    if (!entityNode)
+        return;
+
+    /* Let the entity free its custom data */
+    if (entityInstanceToKill->descriptor->OnExit)
+        entityInstanceToKill->descriptor->OnExit(entityInstanceToKill);
+
+    /* UnRegister the entity from the engine */
+    KON_RemoveFromDisplayList(&scene->WorldMap->MapLayer[i].displayList, entityInstanceToKill->entitySprite);
+    KON_DeleteLinkedListNode(entityNode);
+
+    /* Free the entity instance data */
+    KON_FreeEntity(entityInstanceToKill);
 }

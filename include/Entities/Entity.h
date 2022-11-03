@@ -63,7 +63,7 @@
         EntityHandle. */
 
     /* Particular instance of an entity */
-    struct EntityInstance{
+    struct EntityInstance {
         EntityDescriptor* descriptor;
 
         bool enabled;
