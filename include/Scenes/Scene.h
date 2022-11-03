@@ -27,12 +27,15 @@
     typedef struct SceneHandle SceneHandle;
     #include "Entity.h"
 
+    #include <stdarg.h>
+
     struct SceneHandle {
         Map* WorldMap;
         void* sceneInstanceContext;
     };
 
     typedef void (*functPtrScene)(SceneHandle* scene);
+    typedef void (*functPtrVaScene)(SceneHandle* scene, va_list args);
 
     /* Scene desctiptor data type */
     typedef struct {
@@ -40,7 +43,7 @@
         char* WorldMapPath;
 
         /* Logic */
-        functPtrScene OnSetup;
+        functPtrVaScene OnSetup;
         functPtrScene OnExit;
         functPtrScene OnEvent;
         functPtrScene OnFrame;
@@ -50,9 +53,10 @@
     /*
         SUMMARY : Starts up a Scene from a scene descroptor
         INPUT   : SceneDescriptor* scenePointer : The scene to start up.
+        INPUT   : ...                           : Scene specific arguments
         OUTPUT  : int                           : Success.
     */
-    int KON_StartScene(SceneDescriptor* scenePointer);
+    int KON_StartScene(SceneDescriptor* scenePointer, ...);
 
     /*
         SUMMARY : End a running scene.

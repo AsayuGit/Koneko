@@ -30,6 +30,7 @@
 #include "CommunFunctions.h"
 
 #include <stdlib.h>
+#include <stdarg.h>
 
 #define KON_EntityOnX(scene, function) {                                                                 \
     MapLayer* currentLayer;                                                                              \
@@ -59,15 +60,19 @@ static void KON_MapFrame(SceneHandle* scene) { KON_EntityOnX(scene, OnFrame); }
 
 static bool sceneAlive;
 
-int KON_StartScene(SceneDescriptor* scenePointer) {
+int KON_StartScene(SceneDescriptor* scenePointer, ...) {
     SceneHandle* scene;
 
     scene = (SceneHandle*)calloc(1, sizeof(SceneHandle));
     scene->WorldMap = KON_LoadMap(scenePointer->WorldMapPath);
     if (!scene->WorldMap)
         KON_SystemMsg("(KON_StartScene) Error Loading Scene Data !", MESSAGE_ERROR, 0);
-    if (scenePointer->OnSetup)
-        scenePointer->OnSetup(scene);
+    if (scenePointer->OnSetup) {
+        va_list args;
+        va_start(args, scenePointer);
+        scenePointer->OnSetup(scene, args);
+        va_end(args);
+    }
     /* Main Loop */
     sceneAlive = true;
     while (sceneAlive) {
@@ -89,7 +94,7 @@ int KON_StartScene(SceneDescriptor* scenePointer) {
         KON_MapFrame(scene);
 
         /* Process entitiy collisions */
-        KON_ProcessEntityCollisions(scene);
+        /* TODO: Fix -> KON_ProcessEntityCollisions(scene);*/
 
         /* Music loop deamon */
         KON_MusicDaemon();
