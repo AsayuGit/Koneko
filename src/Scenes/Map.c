@@ -160,6 +160,10 @@ void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsign
     KON_AddToDisplayList(&map->MapLayer[layerID].displayList, sprite, priority);
 }
 
+void KON_RemoveSpriteFromLayer(Map* map, Sprite* sprite, unsigned int layerID) {
+    KON_RemoveFromDisplayList(&map->MapLayer[layerID].displayList, sprite);
+}
+
 void KON_PlayLayerAnimation(Map* map, unsigned int layerID, unsigned int animID) {
     if (!map || layerID >= map->nbOfLayers || animID >= map->MapLayer[layerID].nbOfKeyFrameAnimations) {
         KON_SystemMsg("(KON_PlayLayerAnimation) Invalid parameters!", MESSAGE_WARNING, 0);

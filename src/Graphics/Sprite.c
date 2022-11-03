@@ -135,7 +135,7 @@ Sprite* KON_CreateSprite(unsigned int width, unsigned int height) {
 }
 
 void KON_FreeSprite(Sprite** sprite) {
-    if (!sprite) /* Check if sprite's not null */
+    if (!sprite || !(*sprite)) /* Check if sprite's not null */
         return;
 
     KON_FreeSurface((*sprite)->spriteTexture);

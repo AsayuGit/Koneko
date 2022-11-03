@@ -83,6 +83,11 @@
     void KON_AddSpriteToLayer(Map* map, Sprite* sprite, unsigned int layerID, unsigned int priority, double x, double y);
 
     /*
+        SUMARRY : Removed a previously added sprite from a layer
+    */
+    void KON_RemoveSpriteFromLayer(Map* map, Sprite* sprite, unsigned int layerID);
+
+    /*
         SUMMARY : Start an animation on a layer.
         INPUT   : Map* map             : The map the layer is part of.
         INPUT   : unsigned int layerID : The Nb of the layer to animate.
