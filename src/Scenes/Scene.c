@@ -30,7 +30,6 @@
 #include "CommunFunctions.h"
 
 #include <stdlib.h>
-#include <stdarg.h>
 
 #define KON_EntityOnX(scene, function) {                                                                 \
     MapLayer* currentLayer;                                                                              \

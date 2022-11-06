@@ -32,7 +32,10 @@
 
     typedef void (*functPtrEntityFree)(EntityInstance* entity);
     typedef void (*functPtrEntity)(SceneHandle* scene, MapLayer* layer, EntityInstance* self);
+    typedef void (*functPtrVaEntity)(SceneHandle* scene, MapLayer* layer, EntityInstance* self, va_list args);
     typedef void (*functPtrEntityColison)(SceneHandle* scene, MapLayer* layer, EntityInstance* self, CollisionEvent* collision);
+
+    #include <stdarg.h>
 
     struct EntityProperties {
         bool isSolid;
@@ -46,7 +49,7 @@
         EntityProperties properties;
 
         /* Logic */
-        functPtrEntity OnSetup;
+        functPtrVaEntity OnSetup;
         functPtrEntityFree OnExit;
         functPtrEntity OnEvent;
         functPtrEntity OnFrame;
@@ -128,9 +131,10 @@
         INPUT   : unsigned int layerID            : The layer the new entity should be spawned on.
         INPUT   : unsigned int priority           : The display priority the entity should use amongst its layer.
         INPUT   : double x, y                     : The new entity's coordinates.
+        INPUT   : ...                             : Entity specific arguments
         OUTPUT  : EntityInstance*                 : The spawned EntityInstance (or NULL on error).
     */
-    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y);
+    EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y, ...);
 
     /*
         SUMMARY : Kills a previously spawned entity instance.

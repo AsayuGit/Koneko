@@ -29,6 +29,7 @@
 #include "DisplayList.h"
 
 #include <stdlib.h>
+#include <stdarg.h>
 
 /* Loads an Entity in memory */
 EntityInstance* KON_LoadEntity(EntityDescriptor* entityToLoad){
@@ -160,7 +161,7 @@ void KON_BoundEntityInstanceToRect(EntityInstance* entity, KON_Rect* rect){
     }
 }
 
-EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y) {
+EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEntity, unsigned int layerID, unsigned int priority, double x, double y, ...) {
     EntityInstance* newInstance = NULL;
     LinkedList* nodePointer = NULL;
     MapLayer* mapLayer;
@@ -183,8 +184,12 @@ EntityInstance* KON_SpawnEntity(SceneHandle* scene, EntityDescriptor* spawnedEnt
     /* The MapLayer to spawn the new entity in */
     mapLayer = scene->WorldMap->MapLayer + layerID;
 
-    if (newInstance->descriptor->OnSetup)
-        newInstance->descriptor->OnSetup(scene, mapLayer, newInstance);
+    if (newInstance->descriptor->OnSetup) {
+        va_list args;
+        va_start(args, y);
+        newInstance->descriptor->OnSetup(scene, mapLayer, newInstance, args);
+        va_end(args);
+    }
 
     nodePointer = KON_AppendToLinkedList(&mapLayer->entityInstanceList, newInstance, sizeof(EntityInstance));
     free(newInstance);
