@@ -30,12 +30,12 @@
     #include "Scene.h"
     #include "Collisions.h"
 
+    #include <stdarg.h>
+
     typedef void (*functPtrEntityFree)(EntityInstance* entity);
     typedef void (*functPtrEntity)(SceneHandle* scene, MapLayer* layer, EntityInstance* self);
     typedef void (*functPtrVaEntity)(SceneHandle* scene, MapLayer* layer, EntityInstance* self, va_list args);
     typedef void (*functPtrEntityColison)(SceneHandle* scene, MapLayer* layer, EntityInstance* self, CollisionEvent* collision);
-
-    #include <stdarg.h>
 
     struct EntityProperties {
         bool isSolid;
