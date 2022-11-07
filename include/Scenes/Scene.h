@@ -21,22 +21,22 @@
 
 #ifndef _SCENE_H
 #define _SCENE_H
-
-    #include "LinkedList.h"
-    #include "Map.h"
-    typedef struct SceneHandle SceneHandle;
-    #include "Entity.h"
-
     #include <stdarg.h>
+    
+    typedef struct SceneHandle SceneHandle;
+    typedef void (*functPtrScene)(SceneHandle* scene);
+    typedef void (*functPtrOnDisplay)(SceneHandle* scene, unsigned int layerID);
+    typedef void (*functPtrVaScene)(SceneHandle* scene, va_list args);
+
+
+    #include "Map.h"
+    #include "Entity.h"
+    #include "LinkedList.h"
 
     struct SceneHandle {
         Map* WorldMap;
         void* sceneInstanceContext;
     };
-
-    typedef void (*functPtrScene)(SceneHandle* scene);
-    typedef void (*functPtrVaScene)(SceneHandle* scene, va_list args);
-
     /* Scene desctiptor data type */
     typedef struct {
         /* Data */
@@ -47,7 +47,7 @@
         functPtrScene OnExit;
         functPtrScene OnEvent;
         functPtrScene OnFrame;
-        functPtrScene OnDisplay;
+        functPtrOnDisplay OnDisplay;
     } SceneDescriptor;
 
     /*

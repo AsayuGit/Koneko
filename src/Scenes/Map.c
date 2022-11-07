@@ -186,7 +186,7 @@ static void KON_UpdateLayerAnimation(MapLayer* layer) {
     KON_UpdateAnimation(&layer->pos, &layer->keyFrameAnimationArray[layer->playingAnimation]);
 }
 
-void KON_DrawMap(Map* map) {
+void KON_DrawMap(SceneHandle* scene, functPtrOnDisplay OnDisplay) {
     MapLayer* currentLayer;
     unsigned int i;
     
@@ -194,9 +194,8 @@ void KON_DrawMap(Map* map) {
     KON_ClearScreen();
 
     /* Draw each layer */
-    /*for (i = map->nbOfLayers - 1; i >= 0; i--) {*/
-    for (i = 0; i < map->nbOfLayers; i++) {
-        currentLayer = map->MapLayer + i;
+    for (i = 0; i < scene->WorldMap->nbOfLayers; i++) {
+        currentLayer = scene->WorldMap->MapLayer + i;
 
         /* Update layer position */
         KON_UpdateLayerAnimation(currentLayer);
@@ -205,5 +204,8 @@ void KON_DrawMap(Map* map) {
         KON_UpdateLayerEntityPosition(currentLayer);
 
         KON_RenderLayer(currentLayer);
+
+        if (OnDisplay)
+            OnDisplay(scene, i);
     }
 }

@@ -64,6 +64,8 @@
         MapLayer* MapLayer; /* Map Layer array */
     } Map;
 
+    #include "Scene.h"
+
     /*
         SUMMARY : Loads a Map form disk.
         INPUT   : char** mapFilePath : The path to the map to load.
@@ -95,6 +97,6 @@
     */
     void KON_PlayLayerAnimation(Map* map, unsigned int layerID, unsigned int animID);
 
-    void KON_DrawMap(Map* map);
+    void KON_DrawMap(SceneHandle* scene, functPtrOnDisplay OnDisplay);
 
 #endif

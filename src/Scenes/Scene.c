@@ -99,10 +99,7 @@ int KON_StartScene(SceneDescriptor* scenePointer, ...) {
         KON_MusicDaemon();
 
         /* Draws the loaded map and its content on scren */
-        KON_DrawMap(scene->WorldMap);
-
-        if (scenePointer->OnDisplay)
-            scenePointer->OnDisplay(scene);
+        KON_DrawMap(scene, scenePointer->OnDisplay);
 
         KON_FinishFrame(); /* Update the main window */
     }
