@@ -86,6 +86,10 @@ Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, in
                     Dimensions.x = CharCoords.x;
 
                 /* New line */
+                sizeTmp = CharCoords.x - x;
+                if (sizeTmp > Dimensions.x)
+                    Dimensions.x = sizeTmp;
+
                 CharCoords.y += Font->Rects[0].h + 1;
                 CharCoords.x = x;
                 CharID++;
@@ -94,7 +98,11 @@ Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, in
         }
     }
 
-    Dimensions.y = CharCoords.y + Font->Rects[0].h;
+    Dimensions.y = (CharCoords.y - y) + Font->Rects[(unsigned int)text[--CharID]].h;
+
+    sizeTmp = (CharCoords.x - x) + Font->Rects[(unsigned int)text[CharID]].w;
+    if (sizeTmp > Dimensions.x)
+        Dimensions.x = sizeTmp;
 
     return Dimensions;
 }
@@ -109,6 +117,6 @@ Vector2i KON_PrintTrim(BitmapFont* Font, KON_Surface* target, const char* text, 
 }
 
 /* TOFIX */
-Vector2i KON_PrintLen(BitmapFont* Font, char* text, int intCharSpce) {
+Vector2i KON_PrintLen(BitmapFont* Font, const char* text, int intCharSpce) {
     return KON_PrintEx(Font, NULL, text, intCharSpce, false, 0, 0);
 }
