@@ -36,14 +36,14 @@
         SUMMARY : Free a previously loaded sound effect.
         INPUT   : KON_Sfx soundEffect : The sound effect to free.
     */
-    void     KON_FreeSoundEffect(KON_Sfx* soundEffect);
+    void KON_FreeSoundEffect(KON_Sfx* soundEffect);
 
     /*
         SUMMARY : Plays the sound effect file passed in parameters
         INPUT   : KON_Sfx sfx : The sound effect to play
         INPUT   : int loops   : The number of times the sound effect should be played for
     */
-    void     KON_PlaySoundEffect(KON_Sfx* sfx, int loops);
+    void KON_PlaySoundEffect(KON_Sfx* sfx, int loops);
 
 
     /*
@@ -51,6 +51,6 @@
         INPUT   : KON_Sfx* sfx        : The sound effect to set the volume if
         INPUT   : unsigned int volume : The new volume value
     */
-    void     KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume);
+    void KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume);
 
 #endif

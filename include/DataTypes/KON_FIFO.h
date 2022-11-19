@@ -24,7 +24,7 @@
 
     #include <stdlib.h>
     #include <stdint.h>
-    #include <stdbool.h>
+    #include "Bool.h"
 
     typedef struct KON_FIFO KON_FIFO;
 

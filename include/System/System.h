@@ -26,7 +26,7 @@
     #include "KON_DisplayDevice.h"
     #include "KON_InputDevice.h"
 
-    #include <Bool.h>
+    #include "Bool.h"
 
     typedef struct {
         DisplayDevice dDevice;
@@ -36,7 +36,7 @@
     /*
         SUMMARY : Properly exits Koneko.
     */
-    void KON_Exit();
+    void KON_Exit(void);
 
     /*
         SUMMARY : Initialize the Koneko Engine.
@@ -49,12 +49,12 @@
     /*
         SUMMARY : Finalise the current frame and displays it in the game's window.
     */
-    void KON_FinishFrame();
+    void KON_FinishFrame(void);
 
     /*
         SUMMARY : Process Koneko's system events.
     */
-    void KON_SystemEvents();
+    void KON_SystemEvents(void);
 
     /*
         SUMMARY : Set if the engine should draw the performance header or not.
@@ -66,6 +66,6 @@
         SUMMARY : Return the number of ms since the start of the game.
         OUTPUT  : uint32_t : nb of ms since the start of the game.
     */
-    uint32_t KON_GetMs();
+    uint32_t KON_GetMs(void);
 
 #endif

@@ -16,13 +16,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-void KON_InitFileSystem() {
+void KON_InitFileSystem(void) {
     #ifdef GEKKO
         fatInitDefault();
     #endif
 }
 
-void KON_FreeFileSystem() {}
+void KON_FreeFileSystem(void) {}
 
 char* KON_DirName(char *path) {
     #ifdef _XBOX

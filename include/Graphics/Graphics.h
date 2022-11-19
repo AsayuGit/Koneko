@@ -24,8 +24,8 @@
 
     #include "Scene.h"
 
-    uint32_t        getpixel(KON_CPUSurface *surface, int x, int y);
-    bool            RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect);
-    bool            RectOnScreen(const KON_Rect* Rect);
+    uint32_t getpixel(KON_CPUSurface *surface, int x, int y);
+    bool RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect);
+    bool RectOnScreen(const KON_Rect* Rect);
 
 #endif

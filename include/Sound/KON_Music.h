@@ -22,7 +22,7 @@
 #ifndef _MUSIC_H
 #define _MUSIC_H
 
-    #include <Bool.h>
+    #include "Bool.h"
 
     typedef struct KON_Music KON_Music;
 
@@ -30,24 +30,24 @@
         SUMMARY : Play the music file passed in parameters
         INPUT   : char* introPath : The path of the music intro
         INPUT   : char* loopPath  : The path of the music loop
-        INPUT   : int loops       : The number of times to play the music for (-1 = infinity)
+        INPUT   : int  loops       : The number of times to play the music for (-1 = infinity)
     */
     void KON_PlayMusic(char* introPath, char* loopPath, int loops);
 
     /*
         SUMMARY : Stop the currently playing music file if any
     */
-    void KON_StopMusic();
+    void KON_StopMusic(void);
 
     /*
         SUMMARY : Play the looping part of the currently playing music one the intro has ended (should be called every frame)
     */
-    void KON_MusicDaemon();
+    void KON_MusicDaemon(void);
 
     /*
         SUMMARY : Return wether music is currently playing or not.
     */
-    bool KON_IsMusicPlaying();
+    bool KON_IsMusicPlaying(void);
 
     /*
         SUMMARY : Set the volume of the music track.

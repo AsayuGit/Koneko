@@ -219,7 +219,7 @@ void KON_SetDrawFPS(bool value) {
     drawFPS = value;
 }
 
-void KON_DrawFPS() {
+void KON_DrawFPS(void) {
     char fpsText[100];
     double fps = 1000.0 / Koneko.dDevice.frametime;
 
@@ -228,7 +228,7 @@ void KON_DrawFPS() {
     KON_DrawScaledSurface(fpsTextBox, &fpsTextBoxSize);
 }
 
-static void DrawBordingFrame() {
+static void DrawBordingFrame(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -239,12 +239,11 @@ static void DrawBordingFrame() {
     #endif
 }
 
-void KON_FinishFrame() {
+void KON_FinishFrame(void) {
     uint32_t ticks;
     DrawBordingFrame();
 
-    if (drawFPS)
-        KON_DrawFPS();
+    if (drawFPS) KON_DrawFPS();
 
     #ifdef GEKKO
         KON_GCRender();
@@ -268,7 +267,7 @@ void KON_SetCameraFOV(double fov) {
     KON_SetCameraFOVRAD(KON_DegToRad(fov));
 }
 
-void KON_ResetCameraFOV() {
+void KON_ResetCameraFOV(void) {
     KON_SetCameraFOVRAD(2.0 * atan(0.5) / (double)Koneko.dDevice.InternalResolution.y * (double)Koneko.dDevice.InternalResolution.x);
 }
 
@@ -313,7 +312,7 @@ Vector2i KON_ScreenToRenderCoordinate(Vector2i screenCoordinate) {
     return renderCoordinate;
 }
 
-void KON_UpdateRenderRect() {
+void KON_UpdateRenderRect(void) {
 
     #ifdef GEKKO
         Koneko.dDevice.IRScalar = 1;
@@ -346,7 +345,7 @@ void KON_UpdateRenderRect() {
     KON_InitRect(vi.Frame[3], vi.RenderRect.x, vi.RenderRect.y + vi.RenderRect.h, vi.RenderRect.w, vi.RenderRect.y);   /* Bottom Frame */
 }
 
-void KON_ClearScreen() {
+void KON_ClearScreen(void) {
     #ifdef GEKKO
         /* TODO: Implement libogc */
     #else
@@ -393,7 +392,7 @@ void KON_InitDisplayDevice(int resX, int resY, char* gameTitle) {
     fpsTextBox = KON_CreateSurface(fpsTextBoxSize.w, fpsTextBoxSize.h);
 }
 
-void KON_FreeDisplayDevice() {
+void KON_FreeDisplayDevice(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -409,8 +408,7 @@ void KON_FreeDisplayDevice() {
     INPUT   : SDL_Texture* surface : Surface to be freed
 */
 void KON_FreeRawSurface(KON_Surface* surface) {
-    if (!surface)
-        return;
+    if (!surface) return;
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -852,7 +850,7 @@ void KON_ClearTargetSurface(KON_Surface* target) {
     }
 }
 
-void KON_ShowDebugScreen() {
+void KON_ShowDebugScreen(void) {
     #ifdef GEKKO
         if (!vi.pageflip)
             return;

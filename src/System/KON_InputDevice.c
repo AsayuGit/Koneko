@@ -5,7 +5,7 @@
 #include "LinkedList.h"
 #include "KON_FIFO.h"
 
-#include <stdbool.h>
+#include "Bool.h"
 
 typedef struct {
     #ifdef GEKKO
@@ -40,23 +40,22 @@ static KON_FIFO* eventQueue = NULL;
 
 #define KON_EVENT_QUEUE_SIZE 256
 
-void KON_InitInputs() {
+void KON_InitInputs(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
         inInt.Joy1 = NULL;
-        if (SDL_NumJoysticks())
-        inInt.Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
+        if (SDL_NumJoysticks()) inInt.Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
         
         Koneko.iDevice.KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-        inInt.JoyEnabled = (bool)(inInt.Joy1);
+        inInt.JoyEnabled = inInt.Joy1 != 0;
         inInt.EventEnabled = true;
     #endif
 
     eventQueue = KON_CreateFIFO(KON_EVENT_QUEUE_SIZE, sizeof(KON_Event));
 }
 
-void KON_FreeInputDevice() {
+void KON_FreeInputDevice(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -178,7 +177,7 @@ static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventA
     return false;
 }
 
-static void KON_PollAllActions() {
+static void KON_PollAllActions(void) {
     LinkedList* actionList = userActions;
     KON_Action* action = NULL;
     KON_Event newEvent;
@@ -198,7 +197,7 @@ static void KON_PollAllActions() {
     }
 }
 
-void KON_PumpEvent() {
+void KON_PumpEvent(void) {
     KON_Event newEvent;
     #ifdef GEKKO
         /* TODO: implement libogc */
@@ -256,7 +255,7 @@ void KON_PumpEvent() {
     KON_PollAllActions();
 }
 
-bool KON_PollEvent() {
+bool KON_PollEvent(void) {
     if (KON_FIFOPop(eventQueue, &Koneko.iDevice.event))
         return true;
     Koneko.iDevice.event = eventNone;
@@ -297,7 +296,7 @@ void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned 
     KON_AppendToLinkedList(&((KON_Action*)(*action)->data)->bindings, &newBinding, sizeof(KON_Binding));
 }
 
-void KON_FreeUserActions() {
+void KON_FreeUserActions(void) {
     LinkedList** actions = &userActions;
 
     while (*actions) {

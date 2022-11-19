@@ -64,7 +64,7 @@
         SUMMARY : Frees a previously loaded Sprite Animation.
         INPUT   : KON_SpriteAnimation* anim : The Sprite Animation to free.
     */
-    void            KON_FreeSpriteAnimation(KON_SpriteAnimation* spriteAnim);
+    void KON_FreeSpriteAnimation(KON_SpriteAnimation* spriteAnim);
 
     /*
         SUMMARY : Parses a KON_KeyFrameAnimation array from an XML Node
@@ -78,7 +78,7 @@
         SUMMARY : Frees a previously loaded KeyFrame Animation.
         INPUT   : KON_KeyFrameAnimation* keyframeAnim : The KeyFrame Animation to free.
     */
-    void            KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* keyframeAnim);
+    void KON_FreeKeyFrameAnimation(KON_KeyFrameAnimation* keyframeAnim);
 
     /*
         SUMMARY : Animate a vector.

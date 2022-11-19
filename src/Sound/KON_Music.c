@@ -119,7 +119,7 @@ void KON_PlayMusic(char* introPath, char* loopPath, int loops) {
     trackLoops = loops;
 }
 
-void KON_StopMusic() {
+void KON_StopMusic(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -127,7 +127,7 @@ void KON_StopMusic() {
     #endif
 }
 
-void KON_MusicDaemon() {
+void KON_MusicDaemon(void) {
     if (trackLoops == 0)
         return;
     if (KON_IsMusicPlaying() || !currentTrack.loopTrack)
@@ -137,7 +137,7 @@ void KON_MusicDaemon() {
     trackLoops = 0;
 }
 
-bool KON_IsMusicPlaying() {
+bool KON_IsMusicPlaying(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
         return false;

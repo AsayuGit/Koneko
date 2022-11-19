@@ -65,14 +65,14 @@
     #include "KON_Bitmap.h"
 
     void KON_InitDisplayDevice(int resX, int resY, char* gameTitle);
-    void KON_FreeDisplayDevice();
+    void KON_FreeDisplayDevice(void);
 
-    void KON_UpdateRenderRect();
+    void KON_UpdateRenderRect(void);
 
     /*
         SUMMARY : Clear the screen
     */
-    void KON_ClearScreen();
+    void KON_ClearScreen(void);
 
     /*
         SUMMARY : Turns on or off VSync.
@@ -95,7 +95,7 @@
     /*
         SUMMARY : Sets the camera fov to its optimal value for the current resolution.
     */
-    void KON_ResetCameraFOV();
+    void KON_ResetCameraFOV(void);
     void KON_CenterCameraOnCoordinates(double X, double Y);
     void KON_BoundCameraToRegion(KON_Rect Region);
     void KON_RotateCamera(double angle);
@@ -279,5 +279,6 @@
     /*
         SUMMARY : Present a screen of text for debug purpuses.
     */
-    void KON_ShowDebugScreen();
+    void KON_ShowDebugScreen(void);
+
 #endif

@@ -40,7 +40,7 @@
 		#define JOY_LEFT 14
 		#define JOY_RIGHT 15
 	#else
-		#define JOY_A 2 // Temp Values 
+		#define JOY_A 2 /* Temp Values */ 
 		#define JOY_B 1
 		#define JOY_X 3
 		#define JOY_Y 0
@@ -119,6 +119,5 @@
         #define PAD_MAINMENU SDL_SCANCODE_F4
 
     #endif
-
 
 #endif

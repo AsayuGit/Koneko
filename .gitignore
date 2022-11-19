@@ -82,3 +82,7 @@ vgcore*
 build
 Koneko
 lib
+
+# clangd files
+compile_commands.jsonq
+.cache

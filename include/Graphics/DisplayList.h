@@ -31,7 +31,7 @@
         SUMMARY : Frees a previously allocated DisplayList.
         INPUT   : DisplayList* listToFree : The DisplayList to be freed.
     */
-    void         KON_FreeDisplayList(DisplayList* listToFree);
+    void KON_FreeDisplayList(DisplayList* listToFree);
 
     /*
         SUMMARY : Add a Sprite to a DisplayList.
@@ -39,20 +39,20 @@
         INPUT   : Sprite* sprite        : The Sprite to add to the DisplayList.
         INPUT   : unsigned int priority : The priority level the Sprite should be drawn with (0 to inf / back to front).
     */
-    void         KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int priority);
+    void KON_AddToDisplayList(DisplayList** list, Sprite* sprite, unsigned int priority);
 
     /*
         SUMMARY : Remove a previously added Sprite from a DisplayList.
         INPUT   : DisplayList* list : The DisplayList the Sprite should be removed from.
         INPUT   : Sprite* sprite    : The Sprite to be removed from the DisplayList.
     */
-    void         KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite);
+    void KON_RemoveFromDisplayList(DisplayList** list, Sprite* sprite);
 
     /*
         SUMMARY : Clears a DisplayList of all its Sprites.
         INPUT   : DisplayList* list : The displayList to be cleared.
     */
-    void         KON_ClearDisplayList(DisplayList* list);
+    void KON_ClearDisplayList(DisplayList* list);
 
     /*
         SUMMARY : Set a Sprite's priority in a DisplayList.
@@ -60,22 +60,22 @@
         INPUT   : Sprite* sprite        : The Sprite to set the priority of.
         INPUT   : unsigned int priority : The priority level the Sprite should be drawn with (0 to inf / back to front).
     */
-    #define      KON_SetSpritePrirority(list, sprite, priority) do { \
-        KON_RemoveFromDisplayList(list, sprite);                     \
-        KON_AddToDisplayList(list, sprite, priority);                \
-    } while (0)                                                      \
+    #define KON_SetSpritePrirority(list, sprite, priority) do { \
+        KON_RemoveFromDisplayList(list, sprite);                \
+        KON_AddToDisplayList(list, sprite, priority);           \
+    } while (0)                                                 \
 
     /*
         SUMMARY : Draws a DisplayList to the screen.
         INPUT   : DisplayList* list : The DisplayList to be drawn.
     */
-    void         KON_DrawDisplayList(DisplayList* list);
+    void KON_DrawDisplayList(DisplayList* list);
 
     /*
         SUMMARY: Draws a DisplayList at a set location.
         INPUT   : DisplayList* list : The DisplayList to be drawn.
         INPUT   : double x, y       : Where to draw the DisplayList at.
     */
-    void         KON_DrawDisplayListAt(DisplayList* list, double x, double y);
+    void KON_DrawDisplayListAt(DisplayList* list, double x, double y);
 
 #endif

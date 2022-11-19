@@ -22,7 +22,7 @@
 #ifndef _KON_INPUTDEVICE_H
 #define _KON_INPUTDEVICE_H
 
-    #include <Bool.h>
+    #include "Bool.h"
     #include "KON_Events.h"
     #include "KON_Keyboard.h"
     #include "KON_Mouse.h"
@@ -39,22 +39,22 @@
     /*
         TODO: Doc
     */
-    void KON_InitInputs();
+    void KON_InitInputs(void);
 
     /*
         TODO: Doc
     */
-    void KON_FreeInputDevice();
+    void KON_FreeInputDevice(void);
 
     /*
         TODO: Doc
     */
-    void KON_PumpEvent();
+    void KON_PumpEvent(void);
 
     /*
         TODO: Doc
     */
-    bool KON_PollEvent();
+    bool KON_PollEvent(void);
 
     /* UserActions */
 
@@ -71,7 +71,7 @@
     /*
         TODO: Doc
     */
-    void KON_FreeUserActions();
+    void KON_FreeUserActions(void);
 
     /*
         TODO: Doc

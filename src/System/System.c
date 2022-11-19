@@ -30,7 +30,7 @@
 #include "API.h"
 #include <stdlib.h>
 
-static void KON_FreeSoundDevice() {
+static void KON_FreeSoundDevice(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
     #else
@@ -38,7 +38,7 @@ static void KON_FreeSoundDevice() {
     #endif
 }
 
-static void KON_InitSoundDevice() {
+static void KON_InitSoundDevice(void) {
     #ifdef GEKKO
 
     #else
@@ -49,7 +49,7 @@ static void KON_InitSoundDevice() {
 }
 
 /* FIXME : Implement memoru cleanup */
-void KON_Exit(){
+void KON_Exit(void){
     KON_FreeFileSystem();
     KON_FreeInputDevice();
     KON_FreeSoundDevice();
@@ -74,7 +74,7 @@ void KON_InitEngine(int resX, int resY, char* gameTitle) {
     KON_InitFileSystem();
 }
 
-void KON_SystemEvents() {
+void KON_SystemEvents(void) {
 
     switch (Koneko.iDevice.event.type) {
         case KON_EVENT_GAME_EXIT:
@@ -123,7 +123,7 @@ void KON_SystemEvents() {
 
 }
 
-uint32_t KON_GetMs() {
+uint32_t KON_GetMs(void) {
     #ifdef GEKKO
         /* TODO: implement libogc */
         return 0;
