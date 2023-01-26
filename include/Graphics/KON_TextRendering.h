@@ -30,7 +30,7 @@
     INPUT  :
     OUTPUT : 
 */
-int      KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y);
+int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y, KON_Rect* boundingBox);
 
 Vector2i KON_Print(BitmapFont* Font, KON_Surface* target, const char* text, const unsigned int x, const unsigned int y);
 

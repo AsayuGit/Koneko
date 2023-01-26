@@ -25,14 +25,14 @@
 #include <string.h>
 
 /* FIXME */
-int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y) {
+int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int color, unsigned int x, unsigned int y, KON_Rect* boundingBox) {
     /* Declaration */
     KON_Rect DstLetter, SrcLetter;
 
     /* Init */
     if (!Font){ /* Font check */
         KON_SystemMsg("(gputc) No Font to print with !", MESSAGE_WARNING, 0);
-        return 0;
+        return -1;
     }
 
     c -= 32; /* We only want the printable characters*/
@@ -54,15 +54,18 @@ int KON_PrintChar(BitmapFont* Font, KON_Surface* target, char c, unsigned int co
         KON_SetRenderTarget(NULL);
     }
 
-    return DstLetter.w;
+    if (boundingBox)
+        *boundingBox = DstLetter;
+    
+    return 0;
 }
 
 Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, int intCharSpce, const bool skipWhiteSpace, const unsigned int x, const unsigned int y) {
     /* Declaration */
-    unsigned int CharID = 0, sizeTmp, textColor = 0;
-    Vector2i CharCoords;
-    Vector2i Dimensions = {0};
-    bool skip = skipWhiteSpace;
+    unsigned int CharID = 0;
+    KON_Rect chrBoundingBox = {0};
+    Vector2i CharCoords, Dimensions = {0};
+    register int tmp;
 
     if (!text)
         return Dimensions;
@@ -74,21 +77,21 @@ Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, in
         for (; text[CharID] != '\0' && text[CharID] == '\n'; CharID++);
 
     while (text[CharID] != '\0') {
-        if (skip)
+        if (skipWhiteSpace)
             for (; text[CharID] != '\0' && text[CharID] == ' '; CharID++);
 
         for (; text[CharID] != '\0'; CharID++) {
             if (text[CharID] != '\n') {
-                sizeTmp = KON_PrintChar(Font, target, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
-                CharCoords.x += sizeTmp;
+                KON_PrintChar(Font, target, text[CharID], 0, CharCoords.x, CharCoords.y, &chrBoundingBox);
+                CharCoords.x += chrBoundingBox.w + intCharSpce;
             } else {
                 if (CharCoords.x > Dimensions.x)
                     Dimensions.x = CharCoords.x;
 
                 /* New line */
-                sizeTmp = CharCoords.x - x;
-                if (sizeTmp > Dimensions.x)
-                    Dimensions.x = sizeTmp;
+                tmp = CharCoords.x - x;
+                if (tmp > Dimensions.x)
+                    Dimensions.x = tmp;
 
                 CharCoords.y += Font->Rects[0].h + 1;
                 CharCoords.x = x;
@@ -98,11 +101,11 @@ Vector2i KON_PrintEx(BitmapFont* Font, KON_Surface* target, const char* text, in
         }
     }
 
-    Dimensions.y = (CharCoords.y - y) + Font->Rects[(unsigned int)text[--CharID]].h;
+    Dimensions.y = (CharCoords.y - y) + chrBoundingBox.h;
 
-    sizeTmp = (CharCoords.x - x) + Font->Rects[(unsigned int)text[CharID]].w;
-    if (sizeTmp > Dimensions.x)
-        Dimensions.x = sizeTmp;
+    tmp = (CharCoords.x - x) + chrBoundingBox.w;
+    if (tmp > Dimensions.x)
+        Dimensions.x = tmp;
 
     return Dimensions;
 }
