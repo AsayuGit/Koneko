@@ -126,17 +126,23 @@ LinkedList* KON_GetLinkedListNodeIndex(LinkedList* list, unsigned int index) {
 }
 
 LinkedList*  KON_SearchDataInLinkedList(LinkedList* list, void* data) {
-    return *KON_SearchDataPointerInLinkedList(&list, data);
+    if (!list)
+        return NULL;
+    while (list) {
+        if (list->data == data)
+            return list;
+        list = list->next;
+    }
+    return NULL;
 }
 
 LinkedList**  KON_SearchDataPointerInLinkedList(LinkedList** list, void* data) {    
     if (!list)
         return NULL;
-    while (*list){
+    while (*list) {
         if ((*list)->data == data)
             return list;
         list = &(*list)->next;
     }
-    
     return NULL;
 }

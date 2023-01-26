@@ -93,7 +93,7 @@ int KON_StartScene(SceneDescriptor* scenePointer, ...) {
         KON_MapFrame(scene);
 
         /* Process entitiy collisions */
-        /* TODO: Fix -> KON_ProcessEntityCollisions(scene);*/
+        KON_ProcessEntityCollisions(scene);
 
         /* Music loop deamon */
         KON_MusicDaemon();
