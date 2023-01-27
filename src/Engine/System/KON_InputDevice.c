@@ -20,26 +20,12 @@
 */
 
 #include "KON_InputDevice.h"
+#include "KON_BKD_Input.h"
 
 #include "Koneko.h"
-#include "API.h"
 #include "LinkedList.h"
-#include "KON_FIFO.h"
 
 #include "Bool.h"
-
-typedef struct {
-    #ifdef GEKKO
-
-    #else
-        /* Events */
-        bool EventEnabled;
-
-        /* Joystick */
-        SDL_Joystick* Joy1; /* Pointers to the Joypad */
-        bool JoyEnabled;
-    #endif
-} KON_InputInterface;
 
 typedef struct {
     KON_BindingType type;
@@ -54,7 +40,6 @@ typedef struct {
 } KON_Action;
 
 const static KON_Event eventNone;
-static KON_InputInterface inInt;
 
 static LinkedList* userActions = NULL;
 static KON_FIFO* eventQueue = NULL;
@@ -62,28 +47,12 @@ static KON_FIFO* eventQueue = NULL;
 #define KON_EVENT_QUEUE_SIZE 256
 
 void KON_InitInputs(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        inInt.Joy1 = NULL;
-        if (SDL_NumJoysticks()) inInt.Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
-        
-        Koneko.iDevice.KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-        inInt.JoyEnabled = inInt.Joy1 != 0;
-        inInt.EventEnabled = true;
-    #endif
-
+    KON_BKD_InitInputs();
     eventQueue = KON_CreateFIFO(KON_EVENT_QUEUE_SIZE, sizeof(KON_Event));
 }
 
 void KON_FreeInputDevice(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        if (inInt.Joy1)
-            SDL_JoystickClose(inInt.Joy1);
-    #endif
-
+    KON_BKD_FreeInputs();
     KON_FreeFIFO(&eventQueue);
     KON_FreeUserActions();
 }
@@ -219,60 +188,8 @@ static void KON_PollAllActions(void) {
 }
 
 void KON_PumpEvent(void) {
-    KON_Event newEvent;
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        SDL_Event sdlEvent;
-        Koneko.iDevice.mouseState = SDL_GetMouseState(&Koneko.iDevice.mousePos.x, &Koneko.iDevice.mousePos.y);
-        SDL_GetRelativeMouseState(&Koneko.iDevice.mouseMvt.x, &Koneko.iDevice.mouseMvt.y);
-
-        while (SDL_PollEvent(&sdlEvent)) {
-            newEvent = eventNone;
-
-            switch (sdlEvent.type) {
-                case SDL_WINDOWEVENT:
-                    switch (sdlEvent.window.event) {
-                        case SDL_WINDOWEVENT_CLOSE:
-                            newEvent.type = KON_EVENT_GAME_EXIT;
-                            break;
-
-                        case SDL_WINDOWEVENT_RESIZED:
-                            newEvent.type = KON_EVENT_RESOLUTION_CHANGED;
-                            newEvent.res.width = sdlEvent.window.data1;
-                            newEvent.res.height = sdlEvent.window.data2;
-                            break;
-                    }
-                    break;
-
-                /*
-                case SDL_KEYDOWN:
-                    if (!dupEvent && KON_GetKeyActionEvent(&Koneko.iDevice.event)) {
-                        dupEvent = true;
-                        return true;
-                    }
-                    Koneko.iDevice.event.type = KON_EVENT_KEY_DOWN;
-                    dupEvent = false;
-                    return true;
-
-                case SDL_KEYUP:
-                    if (!dupEvent && KON_GetKeyActionEvent(&Koneko.iDevice.event)) {
-                        dupEvent = true;
-                        return true;
-                    }
-                    Koneko.iDevice.event.type = KON_EVENT_KEY_UP;
-                    dupEvent = false;
-                    return true;
-                */
-                
-                default:
-                    continue;
-            }
-
-            KON_FIFOPush(eventQueue, &newEvent);
-        }
-    #endif
-
+    KON_BKD_GetMouseState();
+    KON_BKD_PumpSystemEvents(eventQueue);
     KON_PollAllActions();
 }
 

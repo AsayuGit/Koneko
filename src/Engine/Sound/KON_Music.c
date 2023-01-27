@@ -20,41 +20,19 @@
 */
 
 #include "KON_Music.h"
+#include "KON_BKD_Music.h"
 #include "RessourceManager.h"
 #include "Log.h"
-#include "API.h"
 
 #include <stddef.h>
 
-#ifdef GEKKO
-    typedef void KON_Track;
-#else
-    typedef Mix_Music KON_Track;
-#endif
-
-struct KON_Music {
+typedef struct {
     KON_Track* introTrack;
     KON_Track* loopTrack;
-};
+} KON_Music;
 
 static KON_Music currentTrack;
 static int trackLoops;
-
-KON_Track* KON_LoadRawMusic(char* FilePath) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-        return NULL;
-    #else
-        return Mix_LoadMUS(FilePath);
-    #endif
-}
-
-void KON_FreeRawMusic(KON_Track* music) {
-    /* TODO: implement libogc */
-    #ifndef GEKKO
-        Mix_FreeMusic(music);
-    #endif
-}
 
 static KON_Track* KON_LoadMusicTrack(char* filePath) {
     KON_Track* loadedTrack;
@@ -65,12 +43,8 @@ static KON_Track* KON_LoadMusicTrack(char* filePath) {
     if ((loadedTrack = KON_GetManagedRessource(filePath, RESSOURCE_MUSIC)))
         return loadedTrack;
 
-    if (!(loadedTrack = KON_LoadRawMusic(filePath))) {
-        #ifdef GEKKO
-            /* TODO: implement libogc */
-        #else
-            KON_SystemMsg("(KON_LoadMusicTrack) Can't load music file : ", MESSAGE_ERROR, 2, filePath, Mix_GetError());
-        #endif
+    if (!(loadedTrack = KON_BKD_LoadTrack(filePath))) {
+        KON_SystemMsg("(KON_LoadMusicTrack) Can't load music file : ", MESSAGE_ERROR, 1, filePath);
         return NULL;
     }
 
@@ -94,62 +68,41 @@ static void KON_FreeMusic(KON_Music* music) {
         return;
 
     if (music->introTrack) {
-        KON_FreeRawMusic(KON_FreeManagedRessourceByRef(music->introTrack));
+        KON_BKD_FreeTrack(KON_FreeManagedRessourceByRef(music->introTrack));
     }
 
     if (music->loopTrack) {
-        KON_FreeRawMusic(KON_FreeManagedRessourceByRef(music->loopTrack));
+        KON_BKD_FreeTrack(KON_FreeManagedRessourceByRef(music->loopTrack));
     }
 
-    /* free(music) */
-}
-
-static void KON_PlayTrack(KON_Track* track, int loops) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        Mix_PlayMusic(track, loops);
-    #endif
+    /* TODO: free(music) */
 }
 
 void KON_PlayMusic(char* introPath, char* loopPath, int loops) {
     KON_FreeMusic(&currentTrack);
     KON_LoadMusic(introPath, loopPath);
-    KON_PlayTrack(currentTrack.introTrack, 1);
+    KON_BKD_PlayTrack(currentTrack.introTrack, 1);
     trackLoops = loops;
 }
 
 void KON_StopMusic(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        Mix_HaltMusic();
-    #endif
+    KON_BKD_StopPlayback();
 }
 
 void KON_MusicDaemon(void) {
     if (trackLoops == 0)
         return;
-    if (KON_IsMusicPlaying() || !currentTrack.loopTrack)
+    if (KON_BKD_GetPlaybackStatus() || !currentTrack.loopTrack)
         return;
     
-    KON_PlayTrack(currentTrack.loopTrack, trackLoops);
+    KON_BKD_PlayTrack(currentTrack.loopTrack, trackLoops);
     trackLoops = 0;
 }
 
 bool KON_IsMusicPlaying(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-        return false;
-    #else
-        return Mix_PlayingMusic();
-    #endif
+    return KON_BKD_GetPlaybackStatus();
 }
 
 void KON_SetMusicVolume(unsigned int volume) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        Mix_VolumeMusic(volume);
-    #endif
+    KON_BKD_SetPlaybackVolume(volume);
 }

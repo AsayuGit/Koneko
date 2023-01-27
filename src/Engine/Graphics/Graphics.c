@@ -21,67 +21,11 @@
 
 #include "Koneko.h"
 #include "Graphics.h"
-#include "System.h"
-#include "TileMap.h"
-
-#include "API.h"
+#include "Rect.h"
+#include "KON_BKD_Video.h"
 
 uint32_t getpixel(KON_CPUSurface *surface, int x, int y) {
-    #ifdef GEKKO
-        return 0;
-    #else
-        /* Declaration */
-        unsigned int bpp;
-        uint8_t *p;
-        void* pixelData;
-
-        /* Init */
-        if (!surface){
-            printf("ERROR: (getpixel) No surface provided !\n");
-            return 0; /* Failsafe */
-        } else if (!(pixelData = KON_GetCPUSurfacePixelData(surface))){
-            /*printf("ERROR: (getpixel) No pixel data !\n");*/
-            return 0; /* Failsafe */
-        }
-
-        bpp = KON_GetCPUSurfaceBPP(surface);
-        p = (uint8_t *)pixelData + y * KON_GetCPUSurfacePitch(surface) + x * bpp; /* Here p is the address to the pixel we want to retrieve */
-
-        /*printf("%x %d %d %d %d\n", surface->pixels, y, surface->pitch, x, bpp);*/
-
-        /* Logic */
-        switch(bpp) {
-        case 1:
-            /*printf("DEBUG 1)\n");*/
-            return *p;
-            break;
-
-        case 2:
-            /*printf("DEBUG 2)\n");*/
-            return *(uint8_t *)p;
-            break;
-
-        case 3:
-            /*printf("DEBUG 3)\n");*/
-            if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-                return p[0] << 16 | p[1] << 8 | p[2];
-            else
-                return p[0] | p[1] << 8 | p[2] << 16;
-            break;
-
-        case 4:
-            /*printf("DEBUG 4)\n");*/
-            /*printf("Nyan 0x%.6x\n", *(Uint32*)p);*/
-            return *((uint32_t*)p);
-            break;
-
-        default:
-            return 0;
-            break;
-        }
-
-        return 0;
-    #endif
+    return KON_BKD_GetPixel(surface, x, y);
 }
 
 bool RectOnRect(const KON_Rect* SrcRect, const KON_Rect* DstRect){

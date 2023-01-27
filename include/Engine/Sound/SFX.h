@@ -22,35 +22,35 @@
 #ifndef _SFX_H
 #define _SFX_H
 
-    typedef struct KON_Sfx KON_Sfx;
+    #include "KON_BKD_SFX.h"
 
     /*
         SUMMARY : Load a sound effect file from disk.
         INPUT   : char* filePath : The path to the sound effect file.
-        OUTPUT  : KON_Sfx*       : The newly loaded sound effect or NULL on error.
+        OUTPUT  : KON_SFX*       : The newly loaded sound effect or NULL on error.
     */
-    KON_Sfx* KON_LoadSoundEffect(char* filePath);
+    KON_SFX* KON_LoadSoundEffect(char* filePath);
 
 
     /*
         SUMMARY : Free a previously loaded sound effect.
-        INPUT   : KON_Sfx soundEffect : The sound effect to free.
+        INPUT   : KON_SFX soundEffect : The sound effect to free.
     */
-    void KON_FreeSoundEffect(KON_Sfx* soundEffect);
+    void KON_FreeSoundEffect(KON_SFX* soundEffect);
 
     /*
         SUMMARY : Plays the sound effect file passed in parameters
-        INPUT   : KON_Sfx sfx : The sound effect to play
+        INPUT   : KON_SFX sfx : The sound effect to play
         INPUT   : int loops   : The number of times the sound effect should be played for
     */
-    void KON_PlaySoundEffect(KON_Sfx* sfx, int loops);
+    void KON_PlaySoundEffect(KON_SFX* sfx, int loops);
 
 
     /*
         SUMMARY : Set the volume for a sound effect
-        INPUT   : KON_Sfx* sfx        : The sound effect to set the volume if
+        INPUT   : KON_SFX* sfx        : The sound effect to set the volume if
         INPUT   : unsigned int volume : The new volume value
     */
-    void KON_SetSoundEffectVolume(KON_Sfx* sfx, unsigned int volume);
+    void KON_SetSoundEffectVolume(KON_SFX* sfx, unsigned int volume);
 
 #endif

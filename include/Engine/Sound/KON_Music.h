@@ -23,8 +23,7 @@
 #define _MUSIC_H
 
     #include "Bool.h"
-
-    typedef struct KON_Music KON_Music;
+    #include "KON_BKD_Music.h"
 
     /*
         SUMMARY : Play the music file passed in parameters

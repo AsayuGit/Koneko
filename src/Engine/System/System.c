@@ -26,26 +26,16 @@
 #include "Graphics.h"
 #include "KON_TextRendering.h"
 #include "KON_FileSystem.h"
+#include "KON_BKD_System.h"
 
-#include "API.h"
 #include <stdlib.h>
 
 static void KON_FreeSoundDevice(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-    #else
-        Mix_CloseAudio();
-    #endif
+    KON_BKD_FreeAudio();
 }
 
 static void KON_InitSoundDevice(void) {
-    #ifdef GEKKO
-
-    #else
-        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-            KON_SystemMsg("(KON_InitSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
-        }
-    #endif
+    KON_BKD_InitAudio();
 }
 
 /* FIXME : Implement memoru cleanup */
@@ -55,18 +45,11 @@ void KON_Exit(void){
     KON_FreeSoundDevice();
     KON_FreeDisplayDevice();
 
-    #ifndef GEKKO
-        SDL_Quit();
-    #endif
+    KON_BKD_Free();
 }
 
 void KON_InitEngine(int resX, int resY, char* gameTitle) {
-    #ifndef GEKKO
-        /* SDL Init */
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-            KON_SystemMsg("(KON_InitEngine) SDL Initialisation failed : ", MESSAGE_ERROR, 1, SDL_GetError());
-        }
-    #endif
+    KON_BKD_Init();
 
     KON_InitDisplayDevice(resX, resY, gameTitle);
     KON_InitSoundDevice();
@@ -75,7 +58,6 @@ void KON_InitEngine(int resX, int resY, char* gameTitle) {
 }
 
 void KON_SystemEvents(void) {
-
     switch (Koneko.iDevice.event.type) {
         case KON_EVENT_GAME_EXIT:
             /* TODO: make it nicer */
@@ -124,10 +106,5 @@ void KON_SystemEvents(void) {
 }
 
 uint32_t KON_GetMs(void) {
-    #ifdef GEKKO
-        /* TODO: implement libogc */
-        return 0;
-    #else
-        return SDL_GetTicks();
-    #endif
+    return KON_BKD_GetMs();
 }

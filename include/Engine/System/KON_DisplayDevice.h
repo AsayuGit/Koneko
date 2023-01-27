@@ -25,6 +25,7 @@
     #include "Vector.h"
     #include "Bool.h"
     #include <stdint.h>
+    #include "KON_BKD_Video.h"
 
     typedef struct {
         Vector2d position;
@@ -57,9 +58,7 @@
         DRAW_NO_SCALE = 4
     } DrawFlags;
 
-    typedef struct KON_Surface KON_Surface;
     typedef struct KON_RenderSurface KON_RenderSurface;
-    typedef struct KON_CPUSurface KON_CPUSurface;
 
     #include "Rect.h"
     #include "KON_Bitmap.h"
@@ -123,7 +122,7 @@
         INPUT   : uint8_t flags     : Flags ruling how to load the surface.
         OUTPUT  : KON_CPUSurface*      : The newly loaded surface (or NULL if error).
     */
-    KON_CPUSurface* KON_LoadCpuSurface(char* filePath, uint32_t colorKey, uint8_t flags);
+    KON_CPUSurface* KON_LoadCPUSurface(const char* FilePath, uint32_t ColorKey, uint8_t flags);
 
     /*
         SUMMARY : Loads a CPU-Side Surface from memory.
@@ -162,30 +161,13 @@
         SUMMARY : Free a previously loaded KON_Surface.
         INPUT   : KON_Surface* surface : The surface to free.
     */
-    void         KON_FreeSurface(KON_Surface* surface);
+    void         KON_BKD_FreeSurface(KON_Surface* surface);
 
     /*
         SUMMARY : Free a previously loaded CPU-Side surface.
         INPUT   : KON_CPUSurface* surface : The surface to free.
     */
     void         KON_FreeCPUSurface(KON_CPUSurface* surface);
-
-    /*
-        TODO : Doc
-    */
-    unsigned int KON_GetCPUSurfaceBPP(KON_CPUSurface* surface);
-
-    /*
-        TODO : Doc
-    */
-    unsigned int KON_GetCPUSurfacePitch(KON_CPUSurface* surface);
-
-    /*
-        SUMMARY : Loads a KON_Surface from a CPU-Side surface.
-        INPUT   : KON_CPUSurface* cpuSurface : The CPU-Side surface to load from.
-        OUTPUT  : KON_Surface*            : Tne newly loaded surface (or NULL on error).
-    */
-    KON_Surface* KON_CpuToGpuSurface(KON_CPUSurface* cpuSurface);
 
     /*
         SUMMARY : When provided with a surface, allows the user to get its size.

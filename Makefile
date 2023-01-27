@@ -3,8 +3,8 @@ rwildcard = $(foreach item,$(wildcard $1/*),$(call rwildcard,$(item),$2)$(filter
 # Ajust as needed
 BUILD := build
 export LIB = $(notdir $(OUT))
-SOURCES := src
-INCLUDES := include
+SOURCES := src/Engine
+INCLUDES := include/Engine
 TEXTURES := Assets
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
@@ -17,6 +17,9 @@ export OUT := $(CURDIR)/$(PROJECT)
 export DEPSDIR := $(CURDIR)/$(BUILD)
 
 SRC_PATH := $(call rwildcard,$(SOURCES),%.c)
+SRC_PATH += $(call rwildcard,src/Backends/SDL,%.c)
+SRC_PATH += $(call rwildcard,src/Backends/UNIX,%.c)
+
 SRC_DIR := $(dir $(SRC_PATH))
 export SRC_FILES := $(notdir $(SRC_PATH))
 export OBJ := $(SRC_FILES:%.c=%.o)
@@ -25,6 +28,7 @@ export OBJ := $(SRC_FILES:%.c=%.o)
 export VPATH := $(foreach dir,$(SRC_DIR),$(CURDIR)/$(dir)) $(CURDIR)/$(TEXTURES) $(CURDIR)/$(BUILD)
 
 export HEADERS := $(foreach hFile,$(call rwildcard,$(INCLUDES),%.h),$(CURDIR)/$(hFile))
+export HEADERS += $(foreach hFile,$(call rwildcard,include/Backends,%.h),$(CURDIR)/$(hFile))
 
 export INCLUDE := -I$(CURDIR)/$(BUILD) $(foreach hFile,$(HEADERS),-I$(dir $(hFile)))
 

@@ -23,6 +23,7 @@
 #include "Graphics.h"
 #include "RessourceManager.h"
 #include "Log.h"
+#include "KON_DisplayDevice.h"
 
 #include <stdlib.h>
 
@@ -42,7 +43,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
 
     /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingSurface = KON_LoadCpuSurface(filePath, fontColorKey, SURFACE_KEYED);
+    LoadingSurface = KON_LoadCPUSurface(filePath, fontColorKey, SURFACE_KEYED);
     if (!LoadingSurface) {
         KON_SystemMsg("(KON_LoadBitmapFont) Can't load font : ", MESSAGE_ERROR, 1, filePath);
         return NULL;
@@ -78,7 +79,7 @@ static BitmapFont* KON_LoadRawBitmapFont(char* filePath, uint32_t fontColorKey) 
     }
     KON_UnlockCPUSurface(LoadingSurface);
 
-    LoadingFont->FontSurface = KON_CpuToGpuSurface(LoadingSurface);
+    LoadingFont->FontSurface = KON_BKD_UploadSurface(LoadingSurface);
     KON_FreeCPUSurface(LoadingSurface);
 
     return LoadingFont;
@@ -132,7 +133,7 @@ BitmapFont* KON_LoadBitmapFontFromMem(const char* fontName, BITMAP* bitmap, uint
     }
     KON_UnlockCPUSurface(LoadingSurface);
 
-    LoadingFont->FontSurface = KON_CpuToGpuSurface(LoadingSurface);
+    LoadingFont->FontSurface = KON_BKD_UploadSurface(LoadingSurface);
     KON_FreeCPUSurface(LoadingSurface);
 
     KON_AddManagedRessource(fontName, RESSOURCE_FONT, LoadingFont);
@@ -145,7 +146,7 @@ static void KON_FreeRawBitmapFont(BitmapFont* font) {
     if (!font)
         return;
     
-    KON_FreeSurface(font->FontSurface);
+    KON_BKD_FreeSurface(font->FontSurface);
     free(font);
 }
 
