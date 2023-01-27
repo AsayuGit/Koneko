@@ -28,6 +28,7 @@
 
 int KON_LoadRaycastLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+    register TileMap* layerTileMap;
 
     KON_LoadLayerSurface(layer, layerNode);
     layer->layerRenderer = RENDER_3D_RAYCAST;
@@ -42,6 +43,13 @@ int KON_LoadRaycastLayer(MapLayer* layer, KON_XMLNode* layerNode) {
 
         layerProperty = KON_GetXMLNodeSibling(layerProperty);
     }
+
+    layerTileMap = layer->layerData;
+    
+    layer->boundingBox.x = 0;
+    layer->boundingBox.y = 0;
+    layer->boundingBox.w = layerTileMap->MapSizeX * layerTileMap->TileSize;
+    layer->boundingBox.h = layerTileMap->MapSizeX * layerTileMap->TileSize;
 
     layer->playingAnimation = -1;
     layer->shown = true;

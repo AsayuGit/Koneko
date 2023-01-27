@@ -39,6 +39,7 @@
 
 int KON_LoadTileMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+    register TileMap* layerTileMap;
 
     KON_LoadLayerSurface(layer, layerNode);
     layer->layerRenderer = RENDER_2D_TILEMAP;
@@ -53,6 +54,13 @@ int KON_LoadTileMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
 
         layerProperty = KON_GetXMLNodeSibling(layerProperty);
     }
+    
+    layerTileMap = layer->layerData;
+    
+    layer->boundingBox.x = 0;
+    layer->boundingBox.y = 0;
+    layer->boundingBox.w = layerTileMap->MapSizeX * layerTileMap->TileSize;
+    layer->boundingBox.h = layerTileMap->MapSizeX * layerTileMap->TileSize;
 
     layer->playingAnimation = -1;
     layer->shown = true;
@@ -64,6 +72,7 @@ int KON_LoadTileMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
 
 int KON_LoadBitMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+    Vector2d bitmapSize;
 
     KON_LoadLayerSurface(layer, layerNode);
     layer->layerRenderer = RENDER_2D_BITMAP;
@@ -75,6 +84,12 @@ int KON_LoadBitMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
 
         layerProperty = KON_GetXMLNodeSibling(layerProperty);
     }
+
+    KON_GetSurfaceSize(layer->texture.gpuSide, &bitmapSize);
+    layer->boundingBox.x = 0;
+    layer->boundingBox.y = 0;
+    layer->boundingBox.w = bitmapSize.x;
+    layer->boundingBox.h = bitmapSize.y;
 
     layer->playingAnimation = -1;
     layer->shown = true;
