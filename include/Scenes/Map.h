@@ -41,7 +41,7 @@
                 unsigned int height;
             } cpuSide;
         } texture;
-        void* layerData;
+        void* layerData; /* TODO: Union ? */
         Vector2d pos;
         KON_Rect boundingBox;
         LinkedList* entityInstanceList;

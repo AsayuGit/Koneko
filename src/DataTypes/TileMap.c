@@ -109,6 +109,7 @@ void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID,
     KON_Rect SrcTile, DstTile;
 
     KON_GetTileSrcRectInTileMap((*tileMap), TileID, SrcTile);
+
     DstTile.x = position.x;
     DstTile.y = position.y;
     DstTile.w = DstTile.h = SrcTile.w;
@@ -117,14 +118,12 @@ void KON_DrawTile(KON_Surface* tileSheet, TileMap* tileMap, unsigned int TileID,
 }
 
 void KON_DrawTileMap(MapLayer* Layer) {
-    /* Declaration */
     unsigned int mapIndex, i, j;
     Vector2d tilePos = {0, 0};
     TileMap* map;
 
     map = (TileMap*)Layer->layerData;
 
-    /* Logic */
     if (!Layer->shown || (Layer->layerRenderer != RENDER_2D_TILEMAP))
         return;
 
@@ -132,8 +131,8 @@ void KON_DrawTileMap(MapLayer* Layer) {
     while (mapIndex < map->MapDataSize) {
         for (i = 0; i < map->MapSizeY; i++) {
             for (j = 0; j < map->MapSizeX; j++) {
-                tilePos.y = i * map->TileSize;
-                tilePos.x = j * map->TileSize;
+                tilePos.y = i * map->TileSize + Layer->pos.y - Koneko.dDevice.camera.position.y;
+                tilePos.x = j * map->TileSize + Layer->pos.x - Koneko.dDevice.camera.position.x;
                 KON_DrawTile(Layer->texture.gpuSide, map, map->MapData[mapIndex], tilePos); /* TODO: KON_DrawTileAtCoords ?() */
                 mapIndex++;
             }
