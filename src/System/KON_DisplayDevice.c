@@ -736,9 +736,6 @@ void KON_SetRenderColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 /* API level draw */
 static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_Rect* dstrect, uint8_t flags) {
-    /* TODO: Flags decoding */
-    flags = 0;
-
     #ifdef GEKKO
         f32 normSrectX, normSrectY, normSrectW, normSrectH;
 
@@ -783,7 +780,12 @@ static int KON_DrawEx(KON_Surface* surface, const KON_Rect* srcrect, const KON_R
         GX_End();
         return 0;
     #else
-        return SDL_RenderCopyEx(vi.Renderer, surface->surface, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flags);
+        SDL_RendererFlip flip = 0;
+
+        if (flags & DRAW_HORIZONTAL_FLIP) flip |= SDL_FLIP_HORIZONTAL;
+        if (flags & DRAW_VERTICAL_FLIP) flip |= SDL_FLIP_VERTICAL;
+
+        return SDL_RenderCopyEx(vi.Renderer, surface->surface, (SDL_Rect*)srcrect, (SDL_Rect*)dstrect, 0, 0, flip);
     #endif
 }
 

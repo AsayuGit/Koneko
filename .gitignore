@@ -86,3 +86,6 @@ lib
 # clangd files
 compile_commands.jsonq
 .cache
+
+# Exemple Projects
+Exemples
