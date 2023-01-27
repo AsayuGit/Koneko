@@ -46,6 +46,10 @@
         Tile*         TileIndex;         /* Array of all existing tiles */
     } TileMap;
 
+    int KON_LoadTileMapLayer(MapLayer* layer, KON_XMLNode* layerNode);
+
+    int KON_LoadBitMapLayer(MapLayer* layer, KON_XMLNode* layerNode);
+
     /* Load a tilemap from a map file */
     TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* node);
 
@@ -77,7 +81,6 @@
         INPUT   : MapLayer* Layer : The bitmap layer to draw
     */
     void KON_DrawBitMap(MapLayer* Layer);
-
 
     bool KON_GetTile(TileMap* tileMap, unsigned int X, unsigned int Y, unsigned int Z, unsigned int* tile);
     bool KON_IsTileSolid(TileMap* tileMap, unsigned int tile);

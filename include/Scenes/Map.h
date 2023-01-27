@@ -73,6 +73,8 @@
     */
     Map* KON_LoadMap(char* mapFilePath);
 
+    void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode);
+
     /*
         SUMMARY : Free a previously loaded map.
         INPUT  : Map* map : The map to free.

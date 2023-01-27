@@ -26,6 +26,31 @@
 #include "TileMap.h"
 #include "API.h"
 
+int KON_LoadRaycastLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+
+    KON_LoadLayerSurface(layer, layerNode);
+    layer->layerRenderer = RENDER_3D_RAYCAST;
+
+    while (layerProperty) {
+        if (KON_CompareXMLNodeName(layerProperty, "tileMap")) {
+            if (!(layer->layerData = KON_LoadTileMap(layer, layerProperty)))
+                return -1;
+        } else if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
+            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
+        }
+
+        layerProperty = KON_GetXMLNodeSibling(layerProperty);
+    }
+
+    layer->playingAnimation = -1;
+    layer->shown = true;
+
+    KON_SystemMsg("(KON_LoadRaycastLayer) Loaded NEW Raycast Layer", MESSAGE_LOG, 0);
+
+    return 0;
+}
+
 /*
     SUMMARY: Draw a tile pixel on screen.
 */

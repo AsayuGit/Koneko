@@ -37,6 +37,53 @@
 	#include <linux/limits.h>
 #endif
 
+int KON_LoadTileMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+
+    KON_LoadLayerSurface(layer, layerNode);
+    layer->layerRenderer = RENDER_2D_TILEMAP;
+
+    while (layerProperty) {
+        if (KON_CompareXMLNodeName(layerProperty, "tileMap")) {
+            if (!(layer->layerData = KON_LoadTileMap(layer, layerProperty)))
+                return -1;
+        } else if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
+            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
+        }
+
+        layerProperty = KON_GetXMLNodeSibling(layerProperty);
+    }
+
+    layer->playingAnimation = -1;
+    layer->shown = true;
+
+    KON_SystemMsg("(KON_LoadTileMapLayer) Loaded NEW TileMap Layer", MESSAGE_LOG, 0);
+
+    return 0;
+}
+
+int KON_LoadBitMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+
+    KON_LoadLayerSurface(layer, layerNode);
+    layer->layerRenderer = RENDER_2D_BITMAP;
+
+    while (layerProperty) {
+        if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
+            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
+        }
+
+        layerProperty = KON_GetXMLNodeSibling(layerProperty);
+    }
+
+    layer->playingAnimation = -1;
+    layer->shown = true;
+
+    KON_SystemMsg("(KON_LoadBitMapLayer) Loaded NEW BitMap Layer", MESSAGE_LOG, 0);
+
+    return 0;
+}
+
 TileMap* KON_LoadTileMap(MapLayer* layer, KON_XMLNode* node) {
     const char* tileMapData = NULL, *solidTiles = NULL;
     char* buffer, *strtokPointer;

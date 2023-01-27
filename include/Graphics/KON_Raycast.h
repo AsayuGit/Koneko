@@ -24,6 +24,8 @@
 
     #include "Map.h"
 
+    int KON_LoadRaycastLayer(MapLayer* layer, KON_XMLNode* layerNode);
+
     void KON_DrawRaycast(MapLayer* layer);
 
 #endif

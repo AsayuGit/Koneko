@@ -22,6 +22,7 @@
 #include "Map.h"
 #include "Koneko.h"
 #include "TileMap.h"
+#include "KON_Raycast.h"
 #include "Entity.h"
 #include "CommunFunctions.h"
 #include "KON_FileSystem.h"
@@ -40,7 +41,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode) {
+static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    const char* layerType = KON_GetXMLAttribute(layerNode, "type");
+
+    if (strcmp(layerType, "BitMap") == 0) {
+        return KON_LoadBitMapLayer(layer, layerNode);
+    } else if (strcmp(layerType, "TileMap") == 0) {
+        return KON_LoadTileMapLayer(layer, layerNode);
+    } else if (strcmp(layerType, "Raycast") == 0) {
+        return KON_LoadRaycastLayer(layer, layerNode);
+    } else if (strcmp(layerType, "Empty") == 0) {
+        layer->layerRenderer = RENDER_NONE;
+        KON_SystemMsg("(KON_LoadMapLayer) Loaded NEW Empty Layer", MESSAGE_LOG, 0);
+        layer->playingAnimation = -1;
+        layer->shown = true;
+        return 0;
+    }
+    
+    return -1;
+}
+
+void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode) {
     uint32_t colorKey;
     const char* colorKeyString, *surfacePath = KON_GetXMLAttribute(layerNode, "surfacePath");
 
@@ -50,51 +71,6 @@ static void KON_LoadLayerSurface(MapLayer* layer, KON_XMLNode* layerNode) {
     } else {
         layer->texture.gpuSide = KON_LoadSurface(surfacePath, 0, SURFACE_ALPHA);
     }
-}
-
-static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
-    const char* message, *layerType = KON_GetXMLAttribute(layerNode, "type");
-    KON_XMLNode* layerProperty;
-    bool loadTileMap = false;
-
-    if (strcmp(layerType, "BitMap") == 0) {
-        KON_LoadLayerSurface(layer, layerNode);
-        layer->layerRenderer = RENDER_2D_BITMAP;
-        message = "(KON_LoadMapLayer) Loaded NEW BitMap Layer";
-    } else if (strcmp(layerType, "TileMap") == 0) {
-        KON_LoadLayerSurface(layer, layerNode);
-        layer->layerRenderer = RENDER_2D_TILEMAP;
-        message = "(KON_LoadMapLayer) Loaded NEW TileMap Layer";
-        loadTileMap = true;
-    } else if (strcmp(layerType, "Raycast") == 0) {
-        KON_LoadLayerSurface(layer, layerNode);
-        layer->layerRenderer = RENDER_3D_RAYCAST;
-        message = "(KON_LoadMapLayer) Loaded NEW Raycast Layer";
-        loadTileMap = true;
-    } else if (strcmp(layerType, "Empty") == 0) {
-        layer->layerRenderer = RENDER_NONE;
-        message = "(KON_LoadMapLayer) Loaded NEW Empty Layer";
-    } else {
-        return -1;
-    }
-
-    layerProperty = KON_GetXMLNodeChild(layerNode);
-    while (layerProperty) {
-        if (loadTileMap && KON_CompareXMLNodeName(layerProperty, "tileMap")) {
-            if (!(layer->layerData = KON_LoadTileMap(layer, layerProperty)))
-                return -1;
-        } else if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
-            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
-        }
-
-        layerProperty = KON_GetXMLNodeSibling(layerProperty);
-    }
-
-    layer->playingAnimation = -1;
-    layer->shown = true;
-    KON_SystemMsg(message, MESSAGE_LOG, 0);
-
-    return 0;
 }
 
 Map* KON_LoadMap(char* mapFilePath) {
