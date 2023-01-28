@@ -15,7 +15,7 @@ LIBS = $$(sdl2-config --cflags) $$(pkg-config --cflags mxml)
 
 ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
 
-export VPATH += $(SDL_PATH) $(UNIX_PATH)
+export VPATH += $(SDL_PATH) $(UNIX_PATH) $(MXML_PATH)
 
 .PHONY: archive copy
 
@@ -24,7 +24,7 @@ $(OUT): archive copy
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< $(INCLUDE) $(LIBS) -o $@
 
-archive: $(OBJ) $(SDL_OBJ) $(UNIX_OBJ)
+archive: $(OBJ) $(SDL_OBJ) $(UNIX_OBJ) $(MXML_OBJ)
 	
 	@$(AR) rcs $(ARCHIVE) $^
 

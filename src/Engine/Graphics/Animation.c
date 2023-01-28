@@ -3,7 +3,7 @@
     using SDL and libxml2. This engine is meant to allow game developpement
     for Linux, Windows and the og Xbox.
 
-    Copyright (C) 2021-2022 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
+    Copyright (C) 2021-2023 Killian RAIMBAUD [Asayu] (killian.rai@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
 */
 
 #include "Animation.h"
-#include "XML.h"
 #include "Log.h"
 #include "System.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 KON_SpriteAnimation* KON_ParseSpriteAnimation(KON_XMLNode* animArray, size_t* nbOfSpriteAnimation) {
     KON_SpriteAnimation* LoadingAnimation;
