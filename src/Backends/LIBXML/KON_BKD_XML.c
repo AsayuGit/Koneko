@@ -30,8 +30,6 @@
     #include <libxml2/libxml/parser.h>
 #endif
 
-typedef xmlNode KON_XMLNode;
-
 KON_XMLDoc* KON_BKD_LoadXMLDoc(const char* filePath) {
     #ifdef _XBOX
         return xmlParseFile(filePath); /* Load File into memory */
@@ -45,15 +43,15 @@ void KON_BKD_FreeXMLDoc(KON_XMLDoc* doc) {
 }
 
 const char* KON_BKD_GetXMLNodeName(KON_XMLNode* node) {
-    return node->name;
+    return (const char*)((xmlNode*)node)->name;
 }
 
 KON_XMLNode* KON_BKD_GetXMLNodeChild(KON_XMLNode* node) {
-    return node->children;
+    return ((xmlNode*)node)->children;
 }
 
 KON_XMLNode* KON_BKD_GetXMLNodeSibling(KON_XMLNode* node) {
-    return node->next;
+    return ((xmlNode*)node)->next;
 }
 
 const char* KON_BKD_GetXMLAttribute(KON_XMLNode* node, const char* attribute) {

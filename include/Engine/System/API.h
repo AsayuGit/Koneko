@@ -29,6 +29,9 @@
 
     #elif defined(GEKKO)
 
+    #elif defined(__SWITCH__)
+        #include <SDL2/SDL.h>
+        #include <SDL2/SDL_mixer.h>
     #else
         #include <SDL2/SDL.h>
         /*#define SDLIMAGE <SDL2/SDL_image.h>*/

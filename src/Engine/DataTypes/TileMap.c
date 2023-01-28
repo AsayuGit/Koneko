@@ -33,6 +33,8 @@
 	#include <limits.h>
 #elif defined(GEKKO)
     #include <limits.h>
+#elif defined(__SWITCH__)
+    #include <limits.h>
 #else
 	#include <linux/limits.h>
 #endif

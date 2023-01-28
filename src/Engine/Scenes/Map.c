@@ -33,6 +33,9 @@
 #elif defined GEKKO
     #include <limits.h>
     #include <libgen.h> /* dirname() */
+#elif defined(__SWITCH__)
+    #include <limits.h>
+    #include <libgen.h> /* dirname() */
 #else
     #include <linux/limits.h>
     #include <libgen.h> /* dirname() */

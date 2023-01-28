@@ -212,7 +212,7 @@ KON_CPUSurface* KON_LoadCPUSurface(const char* FilePath, uint32_t ColorKey, uint
         return NULL;
 
     if (!(loadingCPUSurface = KON_BKD_LoadCPUSurface(FilePath))) {
-        KON_SystemMsg("(KON_LoadCPUSurface) Couldn't load : ", MESSAGE_WARNING, 2, FilePath, SDL_GetError());
+        KON_SystemMsg("(KON_LoadCPUSurface) Couldn't load : ", MESSAGE_WARNING, 1, FilePath);
         return NULL;
     }
 
@@ -235,7 +235,7 @@ KON_CPUSurface* KON_LoadCPUSurfaceFromMem(BITMAP* bitmap, uint32_t ColorKey, uin
     KON_CPUSurface* loadingCPUSurface = NULL;
 
     if (!(loadingCPUSurface = KON_BKD_LoadCPUSurfaceFromMem(bitmap))) {
-        KON_SystemMsg("(KON_LoadCPUSurfaceFromMem) Couldn't load memory surface : ", MESSAGE_WARNING, 1, SDL_GetError());
+        KON_SystemMsg("(KON_LoadCPUSurfaceFromMem) Couldn't load memory surface", MESSAGE_WARNING, 0);
         return NULL;
     }
 

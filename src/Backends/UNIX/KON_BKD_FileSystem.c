@@ -21,7 +21,11 @@
 
 #include "KON_BKD_FileSystem.h"
 
+#ifdef __SWITCH__
+#include <limits.h>
+#else
 #include <linux/limits.h>
+#endif
 #define PATH_SEPARATOR '/'
 
 #include <stdlib.h>

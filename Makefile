@@ -72,8 +72,14 @@ export INCLUDE := -I$(CURDIR)/$(BUILD) $(foreach hFile,$(HEADERS),-I$(dir $(hFil
 linux: $(BUILD) $(LIB)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/NIXMakefile.mk
 
+linux_libxml: $(BUILD) $(LIB)
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/NIXMakefile_LIBXML.mk
+
 gamecube: $(BUILD) $(LIB)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/GCMakefile.mk
+
+switch: $(BUILD) $(LIB)
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/NXMakefile.mk
 
 $(BUILD) $(LIB):
 	@[ -d $@ ] || mkdir -p $@

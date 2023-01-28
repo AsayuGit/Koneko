@@ -15,7 +15,7 @@ ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
 package: $(dir $(OUT))/lib$(PROJECT).a copy
 	@echo "gamecube build ready!"
 
-$(dir $(OUT))/lib$(PROJECT).a: $(OBJ)
+$(dir $(OUT))/lib$(PROJECT).a: $(OBJ) $(GX_OBJ) $(UNIX_OBJ) $(MXML_OBJ)
 
 %.tpl.o: %.tpl
 	$(bin2o)

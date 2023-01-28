@@ -21,7 +21,12 @@
 
 #include "KON_BKD_Video.h"
 
+#ifdef __SWITCH__
+#include <limits.h>
+#else
 #include <linux/limits.h>
+#endif
+
 #include <SDL2/SDL.h>
 
 #include "Koneko.h"
