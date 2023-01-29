@@ -31,6 +31,7 @@
 #endif
 
 KON_XMLDoc* KON_BKD_LoadXMLDoc(const char* filePath) {
+    xmlKeepBlanksDefault(0);
     #ifdef _XBOX
         return xmlParseFile(filePath); /* Load File into memory */
     #else
