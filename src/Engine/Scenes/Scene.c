@@ -26,6 +26,7 @@
 #include "Log.h"
 #include "DisplayList.h"
 #include "KON_Music.h"
+#include "KON_BKD_OS.h"
 
 #include "CommunFunctions.h"
 
@@ -74,7 +75,7 @@ int KON_StartScene(SceneDescriptor* scenePointer, ...) {
     }
     /* Main Loop */
     sceneAlive = true;
-    while (sceneAlive) {
+    while (sceneAlive && KON_BKD_OS_Loop()) {
         /* Events Loop */
         KON_PumpEvent();
         while (KON_PollEvent()){
