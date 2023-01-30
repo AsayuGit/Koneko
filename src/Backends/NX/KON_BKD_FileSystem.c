@@ -21,15 +21,23 @@
 
 #include "KON_BKD_FileSystem.h"
 
-#include <linux/limits.h>
+#include <limits.h>
+#include <unistd.h>
+#include <switch.h>
+
 #define PATH_SEPARATOR '/'
 
 #include <stdlib.h>
 #include <string.h>
 
-void KON_BKD_InitFileSystem(void) {}
+void KON_BKD_InitFileSystem(void) {
+    romfsInit();
+    chdir("romfs:/");
+}
 
-void KON_BKD_FreeFileSystem(void) {}
+void KON_BKD_FreeFileSystem(void) {
+    romfsExit();
+}
 
 char* KON_BKD_GetDirName(char* path) {
     char* dirname;
