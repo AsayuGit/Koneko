@@ -27,7 +27,7 @@
 #include "Log.h"
 
 void KON_BKD_InitAudio(void) {
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0){
         KON_SystemMsg("(KON_InitSoundDevice) Can't create sound device : ", MESSAGE_ERROR, 1, SDL_GetError());
     }
 }
