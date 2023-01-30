@@ -10,7 +10,7 @@ export CFLAGS += -D__SWITCH__ $(INCLUDE)
 
 ARCHIVE := $(dir $(OUT))/lib$(notdir $(OUT)).a
 
-export VPATH += $(SDL_PATH) $(UNIX_PATH) $(LIBXML_PATH)
+export VPATH += $(SDL_PATH) $(NX_PATH) $(LIBXML_PATH)
 
 .PHONY: package copy
 
@@ -18,7 +18,7 @@ export VPATH += $(SDL_PATH) $(UNIX_PATH) $(LIBXML_PATH)
 package: $(dir $(OUT))/lib$(PROJECT).a copy
 	@echo "switch build ready!"
 
-$(dir $(OUT))/lib$(PROJECT).a: $(OBJ) $(SDL_OBJ) $(UNIX_OBJ) $(LIBXML_OBJ)
+$(dir $(OUT))/lib$(PROJECT).a: $(OBJ) $(SDL_OBJ) $(NX_OBJ) $(LIBXML_OBJ)
 
 copy: $(HEADERS)
 	@cp -u $^ $(ARCHIVE) $(dir $(OUT))/$(LIB)/

@@ -9,7 +9,8 @@ TEXTURES := Assets
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
-export CFLAGS = -g -Wall -ansi -pedantic
+export CFLAGS = -g -Wall
+#  -ansi -pedantic
 export LDFLAGS = -g
 
 export PROJECT := Koneko
@@ -19,6 +20,7 @@ export DEPSDIR := $(CURDIR)/$(BUILD)
 SRC := $(call rwildcard,$(SOURCES),%.c)
 SDL_BKD := $(call rwildcard,src/Backends/SDL,%.c)
 GX_BKD := $(call rwildcard,src/Backends/GX,%.c)
+NX_BKD := $(call rwildcard,src/Backends/NX,%.c)
 NT_BKD := $(call rwildcard,src/Backends/NT,%.c)
 UNIX_BKD := $(call rwildcard,src/Backends/UNIX,%.c)
 LIBXML_BKD := $(call rwildcard,src/Backends/LIBXML,%.c)
@@ -27,6 +29,7 @@ MXML_BKD := $(call rwildcard,src/Backends/MXML,%.c)
 SRC_DIR := $(dir $(SRC))
 SDL_DIR := $(dir $(SDL_BKD))
 GX_DIR := $(dir $(GX_BKD))
+NX_DIR := $(dir $(NX_BKD))
 NT_DIR := $(dir $(NT_BKD))
 UNIX_DIR := $(dir $(UNIX_BKD))
 LIBXML_DIR := $(dir $(LIBXML_BKD))
@@ -40,6 +43,9 @@ export SDL_OBJ := $(SDL_FILES:%.c=%.o)
 
 export GX_FILES := $(notdir $(GX_BKD))
 export GX_OBJ := $(GX_FILES:%.c=%.o)
+
+export NX_FILES := $(notdir $(NX_BKD))
+export NX_OBJ := $(NX_FILES:%.c=%.o)
 
 export NT_FILES := $(notdir $(NT_BKD))
 export NT_OBJ := $(NT_FILES:%.c=%.o)
@@ -57,6 +63,7 @@ export MXML_OBJ := $(MXML_FILES:%.c=%.o)
 export VPATH := $(foreach dir,$(SRC_DIR),$(CURDIR)/$(dir)) $(CURDIR)/$(TEXTURES) $(CURDIR)/$(BUILD)
 export SDL_PATH := $(foreach dir,$(SDL_DIR),$(CURDIR)/$(dir))
 export GX_PATH := $(foreach dir,$(GX_DIR),$(CURDIR)/$(dir))
+export NX_PATH := $(foreach dir,$(NX_DIR),$(CURDIR)/$(dir))
 export NT_PATH := $(foreach dir,$(NT_DIR),$(CURDIR)/$(dir))
 export UNIX_PATH := $(foreach dir,$(UNIX_DIR),$(CURDIR)/$(dir))
 export LIBXML_PATH := $(foreach dir,$(LIBXML_DIR),$(CURDIR)/$(dir))
