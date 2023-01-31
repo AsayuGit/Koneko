@@ -176,7 +176,7 @@ void KON_BKD_UnlockCPUSurface(KON_CPUSurface* surface) {
 }
 
 int KON_BKD_SetRenderSurface(KON_Surface* surface) {
-    return SDL_SetRenderTarget(Renderer, (SDL_Texture*)surface->texture);
+    return SDL_SetRenderTarget(Renderer, (surface) ? (SDL_Texture*)surface->texture: NULL);
 }
 
 void KON_BKD_SetRenderColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {}

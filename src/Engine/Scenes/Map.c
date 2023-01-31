@@ -44,6 +44,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+static int KON_LoadEmptyLayer(MapLayer* layer, KON_XMLNode* layerNode) {
+    KON_XMLNode* layerProperty = KON_GetXMLNodeChild(layerNode);
+    layer->layerRenderer = RENDER_NONE;
+
+    while (layerProperty) {
+        if (KON_CompareXMLNodeName(layerProperty, "animArray")) {
+            layer->keyFrameAnimationArray = KON_ParseKeyFrameAnimation(layerProperty, &layer->nbOfKeyFrameAnimations);
+        }
+
+        layerProperty = KON_GetXMLNodeSibling(layerProperty);
+    }
+
+    KON_SystemMsg("(KON_LoadMapLayer) Loaded NEW Empty Layer", MESSAGE_LOG, 0);
+    layer->playingAnimation = -1;
+    layer->shown = true;
+    return 0;
+}
+
 static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     const char* layerType = KON_GetXMLAttribute(layerNode, "type");
 
@@ -54,11 +73,7 @@ static int KON_LoadMapLayer(MapLayer* layer, KON_XMLNode* layerNode) {
     } else if (strcmp(layerType, "Raycast") == 0) {
         return KON_LoadRaycastLayer(layer, layerNode);
     } else if (strcmp(layerType, "Empty") == 0) {
-        layer->layerRenderer = RENDER_NONE;
-        KON_SystemMsg("(KON_LoadMapLayer) Loaded NEW Empty Layer", MESSAGE_LOG, 0);
-        layer->playingAnimation = -1;
-        layer->shown = true;
-        return 0;
+        return KON_LoadEmptyLayer(layer, layerNode);
     }
     
     return -1;
