@@ -19,14 +19,29 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "KON_BKD_Input.h"
+#ifndef _KON_JOY_H
+#define _KON_JOY_H
 
-void KON_BKD_InitInputs(void) {}
+typedef enum {
+    KON_NX_PLUS = 0,
+    KON_NX_MINUS = 0,
+    KON_NX_A = 0,
+    KON_NX_B = 0,
+    KON_NX_X = 0,
+    KON_NX_Y = 0,
+    KON_NX_L = 0,
+    KON_NX_R = 0,
+    KON_NX_ZL = 0,
+    KON_NX_ZR = 0,
+    KON_NX_LEFTSTICK = 0,
+    KON_NX_RIGHTSTICK = 0
+} KON_JoyButtons;
 
-void KON_BKD_FreeInputs(void) {}
+typedef enum {
+    KON_NX_LEFTSTICK_X = 0,
+    KON_NX_LEFTSTICK_Y = 1,
+    KON_NX_RIGHTSTICK_X = 2,
+    KON_NX_RIGHTSTICK_Y = 3
+} KON_JoyAxis;
 
-void KON_BKD_PumpSystemEvents(KON_FIFO* eventQueue) {}
-
-void KON_BKD_GetMouseState(void) {}
-
-float KON_BKD_GetJoyAxisState(unsigned int axis, uint8_t player) {}
+#endif

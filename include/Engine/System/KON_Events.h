@@ -37,6 +37,8 @@
         KON_BINDING_GAMEPAD_AXIS,
         KON_BINDING_MOUSE_BUTTON,
         KON_BINDING_MOUSE_AXIS,
+        KON_BINDING_JOY_BUTTON,
+        KON_BINDING_JOY_AXIS,
         KON_BINDING_KEY
     } KON_BindingType;
 
@@ -55,12 +57,6 @@
         unsigned int height;
     };
 
-    struct KON_EventJoystick {
-        uint8_t type;
-        int8_t X;
-        int8_t Y;
-    };
-
     typedef union {
         struct KON_MouseActionData {
             Vector2i pos;
@@ -73,13 +69,13 @@
         unsigned int actionID;
         KON_InputState state;
         KON_BindingType bindingType;
+        float weight;
         KON_ActionData data;
     };
 
     typedef union {
         uint8_t type;
         struct KON_EventResChanged res;
-        struct KON_EventJoystick joy;
         struct KON_EventAction action;
     } KON_Event;
 

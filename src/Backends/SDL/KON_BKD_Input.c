@@ -22,6 +22,7 @@
 #include "KON_BKD_Input.h"
 
 #include <SDL2/SDL.h>
+#include <stdint.h>
 
 #include "Koneko.h"
 #include "Bool.h"
@@ -84,4 +85,8 @@ void KON_BKD_PumpSystemEvents(KON_FIFO* eventQueue) {
 void KON_BKD_GetMouseState(void) {
     Koneko.iDevice.mouseState = SDL_GetMouseState(&Koneko.iDevice.mousePos.x, &Koneko.iDevice.mousePos.y);
     SDL_GetRelativeMouseState(&Koneko.iDevice.mouseMvt.x, &Koneko.iDevice.mouseMvt.y);
+}
+
+float KON_BKD_GetJoyAxisState(unsigned int axis, uint8_t player) {
+    return (float)SDL_JoystickGetAxis(inInt.Joy1, axis) / INT16_MAX;
 }

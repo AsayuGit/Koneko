@@ -26,6 +26,7 @@
     #include "KON_Events.h"
     #include "KON_Keyboard.h"
     #include "KON_Mouse.h"
+    #include "KON_Joy.h"
 
     typedef struct {
         /* Key Presses */
@@ -61,7 +62,7 @@
     /*
         TODO: Doc
     */
-    void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned int binding);
+    void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned int binding, float weight);
 
     /*
         TODO: Doc
@@ -76,7 +77,7 @@
     /*
         TODO: Doc
     */
-    void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned int binding);
+    void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned int binding, float weight);
 
     /*
         SUMMARY : Test if the conditions for an Action are met

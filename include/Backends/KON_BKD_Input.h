@@ -32,4 +32,6 @@
 
     void KON_BKD_GetMouseState(void);
 
+    float KON_BKD_GetJoyAxisState(unsigned int axis, uint8_t player);
+
 #endif

@@ -27,9 +27,13 @@
 
 #include "Bool.h"
 
+#define KON_JOY_DEADZONE 0.20
+#define KON_JOY_MAX 0.95
+
 typedef struct {
     KON_BindingType type;
     unsigned int binding;
+    float weight;
 } KON_Binding;
 
 typedef struct {
@@ -93,6 +97,21 @@ static bool KON_PollMouseAxisBinding(KON_MouseAxis binding, Vector2i* mousePos, 
     return binding & mvtMask;
 }
 
+static bool KON_PollJoyAxisBinding(KON_JoyAxis binding, float* axisValue) {
+    float value = KON_BKD_GetJoyAxisState(binding, 0);
+    float absoluteValue = fabs(value);
+    
+    if (axisValue)
+        *axisValue = value;
+
+    if (absoluteValue <= KON_JOY_DEADZONE)
+        value = 0;
+    else if (absoluteValue >= KON_JOY_MAX)
+        value /= absoluteValue;
+
+    return value != 0;
+}
+
 static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventAction) {
     LinkedList* bindingList = NULL;
     bool matchFound = false;
@@ -107,6 +126,7 @@ static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventA
             case KON_BINDING_KEY:
                 if (KON_PollKeyBinding(binding->binding)) {
                     action->bindingType = KON_BINDING_KEY;
+                    eventAction->weight = binding->weight;
                     matchFound = true;
                 }
                 break;
@@ -114,6 +134,7 @@ static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventA
             case KON_BINDING_MOUSE_BUTTON:
                 if (KON_PollMouseButtonBinding(binding->binding, &eventAction->data.mouse.pos, &eventAction->data.mouse.mvt)) {
                     action->bindingType = KON_BINDING_MOUSE_BUTTON;
+                    eventAction->weight = binding->weight;
                     matchFound = true;
                 }
                 break;
@@ -121,6 +142,19 @@ static bool KON_PollActionRef(KON_Action* action, struct KON_EventAction* eventA
             case KON_BINDING_MOUSE_AXIS:
                 if (KON_PollMouseAxisBinding(binding->binding, &eventAction->data.mouse.pos, &eventAction->data.mouse.mvt)) {
                     action->bindingType = KON_BINDING_MOUSE_AXIS;
+                    eventAction->weight = binding->weight;
+                    matchFound = true;
+                }
+                break;
+
+            case KON_BINDING_JOY_BUTTON:
+                break;
+
+            case KON_BINDING_JOY_AXIS:
+                float axisValue;
+                if (KON_PollJoyAxisBinding(binding->binding, &axisValue)) {
+                    action->bindingType = KON_BINDING_JOY_AXIS;
+                    eventAction->weight = axisValue * binding->weight;
                     matchFound = true;
                 }
                 break;
@@ -200,7 +234,7 @@ bool KON_PollEvent(void) {
     return false;
 }
 
-void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned int binding) {
+void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned int binding, float weight) {
     KON_Action newAction;
     KON_Binding newBinding;
 
@@ -210,6 +244,7 @@ void KON_RegisterAction(unsigned int actionID, KON_BindingType type, unsigned in
 
     newBinding.type = type;
     newBinding.binding = binding;
+    newBinding.weight = weight;
 
     KON_AppendToLinkedList(&newAction.bindings, &newBinding, sizeof(KON_Binding));
     KON_AppendToLinkedList(&userActions, &newAction, sizeof(KON_Action));
@@ -222,7 +257,7 @@ void KON_DeleteAction(unsigned int actionID) {
     KON_DeleteLinkedListNode(action);
 }
 
-void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned int binding) {
+void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned int binding, float weight) {
     LinkedList** action;
     KON_Binding newBinding;
 
@@ -230,6 +265,7 @@ void KON_AddActionBinding(unsigned int actionID, KON_BindingType type, unsigned 
 
     newBinding.type = type;
     newBinding.binding = binding;
+    newBinding.weight = weight;
 
     KON_AppendToLinkedList(&((KON_Action*)(*action)->data)->bindings, &newBinding, sizeof(KON_Binding));
 }
